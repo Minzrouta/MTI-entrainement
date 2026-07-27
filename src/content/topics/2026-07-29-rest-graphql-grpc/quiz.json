@@ -1,0 +1,108 @@
+{
+  "flashcards": [
+    {
+      "q_fr": "Quelles sont les principales contraintes de REST ?",
+      "a_fr": "Ressources identifiées par des URLs, interface uniforme HTTP (verbes GET/POST/PUT/PATCH/DELETE + codes de statut), statelessness (chaque requête porte tout son contexte), réponses cacheables. HATEOAS (liens vers les actions possibles dans les réponses) complète le modèle « pur », rarement implémenté.",
+      "q_en": "What are REST's main constraints?",
+      "a_en": "Resources identified by URLs, the uniform HTTP interface (GET/POST/PUT/PATCH/DELETE verbs + status codes), statelessness (each request carries its full context), cacheable responses. HATEOAS (links to possible actions inside responses) completes the \"pure\" model, rarely implemented."
+    },
+    {
+      "q_fr": "Quelle différence entre un 401 et un 403 ?",
+      "a_fr": "401 Unauthorized = non authentifié : le serveur ne sait pas qui vous êtes (token absent, invalide ou expiré). 403 Forbidden = authentifié mais non autorisé : identité connue, droits insuffisants. Réessayer avec les mêmes credentials ne changera rien à un 403.",
+      "q_en": "What's the difference between a 401 and a 403?",
+      "a_en": "401 Unauthorized = not authenticated: the server doesn't know who you are (missing, invalid or expired token). 403 Forbidden = authenticated but not authorized: known identity, insufficient rights. Retrying with the same credentials won't change a 403."
+    },
+    {
+      "q_fr": "Qu'appelle-t-on over-fetching et under-fetching, et comment GraphQL les résout-il ?",
+      "a_fr": "Over-fetching : l'API renvoie plus de champs que nécessaire (40 champs pour en afficher 3). Under-fetching : un écran nécessite plusieurs appels enchaînés. GraphQL laisse le client décrire exactement les champs voulus, relations comprises, en un seul aller-retour sur un endpoint unique.",
+      "q_en": "What are over-fetching and under-fetching, and how does GraphQL solve them?",
+      "a_en": "Over-fetching: the API returns more fields than needed (40 fields to display 3). Under-fetching: one screen requires several chained calls. GraphQL lets the client describe exactly the fields it wants, relations included, in a single round trip on a single endpoint."
+    },
+    {
+      "q_fr": "Qu'est-ce que le problème N+1 en GraphQL et comment le résout-on ?",
+      "a_fr": "Avec des resolvers naïfs, une liste de N éléments dont chacun résout une relation (ex. l'auteur d'un post) déclenche 1 requête pour la liste + N requêtes pour les relations. Solution : le batching avec le pattern DataLoader, qui regroupe les chargements d'un même tick en une seule requête (WHERE id IN (...)) et déduplique.",
+      "q_en": "What is the N+1 problem in GraphQL and how is it solved?",
+      "a_en": "With naive resolvers, a list of N items each resolving a relation (e.g. a post's author) triggers 1 query for the list + N queries for the relations. Solution: batching with the DataLoader pattern, which groups same-tick loads into a single query (WHERE id IN (...)) and deduplicates."
+    },
+    {
+      "q_fr": "Pourquoi gRPC est-il plus performant que REST/JSON ?",
+      "a_fr": "Sérialisation protobuf binaire (champs numérotés, payloads compacts, parsing rapide), transport HTTP/2 (multiplexage sur une connexion persistante, compression d'en-têtes), code client/serveur généré depuis le contrat .proto, et streaming natif (server, client, bidirectionnel).",
+      "q_en": "Why is gRPC faster than REST/JSON?",
+      "a_en": "Binary protobuf serialization (numbered fields, compact payloads, fast parsing), HTTP/2 transport (multiplexing over a persistent connection, header compression), client/server code generated from the .proto contract, and native streaming (server, client, bidirectional)."
+    },
+    {
+      "q_fr": "Qu'est-ce que l'idempotence et quels verbes HTTP le sont ?",
+      "a_fr": "Une opération est idempotente si la rejouer produit le même état final qu'une seule exécution. GET, PUT et DELETE sont idempotents ; POST ne l'est pas. C'est crucial pour les retries : rejouer un POST de paiement sans idempotency key peut débiter deux fois.",
+      "q_en": "What is idempotence and which HTTP verbs are idempotent?",
+      "a_en": "An operation is idempotent if replaying it produces the same final state as a single execution. GET, PUT and DELETE are idempotent; POST is not. This is crucial for retries: replaying a payment POST without an idempotency key can charge twice."
+    },
+    {
+      "q_fr": "Pagination offset vs cursor : quelle différence et laquelle préférer ?",
+      "a_fr": "Offset (`?page=3&limit=20`) : simple, mais les éléments se décalent si la liste change entre deux pages, et OFFSET profond force la base à parcourir puis jeter des milliers de lignes. Cursor : un pointeur opaque après le dernier élément vu — stable et performant. À préférer par défaut pour les listes qui bougent.",
+      "q_en": "Offset vs cursor pagination: what's the difference and which should you prefer?",
+      "a_en": "Offset (`?page=3&limit=20`): simple, but items shift if the list changes between pages, and a deep OFFSET forces the database to scan then discard thousands of rows. Cursor: an opaque pointer after the last seen item — stable and fast. Prefer it by default for lists that change."
+    },
+    {
+      "q_fr": "REST, GraphQL ou gRPC : quelle grille de choix rapide ?",
+      "a_fr": "API publique → REST (universel, cacheable, testable au curl). BFF ou client mobile agrégeant plusieurs sources → GraphQL (composition des données en un aller-retour). Microservices internes à fort trafic → gRPC (contrats stricts, perfs, streaming ; mais navigateur seulement via grpc-web + proxy).",
+      "q_en": "REST, GraphQL or gRPC: what's the quick decision grid?",
+      "a_en": "Public API → REST (universal, cacheable, curl-testable). BFF or mobile client aggregating several sources → GraphQL (data composition in one round trip). High-traffic internal microservices → gRPC (strict contracts, performance, streaming; but browsers only via grpc-web + proxy)."
+    }
+  ],
+  "qcm": [
+    {
+      "q_fr": "Quel verbe HTTP n'est PAS idempotent ?",
+      "q_en": "Which HTTP verb is NOT idempotent?",
+      "choices_fr": ["POST", "PUT", "DELETE", "GET"],
+      "choices_en": ["POST", "PUT", "DELETE", "GET"],
+      "answer": 0,
+      "explain_fr": "Deux POST identiques créent deux ressources. Rejouer un PUT (remplacement complet), un DELETE ou un GET produit le même état final — c'est ce qui rend leurs retries sûrs.",
+      "explain_en": "Two identical POSTs create two resources. Replaying a PUT (full replacement), a DELETE or a GET produces the same final state — which is what makes their retries safe."
+    },
+    {
+      "q_fr": "Une app mobile n'affiche que 3 champs mais l'API REST en renvoie 40. Comment s'appelle ce problème ?",
+      "q_en": "A mobile app displays only 3 fields but the REST API returns 40. What is this problem called?",
+      "choices_fr": ["Over-fetching", "Under-fetching", "Le problème N+1", "Le head-of-line blocking"],
+      "choices_en": ["Over-fetching", "Under-fetching", "The N+1 problem", "Head-of-line blocking"],
+      "answer": 0,
+      "explain_fr": "Over-fetching = recevoir plus de données que nécessaire. Under-fetching = devoir enchaîner plusieurs appels pour un écran. GraphQL résout les deux en laissant le client sélectionner ses champs.",
+      "explain_en": "Over-fetching = receiving more data than needed. Under-fetching = having to chain several calls for one screen. GraphQL solves both by letting the client select its fields."
+    },
+    {
+      "q_fr": "Sur quoi repose gRPC pour la sérialisation et le transport ?",
+      "q_en": "What does gRPC rely on for serialization and transport?",
+      "choices_fr": ["Protocol Buffers sur HTTP/2", "JSON sur HTTP/1.1", "XML sur WebSocket", "Protocol Buffers sur TCP brut"],
+      "choices_en": ["Protocol Buffers over HTTP/2", "JSON over HTTP/1.1", "XML over WebSocket", "Protocol Buffers over raw TCP"],
+      "answer": 0,
+      "explain_fr": "gRPC sérialise en protobuf (binaire, compact, typé) et transporte sur HTTP/2, ce qui apporte multiplexage, compression d'en-têtes et streaming bidirectionnel.",
+      "explain_en": "gRPC serializes with protobuf (binary, compact, typed) and transports over HTTP/2, which brings multiplexing, header compression and bidirectional streaming."
+    },
+    {
+      "q_fr": "En protobuf, quelle règle garantit la compatibilité ascendante d'un message ?",
+      "q_en": "In protobuf, which rule guarantees a message's backward compatibility?",
+      "choices_fr": ["Ne jamais réutiliser ni renuméroter les numéros de champs, seulement en ajouter", "Incrémenter la version du package à chaque changement", "Toujours renommer les champs obsolètes", "Convertir les messages en JSON avant envoi"],
+      "choices_en": ["Never reuse or renumber field numbers, only add new ones", "Increment the package version on every change", "Always rename obsolete fields", "Convert messages to JSON before sending"],
+      "answer": 0,
+      "explain_fr": "Le wire format protobuf identifie les champs par leur numéro, pas par leur nom. Réutiliser un numéro pour un autre champ corrompt silencieusement le décodage des anciens messages ; on ajoute des numéros, on ne recycle jamais (mot-clé reserved).",
+      "explain_en": "The protobuf wire format identifies fields by number, not name. Reusing a number for another field silently corrupts decoding of old messages; you add numbers, never recycle them (the reserved keyword)."
+    },
+    {
+      "q_fr": "Une requête arrive avec un token expiré. Quel code de statut renvoyer ?",
+      "q_en": "A request arrives with an expired token. Which status code should you return?",
+      "choices_fr": ["401 Unauthorized", "403 Forbidden", "400 Bad Request", "419 Session Expired"],
+      "choices_en": ["401 Unauthorized", "403 Forbidden", "400 Bad Request", "419 Session Expired"],
+      "answer": 0,
+      "explain_fr": "Token expiré = le serveur ne peut plus authentifier le client → 401 (avec en général un header WWW-Authenticate). 403 signifierait « identité connue mais droits insuffisants ». 419 n'est pas un code standard.",
+      "explain_en": "Expired token = the server can no longer authenticate the client → 401 (usually with a WWW-Authenticate header). 403 would mean \"known identity but insufficient rights\". 419 is not a standard code."
+    },
+    {
+      "q_fr": "Pourquoi le cache HTTP classique fonctionne-t-il mal avec GraphQL ?",
+      "q_en": "Why does standard HTTP caching work poorly with GraphQL?",
+      "choices_fr": ["Tout passe par des POST sur un endpoint unique, invisibles pour les caches HTTP", "Les réponses GraphQL sont chiffrées de bout en bout", "Le schéma change à chaque requête", "GraphQL n'utilise pas HTTP"],
+      "choices_en": ["Everything goes through POSTs on a single endpoint, invisible to HTTP caches", "GraphQL responses are end-to-end encrypted", "The schema changes on every request", "GraphQL doesn't use HTTP"],
+      "answer": 0,
+      "explain_fr": "Les caches HTTP (navigateur, CDN) travaillent sur des GET avec des URLs distinctes. En GraphQL, chaque requête est un POST vers /graphql avec un body différent : il faut du caching applicatif (client normalisé type Apollo, persisted queries).",
+      "explain_en": "HTTP caches (browser, CDN) work on GETs with distinct URLs. In GraphQL, every request is a POST to /graphql with a different body: you need application-level caching (a normalized client like Apollo, persisted queries)."
+    }
+  ]
+}

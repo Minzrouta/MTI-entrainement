@@ -1,0 +1,108 @@
+{
+  "flashcards": [
+    {
+      "q_fr": "Qu'est-ce qu'une branche pour Git, concrètement ?",
+      "a_fr": "Un simple pointeur mutable vers un commit : un fichier de 41 octets dans `.git/refs/heads/` contenant un hash. L'historique est le graphe (DAG) des commits ; la branche n'est qu'une étiquette qui avance à chaque commit. D'où des branches instantanées et gratuites.",
+      "q_en": "What is a branch to Git, concretely?",
+      "a_en": "Just a mutable pointer to a commit: a 41-byte file in `.git/refs/heads/` containing a hash. History is the graph (DAG) of commits; the branch is only a label that advances with each commit. Hence instant, free branching."
+    },
+    {
+      "q_fr": "Quelle est la différence fondamentale entre merge et rebase ?",
+      "a_fr": "Merge crée un commit de fusion à deux parents et préserve l'historique tel qu'il s'est passé. Rebase rejoue chaque commit de la branche par-dessus la cible : nouveaux commits, nouveaux hashes, historique linéaire mais réécrit. Le résultat du code est le même, l'historique non.",
+      "q_en": "What is the fundamental difference between merge and rebase?",
+      "a_en": "Merge creates a two-parent merge commit and preserves history as it happened. Rebase replays each commit of the branch on top of the target: new commits, new hashes, a linear but rewritten history. The resulting code is the same, the history is not."
+    },
+    {
+      "q_fr": "Que permet le rebase interactif (`git rebase -i`) ?",
+      "a_fr": "Réécrire une série de commits avant de la partager : réordonner, fusionner (`squash`/`fixup`), reformuler (`reword`), modifier (`edit`) ou supprimer (`drop`) des commits. C'est l'outil standard pour nettoyer une branche avant d'ouvrir la PR.",
+      "q_en": "What does interactive rebase (`git rebase -i`) let you do?",
+      "a_en": "Rewrite a series of commits before sharing it: reorder, combine (`squash`/`fixup`), reword (`reword`), amend (`edit`) or delete (`drop`) commits. It's the standard tool for cleaning up a branch before opening the PR."
+    },
+    {
+      "q_fr": "À quoi sert `git cherry-pick` et quel est son cas d'usage typique ?",
+      "a_fr": "Il rejoue un commit précis sur la branche courante, en créant un nouveau commit (nouveau hash). Cas typique : reporter un hotfix de `main` vers une branche de release. Attention : le même changement existe alors deux fois dans l'historique si les branches sont mergées ensuite.",
+      "q_en": "What is `git cherry-pick` for, and what is its typical use case?",
+      "a_en": "It replays one specific commit onto the current branch, creating a new commit (new hash). Typical case: backporting a hotfix from `main` to a release branch. Beware: the same change then exists twice in history if the branches are later merged."
+    },
+    {
+      "q_fr": "Comment fonctionne `git bisect` ?",
+      "a_fr": "Recherche dichotomique du commit fautif : on marque un commit `bad` et un commit `good`, Git checkout le commit du milieu, on teste et on répond good/bad, jusqu'à isoler le coupable en log₂(n) étapes (1000 commits ≈ 10 tests). `git bisect run ./script.sh` automatise tout.",
+      "q_en": "How does `git bisect` work?",
+      "a_en": "Binary search for the offending commit: you mark one `bad` and one `good` commit, Git checks out the middle commit, you test and answer good/bad, until the culprit is isolated in log₂(n) steps (1000 commits ≈ 10 tests). `git bisect run ./script.sh` automates the whole thing."
+    },
+    {
+      "q_fr": "Qu'est-ce que le reflog et pourquoi est-ce un filet de sécurité ?",
+      "a_fr": "`git reflog` journalise localement tous les déplacements de HEAD et des branches (~90 jours). Après un rebase raté ou un `reset --hard` malheureux, on retrouve le hash d'avant l'erreur et on restaure avec `git reset --hard HEAD@{n}`. Un commit non référencé n'est perdu qu'après passage du garbage collector.",
+      "q_en": "What is the reflog and why is it a safety net?",
+      "a_en": "`git reflog` locally journals every move of HEAD and branches (~90 days). After a botched rebase or an unfortunate `reset --hard`, you find the hash from before the mistake and restore with `git reset --hard HEAD@{n}`. An unreferenced commit is only lost once the garbage collector runs."
+    },
+    {
+      "q_fr": "Quelle est la règle d'or du rebase ?",
+      "a_fr": "Ne jamais rebaser des commits déjà poussés et partagés. Le rebase crée de nouveaux hashes : les collègues qui ont basé leur travail sur les anciens commits se retrouvent avec des historiques divergents pénibles à réconcilier. Rebase = uniquement sur ses commits locaux.",
+      "q_en": "What is the golden rule of rebase?",
+      "a_en": "Never rebase commits that have already been pushed and shared. Rebase creates new hashes: colleagues who based their work on the old commits end up with painfully diverged histories. Rebase = only on your local commits."
+    },
+    {
+      "q_fr": "`git push --force` vs `--force-with-lease` : quelle différence ?",
+      "a_fr": "`--force` écrase la branche distante aveuglément, même si un collègue a poussé entre-temps (travail perdu). `--force-with-lease` échoue si la branche distante a bougé depuis le dernier fetch : même usage (pousser après un rebase), sans le risque. C'est le seul force push acceptable en équipe.",
+      "q_en": "`git push --force` vs `--force-with-lease`: what's the difference?",
+      "a_en": "`--force` blindly overwrites the remote branch, even if a colleague pushed in the meantime (lost work). `--force-with-lease` fails if the remote branch moved since your last fetch: same use (pushing after a rebase), without the risk. It's the only acceptable force push on a team."
+    }
+  ],
+  "qcm": [
+    {
+      "q_fr": "Que fait `git rebase main` aux commits de la branche courante ?",
+      "q_en": "What does `git rebase main` do to the commits of the current branch?",
+      "choices_fr": ["Il les rejoue par-dessus main en créant de nouveaux commits (nouveaux hashes)", "Il déplace les mêmes commits sans changer leurs hashes", "Il les fusionne en un seul commit", "Il les modifie en place dans l'historique"],
+      "choices_en": ["It replays them on top of main, creating new commits (new hashes)", "It moves the same commits without changing their hashes", "It squashes them into a single commit", "It modifies them in place in the history"],
+      "answer": 0,
+      "explain_fr": "Le hash d'un commit couvre son contenu, son parent et ses métadonnées : rejouer un commit sur un autre parent crée forcément un nouveau commit. Les anciens restent dans .git/objects, non référencés.",
+      "explain_en": "A commit's hash covers its content, parent and metadata: replaying a commit on a different parent necessarily creates a new commit. The old ones remain in .git/objects, unreferenced."
+    },
+    {
+      "q_fr": "Après un `git reset --hard` sur le mauvais commit, comment récupérer son travail commité ?",
+      "q_en": "After a `git reset --hard` on the wrong commit, how do you recover your committed work?",
+      "choices_fr": ["Avec `git reflog`, puis reset sur l'entrée d'avant l'erreur", "Impossible, un reset --hard est définitif", "Avec `git revert HEAD`", "En re-clonant le dépôt depuis le remote"],
+      "choices_en": ["With `git reflog`, then reset to the entry from before the mistake", "Impossible, a reset --hard is final", "With `git revert HEAD`", "By re-cloning the repository from the remote"],
+      "answer": 0,
+      "explain_fr": "Le reflog journalise tous les déplacements de HEAD : `git reset --hard HEAD@{n}` restaure la position d'avant. Seul le travail jamais commité est réellement perdu. Revert, lui, crée un commit inverse — autre usage.",
+      "explain_en": "The reflog journals every move of HEAD: `git reset --hard HEAD@{n}` restores the previous position. Only work that was never committed is truly lost. Revert creates an inverse commit — a different use case."
+    },
+    {
+      "q_fr": "Avec `git bisect`, combien de tests faut-il environ pour isoler un bug dans 1000 commits ?",
+      "q_en": "With `git bisect`, about how many tests does it take to isolate a bug in 1000 commits?",
+      "choices_fr": ["Environ 10", "Environ 100", "Environ 500", "1000, un par commit"],
+      "choices_en": ["About 10", "About 100", "About 500", "1000, one per commit"],
+      "answer": 0,
+      "explain_fr": "Bisect fait une recherche dichotomique : log₂(1000) ≈ 10 étapes. C'est tout l'intérêt par rapport à un parcours linéaire de l'historique.",
+      "explain_en": "Bisect performs a binary search: log₂(1000) ≈ 10 steps. That's the whole point compared to walking the history linearly."
+    },
+    {
+      "q_fr": "Quelle commande rejoue un commit précis d'une autre branche sur la branche courante ?",
+      "q_en": "Which command replays one specific commit from another branch onto the current branch?",
+      "choices_fr": ["git cherry-pick <hash>", "git merge <hash>", "git rebase <hash>", "git checkout <hash>"],
+      "choices_en": ["git cherry-pick <hash>", "git merge <hash>", "git rebase <hash>", "git checkout <hash>"],
+      "answer": 0,
+      "explain_fr": "cherry-pick applique le diff d'un commit unique et crée un nouveau commit. Merge intègre toute la branche jusqu'à ce commit, rebase rejoue la branche courante ailleurs, checkout ne fait que se déplacer.",
+      "explain_en": "cherry-pick applies the diff of a single commit and creates a new commit. Merge integrates the whole branch up to that commit, rebase replays the current branch elsewhere, checkout only moves you around."
+    },
+    {
+      "q_fr": "Pourquoi ne faut-il pas rebaser une branche déjà poussée et utilisée par des collègues ?",
+      "q_en": "Why shouldn't you rebase a branch that's already pushed and used by colleagues?",
+      "choices_fr": ["Le rebase crée de nouveaux hashes : leurs historiques divergent du vôtre", "Le rebase supprime définitivement les anciens commits", "Le rebase est impossible sur une branche distante", "Le rebase fusionne automatiquement leurs modifications"],
+      "choices_en": ["Rebase creates new hashes: their histories diverge from yours", "Rebase permanently deletes the old commits", "Rebase is impossible on a remote branch", "Rebase automatically merges their changes"],
+      "answer": 0,
+      "explain_fr": "Les collègues ont basé leur travail sur les anciens commits ; après votre rebase (et force push), leurs branches pointent sur un historique qui n'existe plus en amont — réconciliation pénible. Les anciens commits, eux, ne sont pas supprimés immédiatement.",
+      "explain_en": "Colleagues based their work on the old commits; after your rebase (and force push), their branches point to a history that no longer exists upstream — painful reconciliation. The old commits themselves are not immediately deleted."
+    },
+    {
+      "q_fr": "À quoi `git pull` est-il équivalent par défaut ?",
+      "q_en": "What is `git pull` equivalent to by default?",
+      "choices_fr": ["git fetch puis git merge", "git fetch puis git rebase", "git clone incrémental", "git checkout de la branche distante"],
+      "choices_en": ["git fetch then git merge", "git fetch then git rebase", "An incremental git clone", "A git checkout of the remote branch"],
+      "answer": 0,
+      "explain_fr": "Par défaut, pull = fetch + merge, d'où les commits de merge parasites quand l'historique local a divergé. `git pull --rebase` (ou `pull.rebase=true`) rejoue vos commits locaux par-dessus le remote à la place.",
+      "explain_en": "By default, pull = fetch + merge, hence the noisy merge commits when local history has diverged. `git pull --rebase` (or `pull.rebase=true`) replays your local commits on top of the remote instead."
+    }
+  ]
+}

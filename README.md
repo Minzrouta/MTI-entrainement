@@ -46,11 +46,12 @@ Le cron du VPS (`crontab -l`, 8h) lance `scripts/discord-daily.sh`, qui poste la
 fiche du jour si `~/.config/mti-training/webhook` contient l'URL d'un webhook
 Discord. Sans ce fichier, le script ne fait rien. Phase 2 prévue : bot interactif.
 
-## Redéploiement manuel
+## Déploiement
 
-Si besoin (le push suffit normalement) :
+App Coolify `mti-training` (uuid `xq8pqpea6l4ugd6r5sbhb5o9`), projet « Projets MTI »,
+build nixpacks statique (`dist/` servi par nginx).
 
-```bash
-curl -s -H "Authorization: Bearer $(cat ~/.claude/coolify_token)" \
-  "https://coolify.bantou.me/api/v1/deploy?uuid=<APP_UUID>"
-```
+- **Auto-deploy au push** : ajouter sur GitHub (Settings → Webhooks) l'URL
+  `https://coolify.bantou.me/webhooks/source/github/events/manual`, content type
+  `application/json`, secret = celui affiché dans Coolify → mti-training → Webhooks.
+- **Depuis le VPS** : `scripts/deploy.sh` (utilise le token Coolify local).

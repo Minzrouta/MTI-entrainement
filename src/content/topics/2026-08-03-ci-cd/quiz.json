@@ -1,0 +1,108 @@
+{
+  "flashcards": [
+    {
+      "q_fr": "Quelle est la différence entre continuous delivery et continuous deployment ?",
+      "a_fr": "Delivery : chaque commit vert produit un artefact déployable, mais un humain décide quand déployer en prod. Deployment : tout commit vert sur la branche principale part en prod automatiquement, sans intervention. La différence tient en une phrase : qui appuie sur le bouton.",
+      "q_en": "What is the difference between continuous delivery and continuous deployment?",
+      "a_en": "Delivery: every green commit produces a deployable artifact, but a human decides when to ship to production. Deployment: every green commit on the main branch ships to production automatically, no intervention. The difference fits in one sentence: who presses the button."
+    },
+    {
+      "q_fr": "Pourquoi met-on le lint et l'analyse statique en premier dans un pipeline ?",
+      "a_fr": "Principe du fail-fast : ce sont les vérifications les moins chères (quelques secondes). Autant échouer en 30 secondes sur un problème de formatage ou de typage qu'attendre 10 minutes de tests pour le découvrir. On ordonne le pipeline du moins cher au plus cher.",
+      "q_en": "Why do lint and static analysis come first in a pipeline?",
+      "a_en": "Fail-fast principle: they are the cheapest checks (a few seconds). Better to fail in 30 seconds on a formatting or typing issue than to wait through 10 minutes of tests to find out. You order the pipeline from cheapest to most expensive."
+    },
+    {
+      "q_fr": "Qu'est-ce qu'un runner dans GitHub Actions ou GitLab CI ?",
+      "a_fr": "La machine qui exécute les jobs : hébergée par la plateforme (VM éphémère et vierge à chaque job) ou auto-hébergée (self-hosted) quand on a besoin de GPU, d'un réseau privé ou de matériel spécifique. Comme l'environnement repart de zéro, le cache est essentiel pour la vitesse.",
+      "q_en": "What is a runner in GitHub Actions or GitLab CI?",
+      "a_en": "The machine that executes jobs: hosted by the platform (ephemeral, clean VM per job) or self-hosted when you need GPUs, a private network or specific hardware. Since the environment starts from scratch, caching is essential for speed."
+    },
+    {
+      "q_fr": "Pourquoi ne faut-il pas rebuilder l'artefact entre staging et prod ?",
+      "a_fr": "Deux builds ne sont jamais garantis identiques : une dépendance peut avoir été mise à jour entre-temps, ce qui invalide tout ce qui a été testé en staging. On construit une seule fois (image taguée par SHA de commit) et on promeut ce même artefact immuable d'un environnement à l'autre.",
+      "q_en": "Why should you not rebuild the artifact between staging and production?",
+      "a_en": "Two builds are never guaranteed identical: a dependency may have been updated in between, invalidating everything tested in staging. You build once (image tagged with the commit SHA) and promote that same immutable artifact from one environment to the next."
+    },
+    {
+      "q_fr": "Rolling, blue-green, canary : résume les trois stratégies de déploiement.",
+      "a_fr": "Rolling : on remplace les instances une par une, zéro interruption mais deux versions coexistent (rétro-compatibilité obligatoire). Blue-green : deux environnements complets, bascule totale du trafic, rollback instantané mais infra doublée. Canary : la nouvelle version reçoit 1-5 % du trafic, on surveille les métriques avant d'élargir — le meilleur contrôle du rayon d'impact.",
+      "q_en": "Rolling, blue-green, canary: summarize the three deployment strategies.",
+      "a_en": "Rolling: replace instances one by one, zero downtime but two versions coexist (backward compatibility required). Blue-green: two full environments, full traffic switch, instant rollback but doubled infrastructure. Canary: the new version gets 1-5% of traffic, you watch metrics before widening — the best blast-radius control."
+    },
+    {
+      "q_fr": "Qu'est-ce que le trunk-based development et quel rôle jouent les feature flags ?",
+      "a_fr": "Tout le monde merge fréquemment sur main via des branches très courtes (moins de 1-2 jours). Le code inachevé part en prod désactivé derrière un feature flag, ce qui sépare le déploiement (le code est sur les serveurs) de la release (il est activé pour les utilisateurs). Couper un flag prend des secondes.",
+      "q_en": "What is trunk-based development and what role do feature flags play?",
+      "a_en": "Everyone merges to main frequently through very short-lived branches (under 1-2 days). Unfinished code ships to production disabled behind a feature flag, separating deployment (code is on the servers) from release (it's enabled for users). Killing a flag takes seconds."
+    },
+    {
+      "q_fr": "Pourquoi les migrations de base de données compliquent-elles le rollback ?",
+      "a_fr": "Redéployer l'artefact précédent est trivial, mais une migration qui a supprimé ou transformé des données ne se rejoue pas à l'envers. D'où le pattern expand/contract : ajouter la nouvelle colonne, faire cohabiter les deux versions, puis supprimer l'ancienne colonne dans un déploiement ultérieur — chaque version du code fonctionne avec le schéma d'avant et d'après.",
+      "q_en": "Why do database migrations complicate rollbacks?",
+      "a_en": "Redeploying the previous artifact is trivial, but a migration that dropped or transformed data cannot be replayed backwards. Hence the expand/contract pattern: add the new column, let both versions coexist, then drop the old column in a later deployment — each code version works with the schema before and after."
+    },
+    {
+      "q_fr": "Comment une plateforme CI protège-t-elle les secrets, et quelle est la limite ?",
+      "a_fr": "Secrets stockés chiffrés, scopés par environnement, injectés en variables à l'exécution et masqués dans les logs. Limite : le masquage ne reconnaît pas un secret transformé (base64, URL-encodé, concaténé) — un echo de debug peut le faire fuiter. Un secret leaké se révoque, il ne se supprime pas des logs archivés.",
+      "q_en": "How does a CI platform protect secrets, and what is the limit?",
+      "a_en": "Secrets stored encrypted, scoped per environment, injected as variables at runtime and masked in logs. Limit: masking doesn't recognize a transformed secret (base64, URL-encoded, concatenated) — a debugging echo can leak it. A leaked secret gets revoked, not deleted from archived logs."
+    }
+  ],
+  "qcm": [
+    {
+      "q_fr": "Dans une équipe en continuous delivery (pas deployment), que se passe-t-il après un pipeline vert sur main ?",
+      "q_en": "In a team doing continuous delivery (not deployment), what happens after a green pipeline on main?",
+      "choices_fr": ["Un artefact déployable est prêt, un humain décide quand le mettre en prod", "Le code part automatiquement en prod", "Le code est mergé automatiquement dans la branche release", "Les tests sont relancés une seconde fois pour confirmer"],
+      "choices_en": ["A deployable artifact is ready, a human decides when to ship it to production", "The code ships to production automatically", "The code is auto-merged into the release branch", "Tests are re-run a second time to confirm"],
+      "answer": 0,
+      "explain_fr": "C'est toute la différence avec le continuous deployment : en delivery, chaque commit vert est déployable mais le déploiement prod reste une décision humaine.",
+      "explain_en": "That's the whole difference with continuous deployment: in delivery, every green commit is deployable but the production deploy remains a human decision."
+    },
+    {
+      "q_fr": "Quelle stratégie de déploiement limite le mieux le rayon d'impact d'un bug en prod ?",
+      "q_en": "Which deployment strategy best limits the blast radius of a production bug?",
+      "choices_fr": ["Canary : la nouvelle version ne reçoit d'abord que 1-5 % du trafic", "Blue-green : on bascule tout le trafic d'un coup", "Rolling : on remplace les instances une par une", "Recreate : on arrête tout puis on redémarre la nouvelle version"],
+      "choices_en": ["Canary: the new version first receives only 1-5% of traffic", "Blue-green: all traffic is switched at once", "Rolling: instances are replaced one by one", "Recreate: stop everything then start the new version"],
+      "answer": 0,
+      "explain_fr": "Le canary n'expose qu'une petite fraction des utilisateurs au bug, le temps de vérifier les métriques. Blue-green offre un rollback instantané mais expose 100 % du trafic dès la bascule.",
+      "explain_en": "Canary exposes only a small fraction of users to the bug while metrics are checked. Blue-green offers instant rollback but exposes 100% of traffic at switch time."
+    },
+    {
+      "q_fr": "Pourquoi le cache est-il crucial dans un pipeline CI ?",
+      "q_en": "Why is caching crucial in a CI pipeline?",
+      "choices_fr": ["Chaque job part d'une machine vierge : sans cache, on retélécharge et reconstruit tout à chaque exécution", "Le cache permet de sauter les tests qui ont déjà réussi", "Le cache garde les secrets d'une exécution à l'autre", "Le cache évite de re-cloner le dépôt git"],
+      "choices_en": ["Each job starts on a clean machine: without cache, everything is re-downloaded and rebuilt on every run", "Cache allows skipping tests that already passed", "Cache keeps secrets between runs", "Cache avoids re-cloning the git repository"],
+      "answer": 0,
+      "explain_fr": "Les runners sont éphémères : node_modules, les couches Docker ou ~/.cargo disparaissent après chaque job. Le cache les restaure et fait la différence entre 3 et 15 minutes de pipeline.",
+      "explain_en": "Runners are ephemeral: node_modules, Docker layers or ~/.cargo vanish after each job. The cache restores them and makes the difference between a 3- and a 15-minute pipeline."
+    },
+    {
+      "q_fr": "Un test échoue aléatoirement dans la CI (flaky). Quelle est la bonne réponse d'équipe ?",
+      "q_en": "A test fails randomly in CI (flaky). What is the right team response?",
+      "choices_fr": ["Le corriger ou le mettre en quarantaine : un test non fiable détruit la confiance dans le pipeline", "Configurer un retry automatique de 3 tentatives et passer à autre chose", "Le supprimer puisqu'il ne teste rien de fiable", "Relancer le job jusqu'à ce qu'il passe"],
+      "choices_en": ["Fix it or quarantine it: an unreliable test destroys trust in the pipeline", "Set up 3 automatic retries and move on", "Delete it since it tests nothing reliable", "Re-run the job until it passes"],
+      "answer": 0,
+      "explain_fr": "Le retry et la relance masquent le symptôme : l'équipe finit par ignorer les échecs et un vrai bug passe. Supprimer le test perd la couverture. On corrige la cause (course condition, dépendance au temps, ordre des tests) ou on quarantaine en attendant.",
+      "explain_en": "Retries and re-runs mask the symptom: the team ends up ignoring failures and a real bug slips through. Deleting the test loses coverage. Fix the cause (race condition, time dependency, test ordering) or quarantine it meanwhile."
+    },
+    {
+      "q_fr": "Pourquoi un rolling deployment exige-t-il des migrations DB rétro-compatibles ?",
+      "q_en": "Why does a rolling deployment require backward-compatible DB migrations?",
+      "choices_fr": ["Pendant la bascule, l'ancienne et la nouvelle version du code tournent en même temps sur la même base", "Parce que les migrations sont exécutées sur chaque instance séparément", "Parce que le load balancer ne route pas les requêtes SQL", "Parce que la base est dupliquée pendant le déploiement"],
+      "choices_en": ["During the transition, the old and new code versions run simultaneously against the same database", "Because migrations run on each instance separately", "Because the load balancer doesn't route SQL queries", "Because the database is duplicated during deployment"],
+      "answer": 0,
+      "explain_fr": "Les instances sont remplacées une par une : si la migration supprime une colonne que l'ancienne version lit encore, les instances pas encore mises à jour crashent. D'où expand/contract.",
+      "explain_en": "Instances are replaced one by one: if the migration drops a column the old version still reads, the not-yet-updated instances crash. Hence expand/contract."
+    },
+    {
+      "q_fr": "Quel avantage principal apportent les feature flags par rapport à un rollback classique ?",
+      "q_en": "What main advantage do feature flags offer over a classic rollback?",
+      "choices_fr": ["Désactiver une fonctionnalité en secondes sans redéployer", "Éviter d'écrire des tests pour le code derrière le flag", "Accélérer le build en excluant le code désactivé", "Supprimer le besoin d'un environnement de staging"],
+      "choices_en": ["Disabling a feature in seconds without redeploying", "Avoiding tests for the code behind the flag", "Speeding up the build by excluding disabled code", "Removing the need for a staging environment"],
+      "answer": 0,
+      "explain_fr": "Le flag découple release et déploiement : couper un flag est instantané, alors qu'un rollback implique de redéployer un artefact (et de gérer les migrations). Le code derrière un flag doit quand même être testé.",
+      "explain_en": "Flags decouple release from deployment: killing a flag is instant, while a rollback means redeploying an artifact (and dealing with migrations). Code behind a flag still needs tests."
+    }
+  ]
+}

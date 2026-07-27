@@ -1,0 +1,108 @@
+{
+  "flashcards": [
+    {
+      "q_fr": "Pourquoi le monolithe est-il souvent le bon choix en début de projet ?",
+      "a_fr": "Un appel de fonction est infiniment plus simple qu'un appel réseau : pas de latence ni de panne partielle, une transaction ACID couvre tout, un seul déploiement, une stack trace pour debugger. En début de projet, la vitesse d'itération prime et les frontières de domaines sont encore inconnues — les microservices les figeraient trop tôt.",
+      "q_en": "Why is the monolith often the right choice early in a project?",
+      "a_en": "A function call is infinitely simpler than a network call: no latency or partial failure, one ACID transaction covers everything, one deployment, one stack trace for debugging. Early on, iteration speed rules and domain boundaries are still unknown — microservices would freeze them too early."
+    },
+    {
+      "q_fr": "Qu'est-ce qu'un monolithe modulaire ?",
+      "a_fr": "Un seul déployable, mais des modules internes aux frontières nettes : chaque module n'est accessible que par son interface publique (billing ne touche pas aux tables de users). On garde la simplicité opérationnelle du monolithe tout en préparant une éventuelle extraction future — un déménagement plutôt qu'une réécriture.",
+      "q_en": "What is a modular monolith?",
+      "a_en": "A single deployable, but internal modules with clean boundaries: each module is only reachable through its public interface (billing never touches users' tables). You keep the monolith's operational simplicity while preparing a possible future extraction — a move rather than a rewrite."
+    },
+    {
+      "q_fr": "Quelles sont les trois vraies promesses des microservices ?",
+      "a_fr": "1) Déploiement indépendant : chaque équipe déploie sans attendre les autres — la promesse centrale. 2) Scaling ciblé : répliquer un seul service sous charge (surtout utile pour des besoins asymétriques : GPU, mémoire, langage). 3) Ownership d'équipe : chaque équipe possède ses services de bout en bout — la loi de Conway appliquée volontairement.",
+      "q_en": "What are the three real promises of microservices?",
+      "a_en": "1) Independent deployment: each team deploys without waiting for the others — the central promise. 2) Targeted scaling: replicating one service under load (mostly useful for asymmetric needs: GPU, memory, language). 3) Team ownership: each team owns its services end to end — Conway's law applied deliberately."
+    },
+    {
+      "q_fr": "Qu'est-ce qu'un distributed monolith ?",
+      "a_fr": "L'anti-pattern n°1 : des services séparés par le réseau mais couplés au point de devoir se déployer ensemble (base partagée, API fragiles, chaînes d'appels synchrones). On paie tous les coûts du distribué — latence, pannes partielles, complexité ops — sans le bénéfice central du déploiement indépendant.",
+      "q_en": "What is a distributed monolith?",
+      "a_en": "The number one anti-pattern: services separated by the network but so coupled they must deploy together (shared database, fragile APIs, chains of synchronous calls). You pay every cost of distribution — latency, partial failures, ops complexity — without the central benefit of independent deployment."
+    },
+    {
+      "q_fr": "Pourquoi le pattern database-per-service est-il une condition de l'indépendance ?",
+      "a_fr": "Deux services qui partagent une base sont couplés par le schéma : un ALTER TABLE de l'un casse l'autre, et les déploiements redeviennent coordonnés. Chaque service possède sa base ; les autres n'y accèdent que via son API. Le prix : plus de JOIN cross-services ni de transaction ACID globale.",
+      "q_en": "Why is the database-per-service pattern a condition for independence?",
+      "a_en": "Two services sharing a database are coupled through the schema: one's ALTER TABLE breaks the other, and deployments become coordinated again. Each service owns its database; others only access it through its API. The price: no more cross-service JOINs or global ACID transactions."
+    },
+    {
+      "q_fr": "Explique le pattern saga en deux phrases.",
+      "a_fr": "Une saga remplace la transaction distribuée impossible par une séquence de transactions locales, une par service. Si une étape échoue, des transactions de compensation défont les étapes précédentes (annuler la réservation, rembourser le paiement) — orchestrées par un coordinateur ou chorégraphiées par une chaîne d'événements.",
+      "q_en": "Explain the saga pattern in two sentences.",
+      "a_en": "A saga replaces the impossible distributed transaction with a sequence of local transactions, one per service. If a step fails, compensating transactions undo the previous steps (cancel the reservation, refund the payment) — orchestrated by a coordinator or choreographed through a chain of events."
+    },
+    {
+      "q_fr": "Communication synchrone vs asynchrone entre services : les compromis ?",
+      "a_fr": "Synchrone (REST, gRPC) : simple à raisonner, réponse immédiate, mais couplage temporel — les latences s'additionnent et les pannes se propagent en cascade. Asynchrone (événements via Kafka/RabbitMQ) : découplage, absorption des pics, mais cohérence à terme et debugging plus difficile. Règle pratique : synchrone pour les queries client, asynchrone entre services quand c'est possible.",
+      "q_en": "Synchronous vs asynchronous communication between services: the trade-offs?",
+      "a_en": "Synchronous (REST, gRPC): easy to reason about, immediate answer, but temporal coupling — latencies add up and failures cascade. Asynchronous (events via Kafka/RabbitMQ): decoupling, burst absorption, but eventual consistency and harder debugging. Practical rule: synchronous for client-facing queries, asynchronous between services whenever possible."
+    },
+    {
+      "q_fr": "Qu'est-ce que la stratégie strangler fig ?",
+      "a_fr": "La migration progressive d'un monolithe : on extrait une capacité à la fois, un proxy ou une gateway route progressivement le trafic vers le nouveau service, et le monolithe rétrécit petit à petit. À l'opposé du big bang rewrite. Chaque extraction doit se justifier seule — commencer par le meilleur ratio douleur/risque.",
+      "q_en": "What is the strangler fig strategy?",
+      "a_en": "Progressive migration of a monolith: extract one capability at a time, a proxy or gateway gradually routes traffic to the new service, and the monolith shrinks bit by bit. The opposite of a big-bang rewrite. Each extraction must justify itself — start with the best pain-to-risk ratio."
+    }
+  ],
+  "qcm": [
+    {
+      "q_fr": "Quelle est la promesse CENTRALE des microservices, celle sans laquelle le découpage perd son sens ?",
+      "q_en": "What is the CENTRAL promise of microservices, without which the split loses its meaning?",
+      "choices_fr": ["Le déploiement indépendant de chaque service", "Des performances supérieures grâce au réseau", "Moins de code à écrire au total", "La suppression du besoin de tests d'intégration"],
+      "choices_en": ["Independent deployment of each service", "Better performance thanks to the network", "Less total code to write", "No more need for integration tests"],
+      "answer": 0,
+      "explain_fr": "Si les services doivent se déployer ensemble, on a un distributed monolith. Le réseau dégrade les performances (latence), il ne les améliore pas, et le code total augmente (gestion des pannes, sérialisation, ops).",
+      "explain_en": "If services must deploy together, you have a distributed monolith. The network degrades performance (latency), it doesn't improve it, and total code increases (failure handling, serialization, ops)."
+    },
+    {
+      "q_fr": "Une équipe de 3 développeurs lance un produit avec 8 microservices. Quel est le problème principal ?",
+      "q_en": "A 3-developer team launches a product with 8 microservices. What is the main problem?",
+      "choices_fr": ["Les frontières de services servent à découpler des équipes : sans équipes multiples, on paie les coûts du distribué sans bénéfice", "8 services, c'est trop peu pour du vrai microservice", "Kubernetes ne supporte pas moins de 10 services", "Les microservices exigent au moins un service par développeur"],
+      "choices_en": ["Service boundaries exist to decouple teams: without multiple teams, you pay the costs of distribution with no benefit", "8 services is too few for real microservices", "Kubernetes doesn't support fewer than 10 services", "Microservices require at least one service per developer"],
+      "answer": 0,
+      "explain_fr": "Trois devs n'ont pas de problème de coordination inter-équipes à résoudre : ils héritent du réseau, de l'observabilité et des N pipelines sans aucun gain de déploiement indépendant. Un monolithe modulaire irait plus vite.",
+      "explain_en": "Three devs have no inter-team coordination problem to solve: they inherit the network, observability and N pipelines with zero independent-deployment gain. A modular monolith would move faster."
+    },
+    {
+      "q_fr": "Deux microservices lisent et écrivent directement dans la même base PostgreSQL. Quelle en est la conséquence ?",
+      "q_en": "Two microservices read and write directly to the same PostgreSQL database. What is the consequence?",
+      "choices_fr": ["Couplage par le schéma : une migration de l'un casse l'autre, les déploiements redeviennent coordonnés", "Aucune : c'est le pattern recommandé pour la cohérence", "Meilleure performance grâce au partage du cache de la base", "Les transactions distribuées deviennent impossibles"],
+      "choices_en": ["Schema coupling: one service's migration breaks the other, deployments become coordinated again", "None: it's the recommended pattern for consistency", "Better performance thanks to the shared database cache", "Distributed transactions become impossible"],
+      "answer": 0,
+      "explain_fr": "C'est le chemin le plus court vers le distributed monolith : le schéma devient une API implicite entre les deux services. Database-per-service existe précisément pour préserver le déploiement indépendant. (Au contraire, la base partagée PERMET les transactions ACID communes — c'est l'indépendance qu'elle détruit.)",
+      "explain_en": "It's the shortest road to the distributed monolith: the schema becomes an implicit API between the two services. Database-per-service exists precisely to preserve independent deployment. (If anything, a shared database ENABLES common ACID transactions — what it destroys is independence.)"
+    },
+    {
+      "q_fr": "Dans une saga, que se passe-t-il quand une étape intermédiaire échoue ?",
+      "q_en": "In a saga, what happens when an intermediate step fails?",
+      "choices_fr": ["Des transactions de compensation défont les étapes déjà validées", "La base de données fait un rollback ACID global automatique", "L'étape est retentée indéfiniment jusqu'au succès", "Toutes les bases des services sont restaurées depuis un snapshot"],
+      "choices_en": ["Compensating transactions undo the steps already committed", "The database performs an automatic global ACID rollback", "The step is retried indefinitely until it succeeds", "All service databases are restored from a snapshot"],
+      "answer": 0,
+      "explain_fr": "Il n'existe pas de rollback global : chaque transaction locale est déjà commitée dans sa base. La saga définit donc pour chaque étape une compensation métier (annuler la réservation, rembourser) exécutée en cas d'échec en aval.",
+      "explain_en": "There is no global rollback: each local transaction is already committed in its own database. The saga therefore defines a business compensation for each step (cancel the reservation, refund) executed when a later step fails."
+    },
+    {
+      "q_fr": "Quel symptôme indique le mieux qu'il est temps d'envisager d'extraire des services d'un monolithe ?",
+      "q_en": "Which symptom best indicates it's time to consider extracting services from a monolith?",
+      "choices_fr": ["Plusieurs équipes se bloquent mutuellement à chaque déploiement du monolithe", "Le monolithe dépasse 100 000 lignes de code", "Les concurrents sont passés aux microservices", "La base de données atteint 50 Go"],
+      "choices_en": ["Several teams block each other on every deployment of the monolith", "The monolith exceeds 100,000 lines of code", "Competitors have moved to microservices", "The database reaches 50 GB"],
+      "answer": 0,
+      "explain_fr": "Le signal pertinent est organisationnel (loi de Conway) : des équipes couplées par le déployable unique. La taille du code ou de la base ne dit rien en soi, et la mode des concurrents encore moins. La douleur d'abord, le découpage ensuite — via strangler fig.",
+      "explain_en": "The relevant signal is organizational (Conway's law): teams coupled by the single deployable. Code or database size says nothing by itself, and competitors' fashion even less. Pain first, split second — via strangler fig."
+    },
+    {
+      "q_fr": "Quel est le rôle d'une API gateway dans une architecture microservices ?",
+      "q_en": "What is the role of an API gateway in a microservices architecture?",
+      "choices_fr": ["Point d'entrée unique des clients : routing, auth, rate limiting — les clients ignorent la topologie interne", "Répartir les transactions ACID entre les services", "Synchroniser les schémas des bases de données", "Remplacer le message broker pour la communication asynchrone"],
+      "choices_en": ["Single entry point for clients: routing, auth, rate limiting — clients ignore the internal topology", "Distributing ACID transactions across services", "Synchronizing database schemas", "Replacing the message broker for asynchronous communication"],
+      "answer": 0,
+      "explain_fr": "La gateway découple les clients de la topologie interne : ils appellent un point unique qui route, authentifie, limite le débit et agrège. Elle ne gère ni transactions (saga), ni schémas (database-per-service), ni messaging (broker).",
+      "explain_en": "The gateway decouples clients from the internal topology: they call a single point that routes, authenticates, rate-limits and aggregates. It handles neither transactions (saga), nor schemas (database-per-service), nor messaging (broker)."
+    }
+  ]
+}

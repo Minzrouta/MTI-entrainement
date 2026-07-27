@@ -1,0 +1,108 @@
+{
+  "flashcards": [
+    {
+      "q_fr": "Décris la pyramide de tests et sa logique.",
+      "a_fr": "Beaucoup de tests unitaires (rapides, isolés, précis dans leur diagnostic), moins de tests d'intégration (plusieurs composants avec de vraies dépendances), très peu de E2E (l'application pilotée comme un utilisateur). Plus on monte, plus le test est réaliste mais lent, cher à maintenir et vague quand il échoue.",
+      "q_en": "Describe the test pyramid and its logic.",
+      "a_en": "Many unit tests (fast, isolated, precise in their diagnosis), fewer integration tests (several components with real dependencies), very few E2E tests (the app driven like a user). The higher you climb, the more realistic the test but the slower, more expensive to maintain and vaguer when it fails."
+    },
+    {
+      "q_fr": "Qu'est-ce que le pattern AAA dans un test unitaire ?",
+      "a_fr": "Arrange : préparer les données et l'objet testé. Act : appeler la fonction testée. Assert : vérifier le résultat observable. Cette structure en trois blocs rend le test lisible et garantit qu'il vérifie un comportement précis, avec idéalement une seule raison d'échouer.",
+      "q_en": "What is the AAA pattern in a unit test?",
+      "a_en": "Arrange: prepare the data and the object under test. Act: call the function being tested. Assert: verify the observable result. This three-block structure keeps the test readable and ensures it verifies one precise behavior, ideally with a single reason to fail."
+    },
+    {
+      "q_fr": "Différencie stub, mock, spy et fake.",
+      "a_fr": "Stub : renvoie des réponses préprogrammées (fournit un état au test). Mock : porte des attentes sur les interactions, le test échoue si l'appel attendu ne se produit pas (vérifie un comportement). Spy : enregistre les appels reçus sans changer le comportement. Fake : implémentation réelle mais simplifiée, comme un repository en mémoire.",
+      "q_en": "Differentiate stub, mock, spy and fake.",
+      "a_en": "Stub: returns pre-programmed answers (provides state to the test). Mock: carries expectations about interactions, the test fails if the expected call doesn't happen (verifies behavior). Spy: records received calls without changing behavior. Fake: a real but simplified implementation, like an in-memory repository."
+    },
+    {
+      "q_fr": "Qu'est-ce que le cycle TDD et qu'apporte-t-il concrètement ?",
+      "a_fr": "Red : écrire un test qui échoue. Green : écrire le code minimal qui le fait passer. Refactor : nettoyer avec les tests au vert. Apports : l'API se conçoit du point de vue de l'appelant, le code est testable par construction, et chaque refactoring est protégé par le filet de tests existant.",
+      "q_en": "What is the TDD cycle and what does it concretely bring?",
+      "a_en": "Red: write a failing test. Green: write the minimal code that makes it pass. Refactor: clean up with tests green. Benefits: the API is designed from the caller's point of view, the code is testable by construction, and every refactoring is protected by the existing safety net."
+    },
+    {
+      "q_fr": "Pourquoi un test unitaire doit-il être déterministe, et quels sont les ennemis classiques ?",
+      "a_fr": "Un test non déterministe (flaky) détruit la confiance dans la suite : on relance sans lire, un vrai bug finit par passer. Ennemis classiques : Date.now() et l'horloge, Math.random(), les timeouts et sleeps, l'ordre d'itération non garanti, les dépendances entre tests. Solution : injecter le temps et l'aléa comme des dépendances.",
+      "q_en": "Why must a unit test be deterministic, and what are the classic enemies?",
+      "a_en": "A non-deterministic (flaky) test destroys trust in the suite: people re-run without reading, and a real bug eventually slips through. Classic enemies: Date.now() and the clock, Math.random(), timeouts and sleeps, unspecified iteration order, inter-test dependencies. Solution: inject time and randomness as dependencies."
+    },
+    {
+      "q_fr": "À quoi sert Testcontainers ?",
+      "a_fr": "À lancer de vraies dépendances (Postgres, Redis, Kafka…) dans des conteneurs Docker jetables le temps d'une suite de tests d'intégration. On teste les vraies requêtes SQL, contraintes et transactions au lieu de mocker le driver — quelques secondes de démarrage contre un réalisme incomparable.",
+      "q_en": "What is Testcontainers for?",
+      "a_en": "Starting real dependencies (Postgres, Redis, Kafka…) in throwaway Docker containers for the duration of an integration test suite. You test real SQL queries, constraints and transactions instead of mocking the driver — a few seconds of startup for incomparable realism."
+    },
+    {
+      "q_fr": "Pourquoi la couverture de code est-elle une métrique piégeuse ?",
+      "a_fr": "Elle mesure les lignes exécutées, pas les comportements vérifiés : un test sans assertion donne 100 % de couverture et 0 % de valeur. Loi de Goodhart : en cible, elle pousse à écrire des tests pour couvrir plutôt que pour vérifier. Utile en tendance et pour repérer les zones mortes ; le mutation testing mesure mieux la qualité des assertions.",
+      "q_en": "Why is code coverage a treacherous metric?",
+      "a_en": "It measures executed lines, not verified behaviors: an assertion-free test yields 100% coverage and 0% value. Goodhart's law: as a target, it pushes people to write tests to cover rather than to verify. Useful as a trend and to spot dead zones; mutation testing measures assertion quality better."
+    },
+    {
+      "q_fr": "Comment réduire la flakiness des tests E2E ?",
+      "a_fr": "Attendre des conditions, jamais des durées (auto-waiting de Playwright, attentes explicites sur l'état) ; isoler les données de chaque test ; utiliser des sélecteurs stables (data-testid plutôt que des classes CSS) ; limiter le E2E aux parcours critiques. Un sleep(2000) est presque toujours un futur test flaky.",
+      "q_en": "How do you reduce E2E test flakiness?",
+      "a_en": "Wait for conditions, never durations (Playwright's auto-waiting, explicit waits on state); isolate each test's data; use stable selectors (data-testid rather than CSS classes); limit E2E to critical journeys. A sleep(2000) is almost always a future flaky test."
+    }
+  ],
+  "qcm": [
+    {
+      "q_fr": "Quelle est la différence fondamentale entre un mock et un stub ?",
+      "q_en": "What is the fundamental difference between a mock and a stub?",
+      "choices_fr": ["Le stub fournit des réponses préprogrammées ; le mock vérifie que les interactions attendues ont bien eu lieu", "Le mock est plus rapide que le stub", "Le stub ne fonctionne qu'avec les bases de données", "Le mock est une vraie implémentation simplifiée"],
+      "choices_en": ["A stub provides pre-programmed answers; a mock verifies that expected interactions happened", "A mock is faster than a stub", "A stub only works with databases", "A mock is a real simplified implementation"],
+      "answer": 0,
+      "explain_fr": "Stub = état (alimenter le test en données), mock = comportement (le test échoue si l'appel attendu manque). La « vraie implémentation simplifiée », c'est le fake.",
+      "explain_en": "Stub = state (feeding the test data), mock = behavior (the test fails if the expected call is missing). The \"real simplified implementation\" is the fake."
+    },
+    {
+      "q_fr": "Dans le cycle TDD, que signifie l'étape « red » ?",
+      "q_en": "In the TDD cycle, what does the \"red\" step mean?",
+      "choices_fr": ["Écrire d'abord un test qui échoue, prouvant qu'il teste bien quelque chose", "Corriger tous les tests cassés avant de coder", "Supprimer le code qui ne compile pas", "Marquer les tests lents pour les exclure de la CI"],
+      "choices_en": ["Writing a failing test first, proving it actually tests something", "Fixing all broken tests before coding", "Deleting code that doesn't compile", "Flagging slow tests to exclude them from CI"],
+      "answer": 0,
+      "explain_fr": "Red-green-refactor : le test écrit avant le code doit échouer — sinon il ne prouve rien. On écrit ensuite le code minimal qui le fait passer (green), puis on nettoie (refactor).",
+      "explain_en": "Red-green-refactor: the test written before the code must fail — otherwise it proves nothing. Then you write the minimal code to pass it (green), then clean up (refactor)."
+    },
+    {
+      "q_fr": "Un refactoring interne (sans changement de comportement) casse 15 tests unitaires. Qu'est-ce que ça révèle ?",
+      "q_en": "An internal refactoring (no behavior change) breaks 15 unit tests. What does that reveal?",
+      "choices_fr": ["Les tests étaient couplés à l'implémentation au lieu de vérifier le comportement observable", "Le refactoring a forcément introduit des bugs", "Il n'y avait pas assez de mocks", "La couverture de code était trop faible"],
+      "choices_en": ["The tests were coupled to the implementation instead of verifying observable behavior", "The refactoring necessarily introduced bugs", "There weren't enough mocks", "Code coverage was too low"],
+      "answer": 0,
+      "explain_fr": "Si le comportement observable n'a pas changé, des tests qui cassent testaient le « comment » (appels internes, état privé) et non le « quoi ». Symptôme fréquent de l'abus de mocks — en ajouter aggraverait le problème.",
+      "explain_en": "If observable behavior hasn't changed, breaking tests were testing the \"how\" (internal calls, private state) rather than the \"what\". A frequent symptom of mock overuse — adding more would make it worse."
+    },
+    {
+      "q_fr": "Pour tester une requête SQL complexe avec jointures et contraintes, quelle approche est la plus fiable ?",
+      "q_en": "To test a complex SQL query with joins and constraints, which approach is most reliable?",
+      "choices_fr": ["Un test d'intégration contre un vrai Postgres lancé par Testcontainers", "Mocker le driver SQL et vérifier la chaîne de la requête", "Un test E2E qui passe par l'interface web", "Un stub qui renvoie les lignes attendues"],
+      "choices_en": ["An integration test against a real Postgres started by Testcontainers", "Mocking the SQL driver and checking the query string", "An E2E test going through the web UI", "A stub returning the expected rows"],
+      "answer": 0,
+      "explain_fr": "Mocker le driver ou stubber les résultats teste votre imagination : le test passe même si la requête est fausse. Un vrai Postgres jetable valide la syntaxe, les jointures et les contraintes. Le E2E le ferait aussi, mais lentement et avec un diagnostic vague.",
+      "explain_en": "Mocking the driver or stubbing results tests your imagination: the test passes even if the query is wrong. A real throwaway Postgres validates syntax, joins and constraints. E2E would too, but slowly and with vague diagnosis."
+    },
+    {
+      "q_fr": "Pourquoi un test sans assertion est-il dangereux ?",
+      "q_en": "Why is an assertion-free test dangerous?",
+      "choices_fr": ["Il gonfle la couverture de code sans rien vérifier, donnant une fausse confiance", "Il fait échouer la CI de façon aléatoire", "Il ralentit la suite de tests", "Il empêche les autres tests de s'exécuter en parallèle"],
+      "choices_en": ["It inflates code coverage without verifying anything, giving false confidence", "It makes CI fail randomly", "It slows down the test suite", "It prevents other tests from running in parallel"],
+      "answer": 0,
+      "explain_fr": "Exécuter du code n'est pas le vérifier : le test passe toujours, la couverture monte, et l'équipe croit la zone testée. C'est le cœur du piège de la couverture comme objectif.",
+      "explain_en": "Executing code is not verifying it: the test always passes, coverage rises, and the team believes the area is tested. That's the heart of the coverage-as-target trap."
+    },
+    {
+      "q_fr": "Quel remplacement corrige le mieux un `sleep(2000)` dans un test Playwright flaky ?",
+      "q_en": "Which replacement best fixes a `sleep(2000)` in a flaky Playwright test?",
+      "choices_fr": ["Une attente explicite sur une condition, ex. l'apparition d'un élément (expect(locator).toBeVisible())", "Un sleep(5000) pour laisser plus de marge", "Un retry automatique du test en CI", "Exécuter le test en premier dans la suite"],
+      "choices_en": ["An explicit wait on a condition, e.g. an element appearing (expect(locator).toBeVisible())", "A sleep(5000) to leave more margin", "An automatic retry of the test in CI", "Running the test first in the suite"],
+      "answer": 0,
+      "explain_fr": "Une durée fixe est soit trop courte (flaky) soit trop longue (suite lente) — et souvent les deux selon la machine. On attend l'état attendu : Playwright fait ce polling nativement via ses assertions et son auto-waiting. Le retry masque le problème.",
+      "explain_en": "A fixed duration is either too short (flaky) or too long (slow suite) — often both depending on the machine. Wait for the expected state: Playwright polls natively through its assertions and auto-waiting. Retries mask the problem."
+    }
+  ]
+}

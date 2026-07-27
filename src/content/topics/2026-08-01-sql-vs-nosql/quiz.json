@@ -1,0 +1,108 @@
+{
+  "flashcards": [
+    {
+      "q_fr": "Que signifie ACID ? Illustre avec un virement bancaire.",
+      "a_fr": "Atomicity : débit et crédit passent ensemble ou pas du tout. Consistency : les contraintes (solde, clés étrangères) restent vraies. Isolation : deux virements concurrents ne se voient pas à moitié faits. Durability : après commit, un crash ne perd rien (write-ahead log).",
+      "q_en": "What does ACID stand for? Illustrate with a bank transfer.",
+      "a_en": "Atomicity: debit and credit happen together or not at all. Consistency: constraints (balance, foreign keys) remain true. Isolation: two concurrent transfers don't see each other half-done. Durability: after commit, a crash loses nothing (write-ahead log)."
+    },
+    {
+      "q_fr": "Cite les quatre familles NoSQL avec un exemple chacune.",
+      "a_fr": "Document (MongoDB) : JSON imbriqués, agrégats dénormalisés. Clé-valeur (Redis, DynamoDB) : GET/PUT par clé, latence minimale. Colonnes larges (Cassandra) : écritures massives distribuées, modélisation par requête. Graphe (Neo4j) : nœuds et relations de première classe, traversées efficaces.",
+      "q_en": "Name the four NoSQL families with one example each.",
+      "a_en": "Document (MongoDB): nested JSON, denormalized aggregates. Key-value (Redis, DynamoDB): GET/PUT by key, minimal latency. Wide-column (Cassandra): massive distributed writes, query-driven modeling. Graph (Neo4j): first-class nodes and relationships, efficient traversals."
+    },
+    {
+      "q_fr": "Énonce correctement le théorème CAP.",
+      "a_fr": "Dans un système distribué, PENDANT une partition réseau (P, subie, pas choisie), il faut trancher entre cohérence (refuser de répondre plutôt que répondre faux) et disponibilité (répondre au risque de diverger). Hors partition, le vrai trade-off est latence vs cohérence (PACELC). CAP ne s'applique pas à une base mono-nœud.",
+      "q_en": "State the CAP theorem correctly.",
+      "a_en": "In a distributed system, DURING a network partition (P, endured, not chosen), you must choose between consistency (refusing to answer rather than answering wrong) and availability (answering at the risk of diverging). Outside a partition, the real trade-off is latency vs consistency (PACELC). CAP doesn't apply to a single-node database."
+    },
+    {
+      "q_fr": "Qu'est-ce que la cohérence éventuelle (eventual consistency) ?",
+      "a_fr": "Les répliques convergent vers la même valeur « à terme » : entre-temps, une lecture peut renvoyer une donnée périmée. Des garanties intermédiaires existent (read-your-writes, cohérence de session), et certains systèmes règlent la cohérence par requête (Cassandra : ONE vs QUORUM).",
+      "q_en": "What is eventual consistency?",
+      "a_en": "Replicas converge to the same value 'eventually': in the meantime, a read can return stale data. Intermediate guarantees exist (read-your-writes, session consistency), and some systems tune consistency per request (Cassandra: ONE vs QUORUM)."
+    },
+    {
+      "q_fr": "Quelle différence entre réplication et sharding ?",
+      "a_fr": "Réplication : copier les mêmes données sur plusieurs nœuds (leader-follower) → scale les lectures, tolère les pannes ; attention au replica lag. Sharding : partitionner des données différentes sur plusieurs nœuds selon une shard key → scale aussi les écritures ; mauvaise clé = hot shard, et les requêtes cross-shard coûtent cher.",
+      "q_en": "What's the difference between replication and sharding?",
+      "a_en": "Replication: copying the same data to several nodes (leader-follower) → scales reads, tolerates failures; beware of replica lag. Sharding: partitioning different data across nodes according to a shard key → also scales writes; a bad key = hot shard, and cross-shard queries are expensive."
+    },
+    {
+      "q_fr": "Dans quels cas un index B-tree ne sert-il à rien ?",
+      "a_fr": "Colonne à faible sélectivité (booléen : le planner préfère un scan complet), fonction appliquée à la colonne (lower(email) sans index d'expression), LIKE avec wildcard en tête ('%foo'), colonnes hors du préfixe d'un index composite, table minuscule. Vérifier avec EXPLAIN ANALYZE.",
+      "q_en": "In which cases is a B-tree index useless?",
+      "a_en": "Low-selectivity column (a boolean: the planner prefers a full scan), a function applied to the column (lower(email) without an expression index), LIKE with a leading wildcard ('%foo'), columns outside a composite index's prefix, a tiny table. Check with EXPLAIN ANALYZE."
+    },
+    {
+      "q_fr": "Qu'est-ce que le problème N+1 et comment le corriger ?",
+      "a_fr": "L'ORM charge une liste (1 requête) puis, en lazy loading, exécute 1 requête par élément pour la relation accédée dans une boucle : 1+N requêtes, page lente, log rempli de requêtes identiques. Correction : eager loading (JOIN FETCH, include, select_related/prefetch_related).",
+      "q_en": "What is the N+1 problem and how do you fix it?",
+      "a_en": "The ORM loads a list (1 query) then, via lazy loading, runs 1 query per item for the relation accessed in a loop: 1+N queries, slow page, log full of identical queries. Fix: eager loading (JOIN FETCH, include, select_related/prefetch_related)."
+    },
+    {
+      "q_fr": "Pourquoi Postgres + JSONB est-il souvent la réponse pragmatique au débat SQL vs NoSQL ?",
+      "a_fr": "JSONB stocke du JSON binaire indexable (GIN) et requêtable dans un moteur ACID : on garde les colonnes relationnelles et les contraintes pour le structuré, et la flexibilité documentaire pour la partie variable — sans ajouter une deuxième base à opérer.",
+      "q_en": "Why is Postgres + JSONB often the pragmatic answer to the SQL vs NoSQL debate?",
+      "a_en": "JSONB stores binary JSON that is indexable (GIN) and queryable inside an ACID engine: you keep relational columns and constraints for the structured part, and document-style flexibility for the variable part — without adding a second database to operate."
+    }
+  ],
+  "qcm": [
+    {
+      "q_fr": "Un virement débite un compte et en crédite un autre : soit les deux opérations passent, soit aucune. Quelle propriété ACID est en jeu ?",
+      "q_en": "A transfer debits one account and credits another: either both operations happen, or neither. Which ACID property is at play?",
+      "choices_fr": ["Atomicity", "Consistency", "Isolation", "Durability"],
+      "choices_en": ["Atomicity", "Consistency", "Isolation", "Durability"],
+      "answer": 0,
+      "explain_fr": "Tout ou rien = atomicité. La cohérence porte sur les contraintes, l'isolation sur la concurrence, la durabilité sur la survie au crash après commit.",
+      "explain_en": "All or nothing = atomicity. Consistency is about constraints, isolation about concurrency, durability about surviving a crash after commit."
+    },
+    {
+      "q_fr": "Pendant une partition réseau, que fait un système qui privilégie la disponibilité (AP) ?",
+      "q_en": "During a network partition, what does a system favoring availability (AP) do?",
+      "choices_fr": ["Il refuse toutes les écritures jusqu'à la fin de la partition", "Il s'éteint proprement pour éviter la corruption", "Il continue de répondre, au risque de servir des données périmées, puis réconcilie", "Il perd définitivement les écritures effectuées pendant la partition"],
+      "choices_en": ["It refuses all writes until the partition ends", "It shuts down cleanly to avoid corruption", "It keeps answering, at the risk of serving stale data, then reconciles", "It permanently loses the writes made during the partition"],
+      "answer": 2,
+      "explain_fr": "AP = rester disponible pendant la partition, quitte à diverger, puis converger après (cohérence éventuelle). Refuser de répondre serait le choix CP. « AP » ne signifie pas perdre des données.",
+      "explain_en": "AP = staying available during the partition, even if it diverges, then converging afterwards (eventual consistency). Refusing to answer would be the CP choice. AP does not mean losing data."
+    },
+    {
+      "q_fr": "Quel type de base est le plus adapté pour « les amis des amis de mes amis qui aiment le même jeu » ?",
+      "q_en": "Which database type fits best for 'friends of friends of my friends who like the same game'?",
+      "choices_fr": ["Clé-valeur (Redis)", "Graphe (Neo4j)", "Colonnes larges (Cassandra)", "Document (MongoDB)"],
+      "choices_en": ["Key-value (Redis)", "Graph (Neo4j)", "Wide-column (Cassandra)", "Document (MongoDB)"],
+      "answer": 1,
+      "explain_fr": "Une traversée à 3 niveaux avec filtre est le cas d'école du graphe : les relations sont des citoyens de première classe. En SQL, ce serait une cascade de self-joins de plus en plus coûteuse.",
+      "explain_en": "A 3-level traversal with a filter is the textbook graph case: relationships are first-class citizens. In SQL, it would be an increasingly expensive cascade of self-joins."
+    },
+    {
+      "q_fr": "La requête `WHERE lower(email) = 'a@b.fr'` est lente malgré un index sur `email`. Pourquoi ?",
+      "q_en": "The query `WHERE lower(email) = 'a@b.fr'` is slow despite an index on `email`. Why?",
+      "choices_fr": ["L'index est corrompu et doit être reconstruit", "Les chaînes de caractères ne sont pas indexables en B-tree", "La table est trop grosse pour l'index", "La fonction appliquée à la colonne empêche d'utiliser l'index ; il faut un index d'expression sur lower(email)"],
+      "choices_en": ["The index is corrupted and must be rebuilt", "Strings can't be indexed in a B-tree", "The table is too big for the index", "The function applied to the column prevents index use; an expression index on lower(email) is needed"],
+      "answer": 3,
+      "explain_fr": "L'index B-tree stocke les valeurs de `email`, pas de `lower(email)` : le moteur ne peut pas s'en servir. Solution : `CREATE INDEX ON users (lower(email))` — ou une colonne citext.",
+      "explain_en": "The B-tree index stores values of `email`, not `lower(email)`: the engine can't use it. Solution: `CREATE INDEX ON users (lower(email))` — or a citext column."
+    },
+    {
+      "q_fr": "Une page affiche 50 articles avec leur auteur ; le log montre 51 requêtes SQL. Quelle est la bonne correction ?",
+      "q_en": "A page displays 50 articles with their author; the log shows 51 SQL queries. What is the right fix?",
+      "choices_fr": ["Ajouter un index sur la clé étrangère author_id", "Mettre les 51 requêtes en cache Redis", "Charger les auteurs en eager loading (JOIN / include / select_related)", "Passer la base en NoSQL pour éviter les jointures"],
+      "choices_en": ["Add an index on the author_id foreign key", "Cache the 51 queries in Redis", "Load authors via eager loading (JOIN / include / select_related)", "Switch to NoSQL to avoid joins"],
+      "answer": 2,
+      "explain_fr": "C'est le problème N+1 : le lazy loading de l'ORM déclenche une requête par article. L'eager loading ramène tout en 1-2 requêtes. L'index n'aide pas (les requêtes sont déjà rapides individuellement) et le cache masquerait le problème.",
+      "explain_en": "This is the N+1 problem: the ORM's lazy loading fires one query per article. Eager loading brings everything back in 1-2 queries. An index doesn't help (each query is already fast individually) and caching would only mask the problem."
+    },
+    {
+      "q_fr": "Un utilisateur modifie son profil, recharge la page et voit l'ancienne version pendant quelques secondes. Cause la plus probable dans une architecture leader-follower ?",
+      "q_en": "A user edits their profile, reloads the page and sees the old version for a few seconds. Most likely cause in a leader-follower architecture?",
+      "choices_fr": ["La transaction a été annulée par un rollback", "La lecture a été servie par un replica en retard (replica lag)", "L'index de la table profils est invalide", "Le théorème CAP interdit de lire sa propre écriture"],
+      "choices_en": ["The transaction was rolled back", "The read was served by a lagging replica (replica lag)", "The profiles table index is invalid", "The CAP theorem forbids reading your own write"],
+      "answer": 1,
+      "explain_fr": "L'écriture va au leader, la lecture part sur un follower pas encore synchronisé : c'est le replica lag. La garantie qui manque s'appelle read-your-writes (ex. lire depuis le leader juste après une écriture). CAP n'interdit rien de tel.",
+      "explain_en": "The write goes to the leader, the read hits a follower not yet caught up: that's replica lag. The missing guarantee is called read-your-writes (e.g. read from the leader right after a write). CAP forbids no such thing."
+    }
+  ]
+}

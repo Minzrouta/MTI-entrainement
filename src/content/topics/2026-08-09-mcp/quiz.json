@@ -1,0 +1,108 @@
+{
+  "flashcards": [
+    {
+      "q_fr": "Quel problème MCP résout-il ?",
+      "a_fr": "L'intégration N×M : chaque application LLM devait écrire un connecteur custom pour chaque service. MCP standardise le protocole entre les deux : un serveur écrit une fois fonctionne avec tous les hosts compatibles — on passe de N×M à N+M connecteurs.",
+      "q_en": "What problem does MCP solve?",
+      "a_en": "N×M integration: every LLM application had to write a custom connector for every service. MCP standardizes the protocol between the two: a server written once works with every compatible host — going from N×M to N+M connectors."
+    },
+    {
+      "q_fr": "Quels sont les trois rôles de l'architecture MCP ?",
+      "a_fr": "Le host (l'application LLM : Claude Desktop, un IDE), qui orchestre ; le client (la connexion 1-à-1 vers un serveur, à l'intérieur du host) ; le serveur (le programme qui expose tools, resources et prompts). Un host connecté à trois serveurs maintient trois clients.",
+      "q_en": "What are the three roles in the MCP architecture?",
+      "a_en": "The host (the LLM application: Claude Desktop, an IDE), which orchestrates; the client (the 1-to-1 connection to a server, inside the host); the server (the program exposing tools, resources and prompts). A host connected to three servers maintains three clients."
+    },
+    {
+      "q_fr": "Tools, resources, prompts : qui contrôle quoi ?",
+      "a_fr": "Tools : le modèle décide de les appeler (avec approbation utilisateur) — ex. create_issue. Resources : l'application choisit les données à attacher au contexte — ex. contenu de fichier. Prompts : templates déclenchés explicitement par l'utilisateur — ex. slash commands.",
+      "q_en": "Tools, resources, prompts: who controls what?",
+      "a_en": "Tools: the model decides to call them (with user approval) — e.g. create_issue. Resources: the application chooses the data to attach to the context — e.g. file contents. Prompts: templates explicitly triggered by the user — e.g. slash commands."
+    },
+    {
+      "q_fr": "Sur quoi repose la communication MCP et quels sont les deux transports standard ?",
+      "a_fr": "Sur JSON-RPC 2.0, avec une poignée de main initialize qui négocie version et capacités. Transports : stdio (le host lance le serveur en sous-processus, communication stdin/stdout, idéal en local) et HTTP streamable (endpoint distant avec streaming, qui remplace l'ancien HTTP+SSE).",
+      "q_en": "What does MCP communication run on, and what are the two standard transports?",
+      "a_en": "On JSON-RPC 2.0, with an initialize handshake negotiating version and capabilities. Transports: stdio (the host launches the server as a subprocess, stdin/stdout communication, ideal locally) and streamable HTTP (a remote endpoint with streaming, replacing the older HTTP+SSE)."
+    },
+    {
+      "q_fr": "Quelle différence entre MCP et le function calling classique ?",
+      "a_fr": "Le function calling est le mécanisme par lequel le modèle génère des appels de fonctions, mais chaque intégration reste du code custom dans une seule app. MCP standardise la couche au-dessus : découverte dynamique (tools/list), transport, cycle de vie — un serveur MCP est réutilisable par n'importe quel host.",
+      "q_en": "What's the difference between MCP and classic function calling?",
+      "a_en": "Function calling is the mechanism by which the model generates function calls, but each integration remains custom code inside a single app. MCP standardizes the layer above: dynamic discovery (tools/list), transport, lifecycle — an MCP server is reusable by any host."
+    },
+    {
+      "q_fr": "Qu'est-ce que la prompt injection indirecte via un outil MCP ?",
+      "a_fr": "Du contenu externe rapporté par un outil (page web, issue GitHub, email) contient des instructions malveillantes que le modèle risque de suivre — ex. exfiltrer des secrets via un autre outil. Le trio dangereux : données privées + contenu non fiable + canal de sortie externe.",
+      "q_en": "What is indirect prompt injection through an MCP tool?",
+      "a_en": "External content brought back by a tool (web page, GitHub issue, email) contains malicious instructions the model may follow — e.g. exfiltrating secrets through another tool. The dangerous trio: private data + untrusted content + an external output channel."
+    },
+    {
+      "q_fr": "Quelles parades de sécurité citer pour un déploiement MCP ?",
+      "a_fr": "Principe du moindre privilège (tokens à permissions minimales, serveurs read-only si possible), human-in-the-loop pour les actions sensibles, audit des serveurs tiers avant installation (ils exécutent du code localement), et isolation des serveurs à risque.",
+      "q_en": "Which security countermeasures should you cite for an MCP deployment?",
+      "a_en": "Principle of least privilege (minimally-scoped tokens, read-only servers when possible), human-in-the-loop for sensitive actions, auditing third-party servers before installing them (they run code locally), and isolating risky servers."
+    },
+    {
+      "q_fr": "Pourquoi MCP est-il un bon sujet d'entretien en 2026, et comment en parler intelligemment ?",
+      "a_fr": "Adopté au-delà d'Anthropic (OpenAI, Google DeepMind, Microsoft, les IDE), c'est le standard de facto des agents. Un stagiaire marque des points en citant un usage concret (serveur GitHub/Postgres dans un IDE) ou un mini-serveur écrit avec le SDK, plus les limites : coût en tokens, risques d'injection.",
+      "q_en": "Why is MCP a good interview topic in 2026, and how do you discuss it intelligently?",
+      "a_en": "Adopted beyond Anthropic (OpenAI, Google DeepMind, Microsoft, IDEs), it's the de facto agent standard. An intern scores points by citing concrete usage (a GitHub/Postgres server in an IDE) or a mini-server written with the SDK, plus the limits: token cost, injection risks."
+    }
+  ],
+  "qcm": [
+    {
+      "q_fr": "MCP transforme le problème d'intégration N×M en :",
+      "q_en": "MCP turns the N×M integration problem into:",
+      "choices_fr": ["N+M : un connecteur par app et un serveur par service", "N-M : les serveurs remplacent les applications", "M² : chaque serveur parle à chaque serveur", "1 : un serveur universel pour tous les services"],
+      "choices_en": ["N+M: one connector per app and one server per service", "N-M: servers replace applications", "M²: every server talks to every server", "1: a universal server for all services"],
+      "answer": 0,
+      "explain_fr": "Chaque application implémente le protocole une fois (côté client), chaque service est encapsulé une fois (côté serveur) : N+M composants au lieu de N×M intégrations custom. C'est l'analogie USB-C.",
+      "explain_en": "Each application implements the protocol once (client side), each service is wrapped once (server side): N+M components instead of N×M custom integrations. That's the USB-C analogy."
+    },
+    {
+      "q_fr": "Dans MCP, qui décide d'appeler un tool ?",
+      "q_en": "In MCP, who decides to call a tool?",
+      "choices_fr": ["Le modèle, avec approbation de l'utilisateur", "Le serveur, dès qu'il est connecté", "L'application, à chaque message", "L'utilisateur uniquement, via un menu"],
+      "choices_en": ["The model, with user approval", "The server, as soon as it's connected", "The application, on every message", "The user only, through a menu"],
+      "answer": 0,
+      "explain_fr": "Les tools sont contrôlés par le modèle (avec garde-fou humain). Ce sont les resources qui sont contrôlées par l'application, et les prompts par l'utilisateur — la séparation des trois est un choix de design du protocole.",
+      "explain_en": "Tools are model-controlled (with a human guardrail). Resources are application-controlled and prompts user-controlled — the three-way separation is a deliberate protocol design choice."
+    },
+    {
+      "q_fr": "Quel transport utilise un serveur MCP lancé localement par Claude Desktop ?",
+      "q_en": "Which transport does an MCP server launched locally by Claude Desktop use?",
+      "choices_fr": ["stdio : sous-processus communiquant via stdin/stdout", "WebSocket sur le port 443", "gRPC avec TLS mutuel", "Un socket Unix partagé entre modèles"],
+      "choices_en": ["stdio: a subprocess communicating over stdin/stdout", "WebSocket on port 443", "gRPC with mutual TLS", "A Unix socket shared between models"],
+      "answer": 0,
+      "explain_fr": "En local, le host lance le serveur comme sous-processus et échange des messages JSON-RPC sur stdin/stdout : simple, pas de port réseau. Pour les serveurs distants ou partagés, c'est le transport HTTP streamable.",
+      "explain_en": "Locally, the host launches the server as a subprocess and exchanges JSON-RPC messages over stdin/stdout: simple, no network port. For remote or shared servers, it's the streamable HTTP transport."
+    },
+    {
+      "q_fr": "Quelle est LA différence clé entre un serveur MCP et du function calling codé dans une app ?",
+      "q_en": "What is THE key difference between an MCP server and function calling coded into an app?",
+      "choices_fr": ["Le serveur MCP est réutilisable par n'importe quel host compatible", "Le serveur MCP rend les réponses du modèle plus précises", "Le function calling ne supporte pas le JSON", "MCP ne nécessite aucune API sous-jacente"],
+      "choices_en": ["The MCP server is reusable by any compatible host", "The MCP server makes model responses more accurate", "Function calling doesn't support JSON", "MCP requires no underlying API"],
+      "answer": 0,
+      "explain_fr": "C'est la standardisation qui change tout : découverte dynamique, transport commun, réutilisabilité entre apps. MCP n'améliore pas le raisonnement du modèle, et un serveur MCP wrappe généralement une API existante.",
+      "explain_en": "Standardization is what changes everything: dynamic discovery, common transport, reusability across apps. MCP doesn't improve the model's reasoning, and an MCP server usually wraps an existing API."
+    },
+    {
+      "q_fr": "Un serveur MCP de lecture d'emails + un outil d'envoi de messages + accès à des documents privés. Quel est le risque principal ?",
+      "q_en": "An email-reading MCP server + a message-sending tool + access to private documents. What is the main risk?",
+      "choices_fr": ["Une prompt injection dans un email pousse le modèle à exfiltrer les documents", "Le serveur consomme trop de RAM", "Les emails écrasent le contexte du modèle", "JSON-RPC ne supporte pas les pièces jointes"],
+      "choices_en": ["A prompt injection in an email pushes the model to exfiltrate the documents", "The server consumes too much RAM", "The emails overwrite the model's context", "JSON-RPC doesn't support attachments"],
+      "answer": 0,
+      "explain_fr": "C'est le trio dangereux : contenu non fiable (emails entrants) + données privées + canal de sortie (envoi). Un email piégé contenant des instructions peut détourner le modèle. Parades : moindre privilège et approbation humaine des envois.",
+      "explain_en": "That's the dangerous trio: untrusted content (incoming emails) + private data + an output channel (sending). A booby-trapped email containing instructions can hijack the model. Countermeasures: least privilege and human approval of sends."
+    },
+    {
+      "q_fr": "Pourquoi éviter de brancher 15 serveurs MCP « au cas où » ?",
+      "q_en": "Why avoid plugging in 15 MCP servers \"just in case\"?",
+      "choices_fr": ["Chaque outil coûte des tokens de contexte et dégrade la sélection d'outil du modèle", "MCP limite chaque host à 5 serveurs", "Les serveurs entrent en conflit sur le port stdio", "Le modèle doit être ré-entraîné pour chaque serveur"],
+      "choices_en": ["Every tool costs context tokens and degrades the model's tool selection", "MCP limits each host to 5 servers", "The servers conflict over the stdio port", "The model must be retrained for each server"],
+      "answer": 0,
+      "explain_fr": "Les définitions d'outils s'ajoutent au contexte à chaque requête, et un choix parmi 50 outils est moins fiable qu'un choix parmi 5. Pas de limite protocolaire ni de « port stdio » : c'est un arbitrage coût/pertinence.",
+      "explain_en": "Tool definitions are added to the context on every request, and choosing among 50 tools is less reliable than among 5. No protocol limit and no \"stdio port\": it's a cost/relevance trade-off."
+    }
+  ]
+}

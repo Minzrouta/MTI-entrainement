@@ -1,0 +1,108 @@
+{
+  "flashcards": [
+    {
+      "q_fr": "Pourquoi Redis est-il si rapide ? (réponse complète attendue en entretien)",
+      "a_fr": "Quatre raisons : données servies depuis la RAM (aucune I/O disque sur le chemin des requêtes), event loop mono-thread (zéro lock, zéro context switch), structures de données optimisées en C, protocole minimal (RESP). Dire seulement « parce que c'est de la RAM » est insuffisant.",
+      "q_en": "Why is Redis so fast? (full answer expected in an interview)",
+      "a_en": "Four reasons: data served from RAM (no disk I/O on the request path), single-threaded event loop (zero locks, zero context switches), data structures optimized in C, minimal protocol (RESP). Saying only 'because it's RAM' is not enough."
+    },
+    {
+      "q_fr": "Quelle structure Redis pour un leaderboard, et avec quelles commandes ?",
+      "a_fr": "Le sorted set : chaque membre a un score, maintenu trié en permanence. ZADD pour insérer/mettre à jour un score, ZINCRBY pour l'incrémenter, ZRANGE (ou ZREVRANGE) pour le top N, ZRANK pour la position d'un joueur. Tout est en O(log n).",
+      "q_en": "Which Redis structure for a leaderboard, and with which commands?",
+      "a_en": "The sorted set: each member has a score, kept permanently ordered. ZADD to insert/update a score, ZINCRBY to increment it, ZRANGE (or ZREVRANGE) for the top N, ZRANK for a player's position. Everything is O(log n)."
+    },
+    {
+      "q_fr": "Décris le pattern cache-aside, avec son défaut principal.",
+      "a_fr": "Lecture : l'app interroge le cache ; sur un miss, elle lit la DB puis peuple le cache avec un TTL. Écriture : DB puis invalidation de la clé. Défauts : premier accès lent (cache froid) et fenêtre d'incohérence — entre l'écriture DB et l'invalidation, ou pendant le TTL, on sert l'ancienne valeur.",
+      "q_en": "Describe the cache-aside pattern, including its main flaw.",
+      "a_en": "Read: the app queries the cache; on a miss, it reads the DB then populates the cache with a TTL. Write: DB then key invalidation. Flaws: slow first access (cold cache) and an inconsistency window — between the DB write and the invalidation, or during the TTL, the old value is served."
+    },
+    {
+      "q_fr": "Write-through vs write-behind : quel trade-off ?",
+      "a_fr": "Write-through : chaque écriture passe par le cache qui écrit dans la DB de façon synchrone — cache toujours frais mais écritures plus lentes. Write-behind : on écrit dans le cache, flush asynchrone vers la DB — écritures ultra-rapides mais perte possible de données si crash avant le flush.",
+      "q_en": "Write-through vs write-behind: what's the trade-off?",
+      "a_en": "Write-through: every write goes through the cache, which writes to the DB synchronously — cache always fresh but slower writes. Write-behind: you write to the cache, with an asynchronous flush to the DB — ultra-fast writes but possible data loss if a crash occurs before the flush."
+    },
+    {
+      "q_fr": "Qu'est-ce qu'un cache stampede et quelles sont les parades ?",
+      "a_fr": "Une clé chaude expire et des centaines de requêtes font miss simultanément : toutes frappent la DB, qui s'écroule (dogpile). Parades : lock distribué (SET NX EX — un seul client recalcule, les autres attendent ou servent le stale), TTL jitter (TTL ± aléa pour désynchroniser les expirations), recalcul anticipé avant expiration.",
+      "q_en": "What is a cache stampede and what are the countermeasures?",
+      "a_en": "A hot key expires and hundreds of requests miss simultaneously: they all hit the DB, which collapses (dogpile). Countermeasures: a distributed lock (SET NX EX — a single client recomputes, the others wait or serve stale), TTL jitter (TTL ± random to desynchronize expirations), early recomputation before expiry."
+    },
+    {
+      "q_fr": "RDB vs AOF : quelles différences ?",
+      "a_fr": "RDB : snapshots binaires périodiques (fork + copy-on-write), compacts, restart rapide, mais perte de tout ce qui suit le dernier snapshot. AOF : journal de chaque écriture avec fsync configurable (everysec ≈ 1 s de perte max), fichier plus gros, restart plus lent. On les combine souvent ; un pur cache peut désactiver les deux.",
+      "q_en": "RDB vs AOF: what are the differences?",
+      "a_en": "RDB: periodic binary snapshots (fork + copy-on-write), compact, fast restart, but everything after the last snapshot is lost. AOF: a journal of every write with configurable fsync (everysec ≈ at most 1 s of loss), bigger file, slower restart. They're often combined; a pure cache can disable both."
+    },
+    {
+      "q_fr": "Que se passe-t-il quand Redis atteint maxmemory, selon la politique d'éviction ?",
+      "a_fr": "noeviction (le défaut) : les écritures échouent avec une erreur. allkeys-lru : éviction des clés les moins récemment utilisées, TTL ou pas. volatile-lru : éviction uniquement parmi les clés à TTL. allkeys-lfu : par fréquence d'accès, souvent le meilleur choix pour un vrai cache.",
+      "q_en": "What happens when Redis reaches maxmemory, depending on the eviction policy?",
+      "a_en": "noeviction (the default): writes fail with an error. allkeys-lru: evicts the least recently used keys, TTL or not. volatile-lru: evicts only among keys with a TTL. allkeys-lfu: by access frequency, often the best choice for a real cache."
+    },
+    {
+      "q_fr": "Pourquoi le pub/sub de Redis n'est-il pas une vraie message queue ?",
+      "a_fr": "C'est du fire-and-forget : aucune persistance, un abonné déconnecté perd définitivement les messages émis pendant son absence, pas d'acquittement ni de redélivrance. Les streams comblent une partie du manque (consumer groups, acks, relecture) ; pour du routage riche, des DLQ et des garanties fortes, il faut une vraie MQ (RabbitMQ, Kafka).",
+      "q_en": "Why is Redis pub/sub not a real message queue?",
+      "a_en": "It's fire-and-forget: no persistence, a disconnected subscriber permanently loses messages published while away, no acknowledgment or redelivery. Streams fill part of the gap (consumer groups, acks, replay); for rich routing, DLQs and strong guarantees, you need a real MQ (RabbitMQ, Kafka)."
+    }
+  ],
+  "qcm": [
+    {
+      "q_fr": "Un développeur lance `KEYS *` sur un Redis de production contenant 50 millions de clés. Conséquence ?",
+      "q_en": "A developer runs `KEYS *` on a production Redis holding 50 million keys. Consequence?",
+      "choices_fr": ["Rien de grave, la commande est paginée automatiquement", "Toutes les autres commandes sont bloquées pendant le parcours : l'event loop mono-thread est occupée", "Seules les lectures sont bloquées, les écritures continuent", "Redis bascule automatiquement sur un thread secondaire"],
+      "choices_en": ["Nothing serious, the command is automatically paginated", "All other commands are blocked during the scan: the single-threaded event loop is busy", "Only reads are blocked, writes continue", "Redis automatically fails over to a secondary thread"],
+      "answer": 1,
+      "explain_fr": "L'exécution des commandes est mono-thread : une commande O(n) sur 50 M de clés monopolise l'event loop et fige tout le serveur. En prod, on itère avec SCAN, qui parcourt par petits lots sans bloquer.",
+      "explain_en": "Command execution is single-threaded: an O(n) command over 50M keys monopolizes the event loop and freezes the whole server. In production, iterate with SCAN, which walks in small batches without blocking."
+    },
+    {
+      "q_fr": "Quelle structure Redis pour un rate limiter en fenêtre glissante (100 requêtes / 60 s) ?",
+      "q_en": "Which Redis structure for a sliding-window rate limiter (100 requests / 60 s)?",
+      "choices_fr": ["Une list avec LPUSH et LTRIM", "Un hash avec un champ par seconde", "Un sorted set des timestamps : ZADD, ZREMRANGEBYSCORE pour purger, ZCARD pour compter", "Un stream avec un consumer group"],
+      "choices_en": ["A list with LPUSH and LTRIM", "A hash with one field per second", "A sorted set of timestamps: ZADD, ZREMRANGEBYSCORE to purge, ZCARD to count", "A stream with a consumer group"],
+      "answer": 2,
+      "explain_fr": "Le sorted set scoré par timestamp permet de purger les entrées hors fenêtre (ZREMRANGEBYSCORE) puis de compter ce qui reste (ZCARD) — le tout idéalement dans un script Lua pour l'atomicité. INCR+EXPIRE ne donne qu'une fenêtre fixe.",
+      "explain_en": "A sorted set scored by timestamp lets you purge out-of-window entries (ZREMRANGEBYSCORE) then count what remains (ZCARD) — ideally inside a Lua script for atomicity. INCR+EXPIRE only gives a fixed window."
+    },
+    {
+      "q_fr": "Un cache Redis sans TTL atteint maxmemory avec la politique par défaut. Que se passe-t-il ?",
+      "q_en": "A Redis cache without TTLs reaches maxmemory with the default policy. What happens?",
+      "choices_fr": ["Les clés les plus anciennes sont supprimées automatiquement", "Redis compresse les valeurs pour gagner de la place", "Les lectures deviennent plus lentes mais tout continue de fonctionner", "Les écritures échouent avec une erreur : la politique par défaut est noeviction"],
+      "choices_en": ["The oldest keys are automatically removed", "Redis compresses values to save space", "Reads get slower but everything keeps working", "Writes fail with an error: the default policy is noeviction"],
+      "answer": 3,
+      "explain_fr": "Contrairement à l'intuition, Redis n'évince rien par défaut : noeviction fait échouer les écritures une fois la mémoire pleine. Pour un cache, il faut configurer explicitement allkeys-lru ou allkeys-lfu — et mettre des TTL.",
+      "explain_en": "Counter-intuitively, Redis evicts nothing by default: noeviction makes writes fail once memory is full. For a cache, you must explicitly configure allkeys-lru or allkeys-lfu — and set TTLs."
+    },
+    {
+      "q_fr": "À quoi sert le « TTL jitter » (TTL ± aléa) sur les clés d'un cache ?",
+      "q_en": "What is \"TTL jitter\" (TTL ± random) on cache keys for?",
+      "choices_fr": ["Compliquer la prédiction des clés par un attaquant", "Éviter que des milliers de clés créées ensemble expirent au même instant et déclenchent un stampede", "Réduire la consommation mémoire moyenne", "Répartir les clés uniformément entre les nœuds du cluster"],
+      "choices_en": ["Making key prediction harder for an attacker", "Preventing thousands of keys created together from expiring at the same instant and triggering a stampede", "Reducing average memory consumption", "Spreading keys evenly across cluster nodes"],
+      "answer": 1,
+      "explain_fr": "Des clés remplies en masse (déploiement, warm-up) avec le même TTL expirent en même temps : vague de miss synchronisée sur la DB. Un aléa de ±10-20 % étale les expirations dans le temps.",
+      "explain_en": "Keys populated in bulk (deploy, warm-up) with the same TTL expire at the same time: a synchronized wave of misses hits the DB. A ±10-20% random offset spreads expirations over time."
+    },
+    {
+      "q_fr": "Comment supprimer un hash de plusieurs millions de champs sans figer Redis ?",
+      "q_en": "How do you delete a hash with several million fields without freezing Redis?",
+      "choices_fr": ["DEL, la suppression est toujours instantanée", "EXPIRE avec un TTL d'une seconde", "UNLINK, qui délègue la libération mémoire à un thread d'arrière-plan", "FLUSHDB, plus rapide qu'une suppression ciblée"],
+      "choices_en": ["DEL, deletion is always instant", "EXPIRE with a one-second TTL", "UNLINK, which delegates memory reclaiming to a background thread", "FLUSHDB, faster than a targeted deletion"],
+      "answer": 2,
+      "explain_fr": "DEL sur une big key libère la mémoire de façon synchrone dans l'event loop : tout le serveur attend. UNLINK détache la clé immédiatement et libère la mémoire en arrière-plan. FLUSHDB viderait toute la base.",
+      "explain_en": "DEL on a big key reclaims memory synchronously inside the event loop: the whole server waits. UNLINK detaches the key immediately and frees memory in the background. FLUSHDB would wipe the entire database."
+    },
+    {
+      "q_fr": "Redis persiste en RDB avec un snapshot toutes les 5 minutes, sans AOF. Le serveur crashe. Que perd-on ?",
+      "q_en": "Redis persists with RDB snapshots every 5 minutes, no AOF. The server crashes. What is lost?",
+      "choices_fr": ["Toutes les écritures depuis le dernier snapshot, jusqu'à 5 minutes de données", "Rien : RDB journalise chaque écriture", "Toute la base : RDB ne sert qu'à la réplication", "Seulement les clés sans TTL"],
+      "choices_en": ["All writes since the last snapshot, up to 5 minutes of data", "Nothing: RDB journals every write", "The whole database: RDB is only for replication", "Only the keys without a TTL"],
+      "answer": 0,
+      "explain_fr": "RDB est un instantané périodique : tout ce qui suit le dernier snapshot disparaît au crash. C'est l'AOF (fsync everysec) qui borne la perte à ~1 s. D'où le combo RDB + AOF quand les données comptent — ou aucun des deux pour un pur cache.",
+      "explain_en": "RDB is a periodic snapshot: everything after the last one vanishes on a crash. AOF (fsync everysec) is what bounds the loss to ~1 s. Hence the RDB + AOF combo when data matters — or neither for a pure cache."
+    }
+  ]
+}

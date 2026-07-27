@@ -1,0 +1,108 @@
+{
+  "flashcards": [
+    {
+      "q_fr": "Quelle limite fondamentale de HTTP les WebSockets résolvent-elles ?",
+      "a_fr": "HTTP est requête/réponse : le serveur ne peut pas envoyer de données de sa propre initiative. Le WebSocket établit une connexion TCP persistante et full-duplex : les deux côtés émettent quand ils veulent, avec quelques octets d'overhead par message.",
+      "q_en": "What fundamental HTTP limitation do WebSockets solve?",
+      "a_en": "HTTP is request/response: the server cannot send data on its own initiative. WebSocket establishes a persistent, full-duplex TCP connection: both sides send whenever they want, with a few bytes of overhead per message."
+    },
+    {
+      "q_fr": "Décris le handshake WebSocket.",
+      "a_fr": "Le client envoie un GET HTTP avec `Upgrade: websocket`, `Connection: Upgrade` et un nonce `Sec-WebSocket-Key`. Le serveur répond `101 Switching Protocols` avec `Sec-WebSocket-Accept` (SHA-1 du nonce + GUID fixe). La connexion TCP est ensuite réutilisée pour des frames full-duplex. Démarrer en HTTP permet de traverser les proxies et de partager le port 443.",
+      "q_en": "Describe the WebSocket handshake.",
+      "a_en": "The client sends an HTTP GET with `Upgrade: websocket`, `Connection: Upgrade` and a `Sec-WebSocket-Key` nonce. The server answers `101 Switching Protocols` with `Sec-WebSocket-Accept` (SHA-1 of the nonce + a fixed GUID). The TCP connection is then reused for full-duplex frames. Starting as HTTP gets through proxies and shares port 443."
+    },
+    {
+      "q_fr": "Compare short polling, long polling et SSE.",
+      "a_fr": "Short polling : requête toutes les X secondes, simple mais latence moyenne X/2 et requêtes vides. Long polling : le serveur garde la requête ouverte jusqu'à avoir une donnée, latence quasi nulle mais une reconnexion par message. SSE : flux HTTP `text/event-stream` unidirectionnel serveur → client, avec reconnexion automatique native via EventSource — souvent suffisant pour notifications et dashboards.",
+      "q_en": "Compare short polling, long polling and SSE.",
+      "a_en": "Short polling: a request every X seconds, simple but average latency of X/2 and empty requests. Long polling: the server holds the request open until it has data, near-zero latency but one reconnection per message. SSE: a unidirectional server → client `text/event-stream` HTTP flow, with native automatic reconnection via EventSource — often enough for notifications and dashboards."
+    },
+    {
+      "q_fr": "À quoi servent les frames ping/pong ?",
+      "a_fr": "De heartbeat : proxies, NAT et firewalls coupent silencieusement les connexions TCP inactives (souvent après 30-60 s). Le serveur envoie un ping périodique ; sans pong en retour, la connexion est considérée morte et nettoyée. Sans heartbeat, on accumule des connexions zombies et le client croit être connecté à tort.",
+      "q_en": "What are ping/pong frames for?",
+      "a_en": "Heartbeat: proxies, NAT and firewalls silently drop idle TCP connections (often after 30-60 s). The server sends a periodic ping; without a pong back, the connection is considered dead and cleaned up. Without a heartbeat you accumulate zombie connections and the client wrongly believes it's connected."
+    },
+    {
+      "q_fr": "Comment scaler des WebSockets sur plusieurs instances ?",
+      "a_fr": "Deux briques : des sticky sessions au load balancer (la connexion, stateful, doit vivre sur une instance stable) et un pub/sub type Redis entre les instances — celle qui reçoit un message le publie sur un channel, toutes les instances abonnées le relaient à leurs propres clients connectés. C'est ce qu'implémente l'adapter Redis de socket.io.",
+      "q_en": "How do you scale WebSockets across several instances?",
+      "a_en": "Two building blocks: sticky sessions at the load balancer (the connection is stateful and must live on a stable instance) and a Redis-style pub/sub between instances — the one receiving a message publishes it on a channel, and every subscribed instance relays it to its own connected clients. That's what socket.io's Redis adapter implements."
+    },
+    {
+      "q_fr": "Qu'apporte socket.io par rapport au WebSocket natif, et à quel prix ?",
+      "a_fr": "Apports : reconnexion automatique, rooms, namespaces, acknowledgements, fallback en long polling et adapter Redis pour le multi-instance. Prix : un protocole propriétaire (incompatible avec un client ou serveur WebSocket brut) et une dépendance des deux côtés. Aujourd'hui, ce sont surtout les rooms et l'adapter qui le justifient, plus le fallback.",
+      "q_en": "What does socket.io add over native WebSocket, and at what cost?",
+      "a_en": "Additions: automatic reconnection, rooms, namespaces, acknowledgements, long-polling fallback and a Redis adapter for multi-instance. Cost: a proprietary protocol (incompatible with a raw WebSocket client or server) and a dependency on both sides. Today, rooms and the adapter justify it more than the fallback does."
+    },
+    {
+      "q_fr": "Comment authentifier une connexion WebSocket depuis un navigateur ?",
+      "a_fr": "L'API WebSocket du navigateur n'autorise pas de headers custom. Options : cookie de session envoyé au handshake (en vérifiant impérativement le header Origin), token court-vécu en query string (attention aux logs serveur) ou message d'authentification juste après l'ouverture. L'identité est ensuite attachée à la connexion.",
+      "q_en": "How do you authenticate a WebSocket connection from a browser?",
+      "a_en": "The browser's WebSocket API doesn't allow custom headers. Options: session cookie sent at the handshake (imperatively checking the Origin header), a short-lived token in the query string (beware server logs) or an authentication message right after opening. Identity is then attached to the connection."
+    },
+    {
+      "q_fr": "Qu'est-ce que le cross-site WebSocket hijacking et comment s'en protéger ?",
+      "a_fr": "Les WebSockets ne sont pas soumis au CORS : un site malveillant peut ouvrir une connexion vers votre serveur, et le navigateur y joint les cookies de session. Si le serveur ne vérifie pas le header Origin contre une allowlist, l'attaquant obtient une connexion authentifiée au nom de la victime. Protection : valider Origin au handshake (et/ou utiliser des tokens plutôt que le cookie seul).",
+      "q_en": "What is cross-site WebSocket hijacking and how do you defend against it?",
+      "a_en": "WebSockets are not subject to CORS: a malicious site can open a connection to your server, and the browser attaches the session cookies. If the server doesn't check the Origin header against an allowlist, the attacker gets an authenticated connection on the victim's behalf. Defense: validate Origin at the handshake (and/or use tokens rather than the cookie alone)."
+    }
+  ],
+  "qcm": [
+    {
+      "q_fr": "Quel code de statut HTTP conclut un handshake WebSocket réussi ?",
+      "q_en": "Which HTTP status code concludes a successful WebSocket handshake?",
+      "choices_fr": ["101 Switching Protocols", "200 OK", "301 Moved Permanently", "426 Upgrade Required"],
+      "choices_en": ["101 Switching Protocols", "200 OK", "301 Moved Permanently", "426 Upgrade Required"],
+      "answer": 0,
+      "explain_fr": "Le serveur accepte l'upgrade avec 101 Switching Protocols et le header Sec-WebSocket-Accept. 426 est au contraire l'erreur renvoyée quand le serveur exige un upgrade que le client n'a pas proposé.",
+      "explain_en": "The server accepts the upgrade with 101 Switching Protocols and the Sec-WebSocket-Accept header. 426 is the opposite: the error returned when the server requires an upgrade the client didn't offer."
+    },
+    {
+      "q_fr": "Pour pousser des notifications serveur → client sans que le client n'émette, quel est le choix le plus simple et suffisant ?",
+      "q_en": "To push server → client notifications with no client-side sending, what is the simplest sufficient choice?",
+      "choices_fr": ["SSE : unidirectionnel, HTTP standard, reconnexion automatique native", "WebSocket : c'est fait pour le temps réel", "Short polling toutes les 500 ms", "Une requête HTTP/2 par notification"],
+      "choices_en": ["SSE: unidirectional, standard HTTP, native automatic reconnection", "WebSocket: it's made for real-time", "Short polling every 500 ms", "One HTTP/2 request per notification"],
+      "answer": 0,
+      "explain_fr": "Le flux est unidirectionnel : SSE suffit, avec EventSource qui gère reconnexion et reprise (Last-Event-ID) sans code. Le WebSocket ajouterait heartbeat et reconnexion manuelle pour rien.",
+      "explain_en": "The flow is unidirectional: SSE is enough, with EventSource handling reconnection and resumption (Last-Event-ID) without code. A WebSocket would add heartbeat and manual reconnection for nothing."
+    },
+    {
+      "q_fr": "Sur un chat à 3 instances derrière un load balancer, pourquoi faut-il un pub/sub Redis ?",
+      "q_en": "In a chat running on 3 instances behind a load balancer, why do you need a Redis pub/sub?",
+      "choices_fr": ["Chaque connexion vit sur une seule instance : sans pub/sub, un message reçu par l'instance A n'atteint pas les clients connectés à B et C", "Pour persister l'historique des messages", "Pour équilibrer la charge CPU entre les instances", "Parce que Redis est plus rapide que le WebSocket"],
+      "choices_en": ["Each connection lives on a single instance: without pub/sub, a message received by instance A never reaches clients connected to B and C", "To persist message history", "To balance CPU load across instances", "Because Redis is faster than WebSocket"],
+      "answer": 0,
+      "explain_fr": "Le WebSocket est stateful : l'instance A ne connaît que ses propres connexions. Elle publie le message sur un channel Redis, et B et C le relaient à leurs clients. La persistance de l'historique est un problème séparé (base de données).",
+      "explain_en": "WebSocket is stateful: instance A only knows its own connections. It publishes the message on a Redis channel, and B and C relay it to their clients. Persisting history is a separate problem (database)."
+    },
+    {
+      "q_fr": "Pourquoi la reconnexion client doit-elle utiliser un backoff exponentiel avec jitter ?",
+      "q_en": "Why must client reconnection use exponential backoff with jitter?",
+      "choices_fr": ["Sinon, au redémarrage du serveur, tous les clients se reconnectent en même temps et l'écroulent (thundering herd)", "Parce que la RFC 6455 l'impose", "Pour économiser la batterie des mobiles", "Parce que les navigateurs bloquent les reconnexions trop rapides"],
+      "choices_en": ["Otherwise, when the server restarts, all clients reconnect simultaneously and knock it over (thundering herd)", "Because RFC 6455 mandates it", "To save mobile battery", "Because browsers block reconnections that are too fast"],
+      "answer": 0,
+      "explain_fr": "Une reconnexion immédiate en boucle transforme chaque incident en auto-DDoS : des milliers de clients synchronisés reviennent au même instant. Le backoff espace les tentatives, le jitter les désynchronise. La RFC ne dit rien du comportement de reconnexion.",
+      "explain_en": "Immediate reconnection in a loop turns every incident into a self-inflicted DDoS: thousands of synchronized clients return at the same instant. Backoff spaces the attempts, jitter desynchronizes them. The RFC says nothing about reconnection behavior."
+    },
+    {
+      "q_fr": "Un client WebSocket natif (API du navigateur) peut-il se connecter à un serveur socket.io ?",
+      "q_en": "Can a native WebSocket client (browser API) connect to a socket.io server?",
+      "choices_fr": ["Non : socket.io ajoute son propre protocole au-dessus du transport", "Oui, socket.io est une implémentation standard de la RFC 6455", "Oui, mais seulement en wss://", "Non, sauf si le serveur désactive le fallback long polling"],
+      "choices_en": ["No: socket.io adds its own protocol on top of the transport", "Yes, socket.io is a standard implementation of RFC 6455", "Yes, but only over wss://", "No, unless the server disables the long-polling fallback"],
+      "answer": 0,
+      "explain_fr": "socket.io encapsule ses messages (Engine.IO + son propre framing) : un client brut recevra des données incompréhensibles et échouera au handshake applicatif. Client et serveur doivent parler socket.io tous les deux.",
+      "explain_en": "socket.io wraps its messages (Engine.IO + its own framing): a raw client receives unintelligible data and fails the application-level handshake. Client and server must both speak socket.io."
+    },
+    {
+      "q_fr": "Pourquoi un serveur WebSocket doit-il vérifier le header Origin au handshake ?",
+      "q_en": "Why must a WebSocket server check the Origin header at the handshake?",
+      "choices_fr": ["Le CORS ne s'applique pas aux WebSockets : sans cette vérification, un site tiers peut ouvrir une connexion authentifiée par les cookies de la victime", "Pour empêcher les connexions depuis des applications mobiles", "Parce que le TLS ne chiffre pas le handshake", "Pour valider que le client supporte bien la RFC 6455"],
+      "choices_en": ["CORS doesn't apply to WebSockets: without this check, a third-party site can open a connection authenticated by the victim's cookies", "To block connections from mobile apps", "Because TLS doesn't encrypt the handshake", "To validate that the client supports RFC 6455"],
+      "answer": 0,
+      "explain_fr": "C'est le cross-site WebSocket hijacking : le navigateur joint les cookies au handshake quel que soit le site qui l'initie. Seule la validation d'Origin côté serveur (ou une auth par token) bloque l'attaque. Hors navigateur, Origin est falsifiable, mais ce n'est pas le scénario visé.",
+      "explain_en": "That's cross-site WebSocket hijacking: the browser attaches cookies to the handshake regardless of which site initiates it. Only server-side Origin validation (or token auth) blocks the attack. Outside browsers Origin can be forged, but that's not the targeted scenario."
+    }
+  ]
+}

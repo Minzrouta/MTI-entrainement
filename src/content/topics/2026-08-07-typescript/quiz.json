@@ -1,0 +1,108 @@
+{
+  "flashcards": [
+    {
+      "q_fr": "Que devient le typage TypeScript à l'exécution ?",
+      "a_fr": "Il disparaît entièrement : `tsc` efface les annotations et émet du JavaScript pur. La vérification est uniquement statique — aucune donnée n'est validée au runtime, d'où le besoin de validation aux frontières (zod) pour les entrées externes.",
+      "q_en": "What happens to TypeScript's typing at runtime?",
+      "a_en": "It disappears entirely: `tsc` erases the annotations and emits plain JavaScript. Checking is static only — no data is validated at runtime, hence the need for boundary validation (zod) on external input."
+    },
+    {
+      "q_fr": "Qu'est-ce que le typage structurel de TypeScript ?",
+      "a_fr": "Deux types sont compatibles si leurs structures le sont, peu importe leur nom (duck typing vérifié statiquement). Un objet avec les bonnes propriétés est assignable à une interface même s'il n'a jamais été déclaré comme telle — contrairement au typage nominal de Java/C#.",
+      "q_en": "What is TypeScript's structural typing?",
+      "a_en": "Two types are compatible if their structures are, regardless of their names (statically checked duck typing). An object with the right properties is assignable to an interface even if it was never declared as one — unlike Java/C#'s nominal typing."
+    },
+    {
+      "q_fr": "Quelle est la différence entre `any` et `unknown` ?",
+      "a_fr": "`any` désactive toute vérification et se propage à tout ce qu'il touche. `unknown` accepte n'importe quelle valeur mais interdit tout usage tant qu'on n'a pas rétréci le type (typeof, type guard, validation). Aux frontières : `unknown`, jamais `any`.",
+      "q_en": "What's the difference between `any` and `unknown`?",
+      "a_en": "`any` disables all checking and spreads to everything it touches. `unknown` accepts any value but forbids any use until the type has been narrowed (typeof, type guard, validation). At the boundaries: `unknown`, never `any`."
+    },
+    {
+      "q_fr": "Qu'est-ce que le narrowing ?",
+      "a_fr": "Le rétrécissement d'un type union au fil du contrôle de flot : après `if (typeof x === \"string\")`, `x` est un `string` dans la branche. Outils : `typeof`, `instanceof`, `in`, champ discriminant d'une discriminated union, type guards personnalisés (`x is User`).",
+      "q_en": "What is narrowing?",
+      "a_en": "Shrinking a union type through control flow: after `if (typeof x === \"string\")`, `x` is a `string` inside the branch. Tools: `typeof`, `instanceof`, `in`, the discriminant field of a discriminated union, custom type guards (`x is User`)."
+    },
+    {
+      "q_fr": "Interface vs type : quand utiliser quoi ?",
+      "a_fr": "Quasi interchangeables pour un objet. `interface` : declaration merging et `extends`, bien pour les formes d'objets publiques. `type` : unions, intersections, tuples, mapped types. Le choix relève surtout de la convention d'équipe.",
+      "q_en": "Interface vs type: when to use which?",
+      "a_en": "Nearly interchangeable for an object. `interface`: declaration merging and `extends`, good for public object shapes. `type`: unions, intersections, tuples, mapped types. The choice is mostly team convention."
+    },
+    {
+      "q_fr": "Donne un exemple de générique avec contrainte et explique ce qu'il garantit.",
+      "a_fr": "`function getProp<T, K extends keyof T>(obj: T, key: K): T[K]` : `K` doit être une clé existante de `T`, donc demander une propriété inexistante est une erreur de compilation, et le type de retour est exactement celui de la propriété demandée.",
+      "q_en": "Give an example of a constrained generic and explain what it guarantees.",
+      "a_en": "`function getProp<T, K extends keyof T>(obj: T, key: K): T[K]`: `K` must be an existing key of `T`, so asking for a nonexistent property is a compile error, and the return type is exactly that of the requested property."
+    },
+    {
+      "q_fr": "Cite quatre utility types et leur usage typique.",
+      "a_fr": "`Partial<T>` : tout optionnel (payload PATCH). `Pick<T, K>` : ne garder que certaines clés. `Omit<T, K>` : tout sauf certaines clés (DTO sans `password`). `Record<K, V>` : dictionnaire typé (`Record<string, number>`).",
+      "q_en": "Name four utility types and their typical use.",
+      "a_en": "`Partial<T>`: everything optional (PATCH payload). `Pick<T, K>`: keep only certain keys. `Omit<T, K>`: everything except certain keys (DTO without `password`). `Record<K, V>`: typed dictionary (`Record<string, number>`)."
+    },
+    {
+      "q_fr": "Pourquoi valider une réponse d'API avec zod alors qu'elle est déjà typée ?",
+      "a_fr": "Parce que le type est une annotation de compilation, pas une garantie : le serveur peut renvoyer n'importe quoi. `schema.parse(data)` valide réellement au runtime, et `z.infer<typeof schema>` dérive le type statique du schéma — une seule source de vérité pour les deux niveaux.",
+      "q_en": "Why validate an API response with zod when it's already typed?",
+      "a_en": "Because the type is a compile-time annotation, not a guarantee: the server can return anything. `schema.parse(data)` actually validates at runtime, and `z.infer<typeof schema>` derives the static type from the schema — one source of truth for both levels."
+    }
+  ],
+  "qcm": [
+    {
+      "q_fr": "Quel est le principal danger de `any` ?",
+      "q_en": "What is the main danger of `any`?",
+      "choices_fr": ["Il désactive la vérification et se propage à tout ce qu'il touche", "Il ralentit le code au runtime", "Il provoque une erreur de compilation", "Il n'accepte que les valeurs primitives"],
+      "choices_en": ["It disables checking and spreads to everything it touches", "It slows down the code at runtime", "It causes a compile error", "It only accepts primitive values"],
+      "answer": 0,
+      "explain_fr": "`any` court-circuite le compilateur silencieusement et contamine la chaîne d'appels. Aucun impact runtime : les types sont effacés. `noImplicitAny` (strict mode) aide à le traquer.",
+      "explain_en": "`any` silently bypasses the compiler and contaminates the call chain. No runtime impact: types are erased. `noImplicitAny` (strict mode) helps track it down."
+    },
+    {
+      "q_fr": "Pourquoi un objet `{ name: \"Ana\", age: 30 }` est-il assignable à `interface Person { name: string }` ?",
+      "q_en": "Why is an object `{ name: \"Ana\", age: 30 }` assignable to `interface Person { name: string }`?",
+      "choices_fr": ["Parce que le typage est structurel : il a toutes les propriétés requises", "Parce qu'il implémente explicitement Person", "Parce que TypeScript ignore les propriétés en trop dans tous les cas", "Parce que age est de type any"],
+      "choices_en": ["Because typing is structural: it has all the required properties", "Because it explicitly implements Person", "Because TypeScript always ignores extra properties", "Because age is of type any"],
+      "answer": 0,
+      "explain_fr": "Typage structurel : la compatibilité se juge sur la forme, pas sur une déclaration `implements`. Nuance : un littéral d'objet passé directement subit l'excess property check, qui refuse les propriétés inconnues.",
+      "explain_en": "Structural typing: compatibility is judged on shape, not on an `implements` declaration. Nuance: an object literal passed directly triggers the excess property check, which rejects unknown properties."
+    },
+    {
+      "q_fr": "Que fait `strictNullChecks` ?",
+      "q_en": "What does `strictNullChecks` do?",
+      "choices_fr": ["null et undefined ne sont plus assignables à tous les types : il faut les gérer explicitement", "Il interdit d'utiliser null dans le code", "Il remplace null par undefined à la compilation", "Il ajoute des vérifications de null au runtime"],
+      "choices_en": ["null and undefined are no longer assignable to every type: you must handle them explicitly", "It forbids using null in the code", "It replaces null with undefined at compile time", "It adds runtime null checks"],
+      "answer": 0,
+      "explain_fr": "Sans strictNullChecks, `null`/`undefined` sont assignables partout et les erreurs \"cannot read property of undefined\" passent. Avec, un `string | null` force le narrowing avant usage. Aucune vérification runtime : tout est statique.",
+      "explain_en": "Without strictNullChecks, `null`/`undefined` are assignable everywhere and \"cannot read property of undefined\" errors slip through. With it, a `string | null` forces narrowing before use. No runtime checks: it's all static."
+    },
+    {
+      "q_fr": "Quel utility type pour un DTO utilisateur sans le champ password ?",
+      "q_en": "Which utility type for a user DTO without the password field?",
+      "choices_fr": ["Omit<User, \"password\">", "Partial<User>", "Pick<User, \"password\">", "Record<User, \"password\">"],
+      "choices_en": ["Omit<User, \"password\">", "Partial<User>", "Pick<User, \"password\">", "Record<User, \"password\">"],
+      "answer": 0,
+      "explain_fr": "`Omit` retire des clés d'un type. `Pick<User, \"password\">` ferait l'inverse (ne garder que password), `Partial` rendrait tout optionnel sans rien retirer, et `Record` construit un dictionnaire.",
+      "explain_en": "`Omit` removes keys from a type. `Pick<User, \"password\">` would do the opposite (keep only password), `Partial` would make everything optional without removing anything, and `Record` builds a dictionary."
+    },
+    {
+      "q_fr": "Que signifie `data as User` sur une réponse d'API ?",
+      "q_en": "What does `data as User` mean on an API response?",
+      "choices_fr": ["Une assertion : le compilateur fait confiance sans aucune vérification, statique ou runtime", "Une conversion : les données sont transformées au format User", "Une validation : TypeScript vérifie la structure à l'exécution", "Un cast sûr : erreur levée si la structure ne correspond pas"],
+      "choices_en": ["An assertion: the compiler trusts you with no check, static or runtime", "A conversion: the data is transformed into the User format", "A validation: TypeScript checks the structure at runtime", "A safe cast: an error is thrown if the structure doesn't match"],
+      "answer": 0,
+      "explain_fr": "`as` ne convertit ni ne valide rien : c'est une promesse faite au compilateur. Si le serveur renvoie autre chose, le bug explosera plus loin. La validation réelle passe par un schéma runtime comme zod.",
+      "explain_en": "`as` neither converts nor validates anything: it's a promise made to the compiler. If the server returns something else, the bug blows up later. Real validation goes through a runtime schema like zod."
+    },
+    {
+      "q_fr": "Après `if (typeof x === \"string\")` sur un `x: string | number`, quel est le type de x dans la branche else ?",
+      "q_en": "After `if (typeof x === \"string\")` on an `x: string | number`, what is the type of x in the else branch?",
+      "choices_fr": ["number", "string | number", "string", "unknown"],
+      "choices_en": ["number", "string | number", "string", "unknown"],
+      "answer": 0,
+      "explain_fr": "Le narrowing fonctionne dans les deux sens : la branche if élimine `number`, donc la branche else élimine `string`. Le compilateur suit le contrôle de flot pour rétrécir l'union des deux côtés.",
+      "explain_en": "Narrowing works both ways: the if branch eliminates `number`, so the else branch eliminates `string`. The compiler follows control flow to shrink the union on both sides."
+    }
+  ]
+}

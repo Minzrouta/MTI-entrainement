@@ -53,8 +53,18 @@
     {
       "q_fr": "Que partagent tous les conteneurs Docker tournant sur un même hôte Linux ?",
       "q_en": "What do all Docker containers running on the same Linux host share?",
-      "choices_fr": ["Le noyau de l'hôte", "Leur système de fichiers racine", "Leur espace de processus (PID)", "Un hyperviseur commun"],
-      "choices_en": ["The host kernel", "Their root filesystem", "Their process (PID) space", "A shared hypervisor"],
+      "choices_fr": [
+        "Le noyau de l'hôte",
+        "Leur système de fichiers racine",
+        "Leur espace de processus (PID)",
+        "Un hyperviseur commun"
+      ],
+      "choices_en": [
+        "The host kernel",
+        "Their root filesystem",
+        "Their process (PID) space",
+        "A shared hypervisor"
+      ],
       "answer": 0,
       "explain_fr": "Les conteneurs partagent le noyau de l'hôte — c'est ce qui les rend légers. Filesystem et espace PID sont isolés par conteneur, et il n'y a pas d'hyperviseur.",
       "explain_en": "Containers share the host kernel — that's what makes them lightweight. Filesystem and PID space are isolated per container, and there is no hypervisor."
@@ -62,35 +72,75 @@
     {
       "q_fr": "Où finissent les données écrites dans un conteneur sans volume monté ?",
       "q_en": "Where does data written in a container without a mounted volume end up?",
-      "choices_fr": ["Dans la couche d'écriture, perdue à la suppression du conteneur", "Dans l'image, partagée par tous les conteneurs", "Sur le registry", "Dans /var/lib/docker/volumes automatiquement"],
-      "choices_en": ["In the writable layer, lost when the container is removed", "In the image, shared by all containers", "On the registry", "Automatically in /var/lib/docker/volumes"],
-      "answer": 0,
+      "choices_fr": [
+        "Dans /var/lib/docker/volumes automatiquement",
+        "Dans la couche d'écriture, perdue à la suppression du conteneur",
+        "Dans l'image, partagée par tous les conteneurs",
+        "Sur le registry"
+      ],
+      "choices_en": [
+        "Automatically in /var/lib/docker/volumes",
+        "In the writable layer, lost when the container is removed",
+        "In the image, shared by all containers",
+        "On the registry"
+      ],
+      "answer": 1,
       "explain_fr": "Sans volume, tout va dans la couche d'écriture éphémère du conteneur : elle disparaît avec lui. L'image, elle, reste immuable.",
       "explain_en": "Without a volume, everything goes to the container's ephemeral writable layer, which disappears with it. The image itself stays immutable."
     },
     {
       "q_fr": "Que fait exactement `docker run -p 8080:80 nginx` ?",
       "q_en": "What exactly does `docker run -p 8080:80 nginx` do?",
-      "choices_fr": ["Publie le port 80 du conteneur sur le port 8080 de l'hôte", "Publie le port 8080 du conteneur sur le port 80 de l'hôte", "Ouvre les ports 8080 et 80 dans le conteneur", "Redirige le trafic du conteneur vers nginx"],
-      "choices_en": ["Publishes container port 80 on host port 8080", "Publishes container port 8080 on host port 80", "Opens ports 8080 and 80 inside the container", "Redirects container traffic to nginx"],
-      "answer": 0,
+      "choices_fr": [
+        "Ouvre les ports 8080 et 80 dans le conteneur",
+        "Redirige le trafic du conteneur vers nginx",
+        "Publie le port 80 du conteneur sur le port 8080 de l'hôte",
+        "Publie le port 8080 du conteneur sur le port 80 de l'hôte"
+      ],
+      "choices_en": [
+        "Opens ports 8080 and 80 inside the container",
+        "Redirects container traffic to nginx",
+        "Publishes container port 80 on host port 8080",
+        "Publishes container port 8080 on host port 80"
+      ],
+      "answer": 2,
       "explain_fr": "La syntaxe est `-p <port-hôte>:<port-conteneur>`. Attention : par défaut c'est bindé sur 0.0.0.0, donc joignable depuis l'extérieur, en contournant UFW.",
       "explain_en": "The syntax is `-p <host-port>:<container-port>`. Careful: it binds to 0.0.0.0 by default, reachable from outside and bypassing UFW."
     },
     {
       "q_fr": "Quel est le risque principal du tag `latest` en production ?",
       "q_en": "What is the main risk of the `latest` tag in production?",
-      "choices_fr": ["Il est mutable : deux pulls peuvent donner deux images différentes", "Il est plus lent à télécharger", "Il n'est pas compatible avec Compose", "Il expire au bout de 30 jours"],
-      "choices_en": ["It's mutable: two pulls can return different images", "It's slower to download", "It's incompatible with Compose", "It expires after 30 days"],
-      "answer": 0,
+      "choices_fr": [
+        "Il est plus lent à télécharger",
+        "Il n'est pas compatible avec Compose",
+        "Il expire au bout de 30 jours",
+        "Il est mutable : deux pulls peuvent donner deux images différentes"
+      ],
+      "choices_en": [
+        "It's slower to download",
+        "It's incompatible with Compose",
+        "It expires after 30 days",
+        "It's mutable: two pulls can return different images"
+      ],
+      "answer": 3,
       "explain_fr": "`latest` n'est qu'un tag par défaut que l'éditeur peut réécrire à tout moment : déploiements non reproductibles. En prod, on épingle une version, idéalement un digest.",
       "explain_en": "`latest` is just a default tag the publisher can rewrite at any time: non-reproducible deployments. In production, pin a version, ideally a digest."
     },
     {
       "q_fr": "Dans quel ordre le CLI Docker délègue-t-il l'exécution d'un conteneur ?",
       "q_en": "In what order does the Docker CLI delegate container execution?",
-      "choices_fr": ["docker → dockerd → containerd → runc", "docker → runc → containerd → dockerd", "docker → containerd → dockerd → runc", "docker → hyperviseur → noyau"],
-      "choices_en": ["docker → dockerd → containerd → runc", "docker → runc → containerd → dockerd", "docker → containerd → dockerd → runc", "docker → hypervisor → kernel"],
+      "choices_fr": [
+        "docker → dockerd → containerd → runc",
+        "docker → runc → containerd → dockerd",
+        "docker → containerd → dockerd → runc",
+        "docker → hyperviseur → noyau"
+      ],
+      "choices_en": [
+        "docker → dockerd → containerd → runc",
+        "docker → runc → containerd → dockerd",
+        "docker → containerd → dockerd → runc",
+        "docker → hypervisor → kernel"
+      ],
       "answer": 0,
       "explain_fr": "Le CLI parle au démon dockerd (API REST), qui délègue à containerd, qui invoque runc (runtime OCI) pour créer le processus isolé. D'où Kubernetes utilisant containerd sans Docker.",
       "explain_en": "The CLI talks to the dockerd daemon (REST API), which delegates to containerd, which invokes runc (OCI runtime) to create the isolated process. Hence Kubernetes using containerd without Docker."
@@ -98,9 +148,19 @@
     {
       "q_fr": "Pourquoi copie-t-on package.json et lance-t-on `npm install` AVANT de copier le reste du code dans un Dockerfile Node ?",
       "q_en": "Why copy package.json and run `npm install` BEFORE copying the rest of the code in a Node Dockerfile?",
-      "choices_fr": ["Pour que le cache de build réutilise la couche des dépendances tant que package.json ne change pas", "Parce que npm exige que le code soit absent", "Pour réduire la taille de l'image finale", "Pour éviter les conflits de versions de Node"],
-      "choices_en": ["So the build cache reuses the dependency layer as long as package.json doesn't change", "Because npm requires the code to be absent", "To reduce the final image size", "To avoid Node version conflicts"],
-      "answer": 0,
+      "choices_fr": [
+        "Pour éviter les conflits de versions de Node",
+        "Pour que le cache de build réutilise la couche des dépendances tant que package.json ne change pas",
+        "Parce que npm exige que le code soit absent",
+        "Pour réduire la taille de l'image finale"
+      ],
+      "choices_en": [
+        "To avoid Node version conflicts",
+        "So the build cache reuses the dependency layer as long as package.json doesn't change",
+        "Because npm requires the code to be absent",
+        "To reduce the final image size"
+      ],
+      "answer": 1,
       "explain_fr": "Le cache est invalidé couche par couche : si seul le code change, la couche `npm install` reste en cache et le build est quasi instantané. La taille finale, elle, ne change pas.",
       "explain_en": "The cache is invalidated layer by layer: if only the code changes, the `npm install` layer stays cached and the build is nearly instant. Final size is unchanged."
     }

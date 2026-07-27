@@ -1,0 +1,108 @@
+{
+  "flashcards": [
+    {
+      "q_fr": "Qu'apporte Kubernetes par rapport à Docker Compose ?",
+      "a_fr": "Compose démarre une stack sur une seule machine. K8s ajoute le multi-machines, la boucle de réconciliation (self-healing automatique), le scaling déclaratif, les rolling updates avec rollback, et le service discovery/load balancing intégrés — au prix d'une complexité opérationnelle bien supérieure.",
+      "q_en": "What does Kubernetes bring over Docker Compose?",
+      "a_en": "Compose starts a stack on a single machine. K8s adds multi-machine support, the reconciliation loop (automatic self-healing), declarative scaling, rolling updates with rollback, and built-in service discovery/load balancing — at the cost of far greater operational complexity."
+    },
+    {
+      "q_fr": "Quels sont les composants du control plane et leur rôle ?",
+      "a_fr": "kube-apiserver (point d'entrée unique, valide et persiste les objets), etcd (base clé-valeur stockant tout l'état du cluster), kube-scheduler (choisit le node de chaque nouveau Pod), controller manager (fait tourner les boucles de réconciliation).",
+      "q_en": "What are the control plane components and their roles?",
+      "a_en": "kube-apiserver (single entry point, validates and persists objects), etcd (key-value store holding the entire cluster state), kube-scheduler (picks the node for each new Pod), controller manager (runs the reconciliation loops)."
+    },
+    {
+      "q_fr": "Que font kubelet et kube-proxy sur un worker node ?",
+      "a_fr": "kubelet surveille l'API server, lance les conteneurs des Pods assignés au node via le container runtime (containerd) et remonte leur état. kube-proxy programme les règles réseau (iptables/IPVS) pour que les Services routent vers les bons Pods.",
+      "q_en": "What do kubelet and kube-proxy do on a worker node?",
+      "a_en": "kubelet watches the API server, starts the containers of Pods assigned to the node through the container runtime (containerd) and reports their status. kube-proxy programs the network rules (iptables/IPVS) so Services route to the right Pods."
+    },
+    {
+      "q_fr": "Explique la chaîne Deployment → ReplicaSet → Pod.",
+      "a_fr": "Le Deployment gère les versions et les rolling updates (nouveau ReplicaSet monté progressivement, ancien descendu, rollback possible). Le ReplicaSet maintient le nombre de réplicas demandé. Le Pod est la plus petite unité : un ou plusieurs conteneurs partageant IP et volumes, éphémère par conception.",
+      "q_en": "Explain the Deployment → ReplicaSet → Pod chain.",
+      "a_en": "The Deployment manages versions and rolling updates (new ReplicaSet scaled up progressively, old one scaled down, rollback possible). The ReplicaSet maintains the requested replica count. The Pod is the smallest unit: one or more containers sharing IP and volumes, ephemeral by design."
+    },
+    {
+      "q_fr": "Quels sont les trois types de Service principaux et leurs usages ?",
+      "a_fr": "ClusterIP : IP virtuelle interne au cluster (le défaut, pour le trafic entre services). NodePort : ouvre un port sur chaque node (tests, on-prem sans LB). LoadBalancer : provisionne un load balancer cloud avec IP publique — en pratique un seul, devant un Ingress qui route vers N services ClusterIP.",
+      "q_en": "What are the three main Service types and their uses?",
+      "a_en": "ClusterIP: cluster-internal virtual IP (the default, for service-to-service traffic). NodePort: opens a port on every node (testing, on-prem without a LB). LoadBalancer: provisions a cloud load balancer with a public IP — in practice just one, in front of an Ingress routing to N ClusterIP services."
+    },
+    {
+      "q_fr": "Liveness vs readiness probe : quelle différence et quel piège ?",
+      "a_fr": "Liveness : le process est-il vivant ? Échec → restart du conteneur. Readiness : peut-il recevoir du trafic ? Échec → retiré des endpoints du Service, sans restart. Piège : tester une dépendance externe (DB) dans la liveness → restarts en boucle quand la dépendance a un souci.",
+      "q_en": "Liveness vs readiness probe: what's the difference and the trap?",
+      "a_en": "Liveness: is the process alive? Failure → container restart. Readiness: can it receive traffic? Failure → removed from the Service's endpoints, no restart. Trap: testing an external dependency (DB) in the liveness probe → restart loops whenever the dependency has an issue."
+    },
+    {
+      "q_fr": "À quoi servent requests et limits ?",
+      "a_fr": "requests = ressources garanties, utilisées par le scheduler pour placer le Pod. limits = plafond : CPU throttlé au-delà, dépassement mémoire → OOMKilled. Sans requests le scheduling est aveugle ; sans limits un Pod peut affamer le node.",
+      "q_en": "What are requests and limits for?",
+      "a_en": "requests = guaranteed resources, used by the scheduler to place the Pod. limits = ceiling: CPU is throttled beyond it, exceeding memory → OOMKilled. Without requests scheduling is blind; without limits one Pod can starve the node."
+    },
+    {
+      "q_fr": "Quand Kubernetes est-il overkill ?",
+      "a_fr": "Pour un projet à un ou deux services sur un seul serveur : un VPS avec Docker Compose ou un PaaS suffit, avec une fraction de la complexité. K8s se justifie avec plusieurs machines, des besoins réels de scaling/haute dispo, et une équipe capable de l'opérer.",
+      "q_en": "When is Kubernetes overkill?",
+      "a_en": "For a project with one or two services on a single server: a VPS with Docker Compose or a PaaS is enough, at a fraction of the complexity. K8s is justified with multiple machines, real scaling/high-availability needs, and a team able to operate it."
+    }
+  ],
+  "qcm": [
+    {
+      "q_fr": "Où est stocké tout l'état du cluster Kubernetes ?",
+      "q_en": "Where is the entire Kubernetes cluster state stored?",
+      "choices_fr": ["Dans etcd", "Dans le kube-scheduler", "Sur chaque kubelet", "Dans les annotations des Pods"],
+      "choices_en": ["In etcd", "In the kube-scheduler", "On each kubelet", "In Pod annotations"],
+      "answer": 0,
+      "explain_fr": "etcd est la base clé-valeur distribuée du control plane : tous les objets (Deployments, Services, Secrets…) y sont persistés via l'API server. La perdre sans backup, c'est perdre le cluster.",
+      "explain_en": "etcd is the control plane's distributed key-value store: every object (Deployments, Services, Secrets…) is persisted there through the API server. Losing it without a backup means losing the cluster."
+    },
+    {
+      "q_fr": "Un Pod crashe. Qui le recrée ?",
+      "q_en": "A Pod crashes. Who recreates it?",
+      "choices_fr": ["La boucle de réconciliation du ReplicaSet, qui détecte l'écart avec l'état désiré", "Le kube-scheduler, qui surveille les Pods morts", "kube-proxy, qui redirige le trafic vers un nouveau Pod", "L'administrateur, via kubectl apply"],
+      "choices_en": ["The ReplicaSet's reconciliation loop, which detects the gap with desired state", "The kube-scheduler, which watches for dead Pods", "kube-proxy, which redirects traffic to a new Pod", "The administrator, via kubectl apply"],
+      "answer": 0,
+      "explain_fr": "Le ReplicaSet controller compare en permanence réplicas observés et désirés : 2 au lieu de 3 → il crée un Pod. Le scheduler intervient ensuite seulement pour placer ce nouveau Pod sur un node.",
+      "explain_en": "The ReplicaSet controller continuously compares observed and desired replicas: 2 instead of 3 → it creates a Pod. The scheduler only steps in afterwards to place that new Pod on a node."
+    },
+    {
+      "q_fr": "Pourquoi les Secrets Kubernetes ne sont-ils pas sécurisés par défaut ?",
+      "q_en": "Why aren't Kubernetes Secrets secure by default?",
+      "choices_fr": ["Ils sont seulement encodés en base64, pas chiffrés", "Ils sont stockés en clair dans les logs des Pods", "Ils sont accessibles publiquement via l'Ingress", "Ils expirent et deviennent lisibles après 90 jours"],
+      "choices_en": ["They are only base64-encoded, not encrypted", "They are stored in plain text in Pod logs", "They are publicly accessible through the Ingress", "They expire and become readable after 90 days"],
+      "answer": 0,
+      "explain_fr": "base64 est un encodage réversible en une commande, pas du chiffrement. Il faut activer l'encryption at rest d'etcd, restreindre l'accès par RBAC, et idéalement utiliser un gestionnaire externe (Vault, secrets du cloud).",
+      "explain_en": "base64 is an encoding reversible in one command, not encryption. You need etcd encryption at rest, RBAC-restricted access, and ideally an external manager (Vault, cloud secrets)."
+    },
+    {
+      "q_fr": "Que se passe-t-il quand un conteneur dépasse sa limit mémoire ?",
+      "q_en": "What happens when a container exceeds its memory limit?",
+      "choices_fr": ["Il est tué (OOMKilled) puis redémarré", "Sa mémoire est throttlée comme le CPU", "Le Pod est déplacé vers un node plus grand", "Rien, la limit n'est qu'indicative"],
+      "choices_en": ["It is killed (OOMKilled) then restarted", "Its memory is throttled like CPU", "The Pod is moved to a bigger node", "Nothing, the limit is only indicative"],
+      "answer": 0,
+      "explain_fr": "Contrairement au CPU (compressible, donc throttlé), la mémoire ne se throttle pas : dépassement = OOMKilled par le noyau, puis restart selon la restartPolicy. D'où l'importance de dimensionner les limits avec de vraies mesures.",
+      "explain_en": "Unlike CPU (compressible, therefore throttled), memory can't be throttled: exceeding it = OOMKilled by the kernel, then restarted per the restartPolicy. Hence the importance of sizing limits from real measurements."
+    },
+    {
+      "q_fr": "Quel objet permet de router api.exemple.com et www.exemple.com vers deux services différents avec une seule IP publique ?",
+      "q_en": "Which object routes api.example.com and www.example.com to two different services with a single public IP?",
+      "choices_fr": ["Un Ingress (avec son Ingress controller)", "Deux Services LoadBalancer", "Un Service NodePort", "Un ConfigMap de routage"],
+      "choices_en": ["An Ingress (with its Ingress controller)", "Two LoadBalancer Services", "A NodePort Service", "A routing ConfigMap"],
+      "answer": 0,
+      "explain_fr": "L'Ingress fait du routage HTTP par host/path et de la terminaison TLS derrière un seul point d'entrée. Deux LoadBalancer fonctionneraient mais coûteraient une IP publique chacun.",
+      "explain_en": "The Ingress does HTTP host/path routing and TLS termination behind a single entry point. Two LoadBalancers would work but would each cost a public IP."
+    },
+    {
+      "q_fr": "Une readiness probe échoue sur un Pod. Que fait Kubernetes ?",
+      "q_en": "A readiness probe fails on a Pod. What does Kubernetes do?",
+      "choices_fr": ["Il retire le Pod des endpoints du Service, sans le redémarrer", "Il redémarre le conteneur immédiatement", "Il supprime le Pod et en recrée un ailleurs", "Il alerte l'administrateur et attend"],
+      "choices_en": ["It removes the Pod from the Service's endpoints, without restarting it", "It restarts the container immediately", "It deletes the Pod and recreates one elsewhere", "It alerts the administrator and waits"],
+      "answer": 0,
+      "explain_fr": "Readiness = aptitude à recevoir du trafic : en échec, le Pod est simplement sorti du load balancing jusqu'à ce que la probe repasse au vert. C'est la liveness qui déclenche un restart.",
+      "explain_en": "Readiness = ability to receive traffic: on failure, the Pod is simply pulled out of load balancing until the probe goes green again. It's the liveness probe that triggers a restart."
+    }
+  ]
+}

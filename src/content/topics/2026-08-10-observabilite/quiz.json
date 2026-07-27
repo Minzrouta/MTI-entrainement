@@ -1,0 +1,108 @@
+{
+  "flashcards": [
+    {
+      "q_fr": "Quelle est la différence entre monitoring et observabilité ?",
+      "a_fr": "Le monitoring vérifie des conditions connues d'avance (seuils, dashboards prédéfinis) et dit QUE ça casse. L'observabilité est la capacité à répondre à des questions non anticipées à partir des données émises par le système (logs, metrics, traces) : elle permet de comprendre POURQUOI.",
+      "q_en": "What is the difference between monitoring and observability?",
+      "a_en": "Monitoring checks conditions known in advance (thresholds, predefined dashboards) and tells you THAT something broke. Observability is the ability to answer unanticipated questions from the data the system emits (logs, metrics, traces): it lets you understand WHY."
+    },
+    {
+      "q_fr": "Quels sont les trois piliers de l'observabilité et leurs forces/faiblesses ?",
+      "a_fr": "Logs : événements discrets riches en contexte, chers en volume. Metrics : agrégats numériques pas chers, parfaits pour alerter, pauvres en contexte. Traces : parcours d'une requête à travers les services en spans. Leur vraie force : la corrélation par trace ID.",
+      "q_en": "What are the three pillars of observability and their strengths/weaknesses?",
+      "a_en": "Logs: discrete events rich in context, expensive in volume. Metrics: cheap numeric aggregates, perfect for alerting, poor in context. Traces: a request's journey across services in spans. Their real power: correlation via trace ID."
+    },
+    {
+      "q_fr": "Pourquoi des logs structurés en JSON plutôt que du texte libre ?",
+      "a_fr": "On peut filtrer, agréger et chercher par champ (level, route, user_id, duration_ms) au lieu de grepper du texte. Avec un identifiant de corrélation (request/trace ID) propagé entre services, on reconstitue le parcours complet d'une requête dans toute la stack.",
+      "q_en": "Why structured JSON logs rather than free text?",
+      "a_en": "You can filter, aggregate and search by field (level, route, user_id, duration_ms) instead of grepping text. With a correlation identifier (request/trace ID) propagated between services, you can reconstruct a request's full journey through the stack."
+    },
+    {
+      "q_fr": "Que sont les méthodes RED et USE ?",
+      "a_fr": "RED, pour les services : Rate (requêtes/s), Errors (taux d'erreur), Duration (latence en percentiles p50/p95/p99). USE, pour les ressources : Utilization, Saturation, Errors. Deux grilles standard pour construire dashboards et alertes.",
+      "q_en": "What are the RED and USE methods?",
+      "a_en": "RED, for services: Rate (requests/s), Errors (error rate), Duration (latency in p50/p95/p99 percentiles). USE, for resources: Utilization, Saturation, Errors. Two standard grids for building dashboards and alerts."
+    },
+    {
+      "q_fr": "Comment fonctionne une trace distribuée ?",
+      "a_fr": "Une trace est un arbre de spans, chacun représentant une opération (appel HTTP, requête SQL) avec durée, attributs et parent. La context propagation transporte le trace ID et le span ID parent dans les headers HTTP (W3C traceparent) de service en service, permettant de reconstituer l'arbre complet.",
+      "q_en": "How does a distributed trace work?",
+      "a_en": "A trace is a tree of spans, each representing an operation (HTTP call, SQL query) with duration, attributes and a parent. Context propagation carries the trace ID and parent span ID in HTTP headers (W3C traceparent) from service to service, allowing the full tree to be reconstructed."
+    },
+    {
+      "q_fr": "Qu'est-ce qu'OpenTelemetry et son argument clé ?",
+      "a_fr": "Le standard CNCF vendor-neutral pour générer et exporter logs, metrics et traces : SDK par langage, auto-instrumentation, et un Collector qui reçoit, transforme et exporte. On instrumente une fois et on change de backend (Jaeger, Prometheus, Datadog…) sans toucher au code : pas de lock-in.",
+      "q_en": "What is OpenTelemetry and its key argument?",
+      "a_en": "The vendor-neutral CNCF standard for generating and exporting logs, metrics and traces: per-language SDKs, auto-instrumentation, and a Collector that receives, transforms and exports. Instrument once and switch backends (Jaeger, Prometheus, Datadog…) without touching the code: no lock-in."
+    },
+    {
+      "q_fr": "SLI et SLO : définis-les en deux phrases.",
+      "a_fr": "Un SLI est une mesure de ce que vivent les utilisateurs (ex. proportion de requêtes servies en moins de 300 ms). Un SLO est l'objectif qu'on s'engage à tenir sur ce SLI (ex. 99,9 % sur 30 jours) — le budget d'erreur qui en découle arbitre entre fiabilité et vitesse de déploiement.",
+      "q_en": "SLI and SLO: define them in two sentences.",
+      "a_en": "An SLI is a measurement of what users experience (e.g. proportion of requests served under 300 ms). An SLO is the target you commit to on that SLI (e.g. 99.9% over 30 days) — the resulting error budget arbitrates between reliability and deployment speed."
+    },
+    {
+      "q_fr": "Pourquoi alerter sur les symptômes plutôt que sur les causes ?",
+      "a_fr": "Les utilisateurs subissent les symptômes (erreurs, latence), pas les causes (CPU haut). Un CPU à 95 % avec des utilisateurs heureux ne justifie pas de réveiller quelqu'un ; un taux d'erreur à 5 % si. Alerter sur les causes génère de l'alert fatigue ; les causes se consultent dans les dashboards après l'alerte.",
+      "q_en": "Why alert on symptoms rather than causes?",
+      "a_en": "Users suffer symptoms (errors, latency), not causes (high CPU). A CPU at 95% with happy users doesn't justify waking someone up; a 5% error rate does. Alerting on causes generates alert fatigue; causes get consulted in dashboards after the alert."
+    }
+  ],
+  "qcm": [
+    {
+      "q_fr": "Quel pilier est le moins cher à stocker et le plus adapté aux alertes ?",
+      "q_en": "Which pillar is the cheapest to store and best suited for alerting?",
+      "choices_fr": ["Les metrics : des agrégats numériques compacts", "Les logs : du texte compressé", "Les traces : des spans échantillonnés", "Les dashboards : des vues précalculées"],
+      "choices_en": ["Metrics: compact numeric aggregates", "Logs: compressed text", "Traces: sampled spans", "Dashboards: precomputed views"],
+      "answer": 0,
+      "explain_fr": "Une metric est une série de nombres agrégés : quelques octets par point, évaluable en continu par le moteur d'alerting. Logs et traces sont riches mais volumineux — ils servent au diagnostic, pas au déclenchement.",
+      "explain_en": "A metric is a series of aggregated numbers: a few bytes per point, continuously evaluable by the alerting engine. Logs and traces are rich but bulky — they serve diagnosis, not triggering."
+    },
+    {
+      "q_fr": "Pourquoi ne jamais mettre user_id en label d'une metric Prometheus ?",
+      "q_en": "Why should you never put user_id as a Prometheus metric label?",
+      "choices_fr": ["Chaque valeur crée une série temporelle : cardinality explosion et mémoire saturée", "Prometheus interdit les labels numériques", "Le RGPD interdit les identifiants dans les metrics", "Les labels sont limités à 10 valeurs"],
+      "choices_en": ["Each value creates a time series: cardinality explosion and saturated memory", "Prometheus forbids numeric labels", "GDPR forbids identifiers in metrics", "Labels are limited to 10 values"],
+      "answer": 0,
+      "explain_fr": "Chaque combinaison de valeurs de labels est une série distincte en mémoire : un million d'utilisateurs = un million de séries par metric. Les labels doivent avoir des valeurs bornées (status code, endpoint) ; les IDs uniques vont dans les logs et traces.",
+      "explain_en": "Each combination of label values is a distinct series in memory: a million users = a million series per metric. Labels must have bounded values (status code, endpoint); unique IDs belong in logs and traces."
+    },
+    {
+      "q_fr": "Comment le contexte d'une trace se propage-t-il entre deux services HTTP ?",
+      "q_en": "How does trace context propagate between two HTTP services?",
+      "choices_fr": ["Via des headers HTTP (standard W3C traceparent) portant trace ID et span ID parent", "Via une base de données partagée entre services", "Via le Collector qui intercepte le trafic réseau", "Via les logs, corrélés a posteriori par timestamp"],
+      "choices_en": ["Via HTTP headers (W3C traceparent standard) carrying the trace ID and parent span ID", "Via a database shared between services", "Via the Collector intercepting network traffic", "Via logs, correlated afterwards by timestamp"],
+      "answer": 0,
+      "explain_fr": "La context propagation est faite par l'instrumentation : le client injecte le header traceparent, le serveur suivant le lit et crée ses spans comme enfants. Le Collector reçoit les spans exportés, il n'intercepte pas le trafic.",
+      "explain_en": "Context propagation is done by the instrumentation: the client injects the traceparent header, the next server reads it and creates its spans as children. The Collector receives exported spans; it doesn't intercept traffic."
+    },
+    {
+      "q_fr": "Latence moyenne à 80 ms mais des plaintes d'utilisateurs : que regarder d'abord ?",
+      "q_en": "Average latency at 80 ms but users are complaining: what do you look at first?",
+      "choices_fr": ["Les percentiles p95/p99 : la moyenne cache la queue de distribution", "Le CPU des serveurs", "Le nombre total de requêtes", "La version de l'application"],
+      "choices_en": ["The p95/p99 percentiles: the average hides the distribution tail", "The servers' CPU", "The total request count", "The application version"],
+      "answer": 0,
+      "explain_fr": "99 requêtes à 50 ms + 1 à 5 s donnent une moyenne correcte et 1 % d'utilisateurs furieux — souvent les plus actifs. Les percentiles décrivent l'expérience réelle ; c'est pour ça que les SLO se définissent sur des percentiles.",
+      "explain_en": "99 requests at 50 ms + 1 at 5 s give a decent average and 1% of furious users — often the most active. Percentiles describe the real experience; that's why SLOs are defined on percentiles."
+    },
+    {
+      "q_fr": "Quel est le principal argument d'OpenTelemetry face aux SDK propriétaires (Datadog, New Relic…) ?",
+      "q_en": "What is OpenTelemetry's main argument versus proprietary SDKs (Datadog, New Relic…)?",
+      "choices_fr": ["Vendor-neutral : on instrumente une fois et on change de backend sans toucher au code", "Il est plus rapide que tous les SDK propriétaires", "Il stocke lui-même les données gratuitement", "Il ne nécessite aucune instrumentation"],
+      "choices_en": ["Vendor-neutral: instrument once and switch backends without touching the code", "It's faster than every proprietary SDK", "It stores the data itself for free", "It requires no instrumentation at all"],
+      "answer": 0,
+      "explain_fr": "OTel standardise l'instrumentation et l'export (via le Collector) : le backend devient interchangeable, fini le lock-in par le code instrumenté. OTel ne stocke rien lui-même : il génère et transporte les signaux vers un backend.",
+      "explain_en": "OTel standardizes instrumentation and export (via the Collector): the backend becomes interchangeable, ending lock-in through instrumented code. OTel stores nothing itself: it generates and transports signals to a backend."
+    },
+    {
+      "q_fr": "Une équipe reçoit 40 alertes par jour et les acquitte sans agir. Quel est le vrai problème ?",
+      "q_en": "A team receives 40 alerts a day and acknowledges them without acting. What is the real problem?",
+      "choices_fr": ["L'alert fatigue : des alertes non actionnables masqueront la vraie panne le jour J", "Il faut plus d'ingénieurs d'astreinte", "Les seuils doivent être encore abaissés", "Il manque un dashboard supplémentaire"],
+      "choices_en": ["Alert fatigue: non-actionable alerts will mask the real outage when it counts", "More on-call engineers are needed", "The thresholds should be lowered further", "An additional dashboard is missing"],
+      "answer": 0,
+      "explain_fr": "Une alerte acquittée sans action est une alerte inutile qui entraîne l'équipe à ignorer les notifications. Remède : alerter sur les symptômes (SLI/SLO), supprimer ou revoir chaque alerte non actionnable — pas ajouter du monde ni des seuils plus fins.",
+      "explain_en": "An alert acknowledged without action is a useless alert training the team to ignore notifications. Remedy: alert on symptoms (SLI/SLO), delete or rework every non-actionable alert — not adding people or tighter thresholds."
+    }
+  ]
+}

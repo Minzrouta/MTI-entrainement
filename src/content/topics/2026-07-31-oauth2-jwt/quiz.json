@@ -1,0 +1,108 @@
+{
+  "flashcards": [
+    {
+      "q_fr": "Quelle est la différence entre authentification et autorisation, et où se placent OAuth 2.0 et OIDC ?",
+      "a_fr": "L'authentification prouve l'identité (login, MFA) ; l'autorisation détermine les droits. OAuth 2.0 est un framework d'autorisation déléguée : il ne dit pas qui est l'utilisateur. C'est OIDC qui ajoute la couche d'identité (id_token, endpoint /userinfo) au-dessus d'OAuth.",
+      "q_en": "What is the difference between authentication and authorization, and where do OAuth 2.0 and OIDC fit?",
+      "a_en": "Authentication proves identity (login, MFA); authorization determines rights. OAuth 2.0 is a delegated authorization framework: it doesn't say who the user is. OIDC is what adds the identity layer (id_token, /userinfo endpoint) on top of OAuth."
+    },
+    {
+      "q_fr": "De quoi est composé un JWT ?",
+      "a_fr": "Trois parties encodées en base64url, séparées par des points : header (algorithme de signature), payload (claims : sub, iss, aud, exp, iat + claims métier), signature calculée sur les deux premières. Le token est signé mais PAS chiffré : lisible par tous, infalsifiable sans la clé.",
+      "q_en": "What is a JWT made of?",
+      "a_en": "Three base64url-encoded parts separated by dots: header (signing algorithm), payload (claims: sub, iss, aud, exp, iat + business claims), and a signature computed over the first two. The token is signed but NOT encrypted: anyone can read it, nobody can forge it without the key."
+    },
+    {
+      "q_fr": "HS256 vs RS256 : quelle différence et quand choisir l'un ou l'autre ?",
+      "a_fr": "HS256 = HMAC symétrique : le même secret signe et vérifie, donc tout service qui vérifie peut aussi forger. RS256 = RSA asymétrique : la clé privée signe, la clé publique (publiée via JWKS) vérifie. En microservices, RS256 : les services valident les tokens sans jamais détenir la clé de signature.",
+      "q_en": "HS256 vs RS256: what's the difference and when do you pick one over the other?",
+      "a_en": "HS256 = symmetric HMAC: the same secret signs and verifies, so any verifying service can also forge. RS256 = asymmetric RSA: the private key signs, the public key (published via JWKS) verifies. In microservices, RS256: services validate tokens without ever holding the signing key."
+    },
+    {
+      "q_fr": "Pourquoi un JWT est-il difficile à révoquer, et quelle est la parade standard ?",
+      "a_fr": "Il est auto-porteur : valide jusqu'à son exp, sans consultation du serveur — un logout ne l'invalide pas. Parade : access token court (5-15 min) + refresh token long stocké côté serveur, donc révocable, avec rotation (chaque usage émet un nouveau refresh token, la réutilisation d'un ancien signale un vol).",
+      "q_en": "Why is a JWT hard to revoke, and what is the standard countermeasure?",
+      "a_en": "It's self-contained: valid until its exp without asking the server — a logout doesn't invalidate it. Countermeasure: short-lived access token (5-15 min) + long-lived refresh token stored server-side, hence revocable, with rotation (each use issues a new refresh token; reusing an old one signals theft)."
+    },
+    {
+      "q_fr": "Qu'est-ce que PKCE et contre quoi protège-t-il ?",
+      "a_fr": "Une extension du flow authorization code : le client génère un code_verifier aléatoire, envoie son hash SHA-256 (code_challenge) au début, et présente le verifier à l'échange du code. Un code intercepté est donc inexploitable. Conçu pour les clients publics (mobile, SPA) sans client_secret ; recommandé partout, obligatoire en OAuth 2.1.",
+      "q_en": "What is PKCE and what does it protect against?",
+      "a_en": "An extension of the authorization code flow: the client generates a random code_verifier, sends its SHA-256 hash (code_challenge) upfront, and presents the verifier when exchanging the code. An intercepted code is therefore unusable. Designed for public clients (mobile, SPA) without a client_secret; recommended everywhere, mandatory in OAuth 2.1."
+    },
+    {
+      "q_fr": "Quelle différence entre l'access token et l'id_token d'OIDC ?",
+      "a_fr": "L'access token sert à appeler l'API (resource server) : c'est de l'autorisation, son contenu est destiné à l'API. L'id_token est un JWT destiné au client, qui décrit QUI est connecté (claims sub, email, name…) : c'est de l'authentification. Ne jamais utiliser l'un à la place de l'autre.",
+      "q_en": "What's the difference between the access token and OIDC's id_token?",
+      "a_en": "The access token is for calling the API (resource server): it's authorization, and its content is meant for the API. The id_token is a JWT meant for the client, describing WHO is logged in (sub, email, name claims…): that's authentication. Never use one in place of the other."
+    },
+    {
+      "q_fr": "localStorage vs cookie httpOnly pour stocker un token : quels risques respectifs ?",
+      "a_fr": "localStorage est lisible par tout JS de la page : une XSS exfiltre le token. Un cookie httpOnly + Secure + SameSite est invisible pour JS (protégé XSS) mais envoyé automatiquement : surface CSRF, atténuée par SameSite=Lax/Strict et un token anti-CSRF. Pattern robuste : access token en mémoire + refresh token en cookie httpOnly.",
+      "q_en": "localStorage vs httpOnly cookie for storing a token: what are the respective risks?",
+      "a_en": "localStorage is readable by any JS on the page: an XSS exfiltrates the token. An httpOnly + Secure + SameSite cookie is invisible to JS (XSS-safe) but sent automatically: CSRF surface, mitigated by SameSite=Lax/Strict and an anti-CSRF token. Robust pattern: access token in memory + refresh token in an httpOnly cookie."
+    },
+    {
+      "q_fr": "Que doit vérifier le serveur quand il reçoit un JWT ?",
+      "a_fr": "La signature avec l'algorithme ATTENDU (configuré côté serveur, jamais lu aveuglément dans le header), puis les claims : exp (avec une tolérance de clock skew), iss (bon émetteur), aud (token bien destiné à ce service), et les scopes/rôles pour l'autorisation. Le tout via une lib éprouvée, pas de crypto maison.",
+      "q_en": "What must the server check when it receives a JWT?",
+      "a_en": "The signature with the EXPECTED algorithm (configured server-side, never blindly read from the header), then the claims: exp (with clock-skew tolerance), iss (right issuer), aud (token really meant for this service), and scopes/roles for authorization. All through a battle-tested library, no home-made crypto."
+    }
+  ],
+  "qcm": [
+    {
+      "q_fr": "Que garantit la signature d'un JWT ?",
+      "q_en": "What does a JWT's signature guarantee?",
+      "choices_fr": ["La confidentialité du payload", "L'intégrité et l'origine du token", "Le chiffrement de bout en bout", "L'unicité du token"],
+      "choices_en": ["The confidentiality of the payload", "The integrity and origin of the token", "End-to-end encryption", "The uniqueness of the token"],
+      "answer": 1,
+      "explain_fr": "La signature prouve que le token n'a pas été modifié et qu'il vient bien du détenteur de la clé. Le payload reste lisible par tous : base64url n'est pas du chiffrement.",
+      "explain_en": "The signature proves the token wasn't modified and really comes from the key holder. The payload stays readable by anyone: base64url is not encryption."
+    },
+    {
+      "q_fr": "Quel flow OAuth 2.0 pour un batch nocturne qui appelle une API interne sans utilisateur ?",
+      "q_en": "Which OAuth 2.0 flow for a nightly batch calling an internal API with no user involved?",
+      "choices_fr": ["Authorization code + PKCE", "Implicit", "Client credentials", "Resource Owner Password Credentials"],
+      "choices_en": ["Authorization code + PKCE", "Implicit", "Client credentials", "Resource Owner Password Credentials"],
+      "answer": 2,
+      "explain_fr": "Sans resource owner, pas de redirection ni de consentement : le client s'authentifie directement avec ses credentials (client credentials). Authorization code implique un utilisateur ; implicit et ROPC sont dépréciés.",
+      "explain_en": "With no resource owner, there's no redirect or consent: the client authenticates directly with its credentials (client credentials). Authorization code involves a user; implicit and ROPC are deprecated."
+    },
+    {
+      "q_fr": "En quoi consiste l'attaque par « confusion d'algorithme » sur les JWT ?",
+      "q_en": "What is the JWT \"algorithm confusion\" attack?",
+      "choices_fr": ["Faire vérifier un token RS256 en HS256, avec la clé publique comme secret HMAC", "Chiffrer le token avec deux algorithmes en même temps", "Signer le token avec une clé expirée", "Envoyer deux headers alg contradictoires"],
+      "choices_en": ["Getting an RS256 token verified as HS256, using the public key as the HMAC secret", "Encrypting the token with two algorithms at once", "Signing the token with an expired key", "Sending two contradictory alg headers"],
+      "answer": 0,
+      "explain_fr": "Si la lib lit l'alg du header sans le vérifier, un attaquant forge un token HS256 signé avec la clé publique RSA (connue de tous) : le serveur, croyant faire du HMAC, valide. Parade : imposer l'algorithme attendu côté serveur.",
+      "explain_en": "If the library reads the header's alg without enforcing it, an attacker forges an HS256 token signed with the (publicly known) RSA public key: the server, believing it's doing HMAC, validates it. Defense: enforce the expected algorithm server-side."
+    },
+    {
+      "q_fr": "Pourquoi donne-t-on une durée de vie courte (5-15 min) aux access tokens JWT ?",
+      "q_en": "Why are JWT access tokens given a short lifetime (5-15 min)?",
+      "choices_fr": ["Pour réduire la taille du token", "Parce qu'un JWT ne se révoque pas facilement : la fenêtre d'exploitation d'un token volé reste courte", "Pour forcer l'utilisateur à se reconnecter souvent", "Parce que la signature expire cryptographiquement"],
+      "choices_en": ["To reduce the token's size", "Because a JWT can't easily be revoked: the exploitation window of a stolen token stays short", "To force the user to log back in often", "Because the signature cryptographically expires"],
+      "answer": 1,
+      "explain_fr": "Le token étant valide jusqu'à exp sans consultation du serveur, on borne le risque par une durée courte ; le refresh token, révocable côté serveur, renouvelle la session sans re-login.",
+      "explain_en": "Since the token is valid until exp without asking the server, the risk is bounded by a short lifetime; the refresh token, revocable server-side, renews the session without re-login."
+    },
+    {
+      "q_fr": "Contre quoi un cookie httpOnly protège-t-il le token qu'il contient ?",
+      "q_en": "What does an httpOnly cookie protect its token against?",
+      "choices_fr": ["Les attaques CSRF", "L'interception réseau", "Le brute force du secret de signature", "La lecture du token par du JavaScript injecté (XSS)"],
+      "choices_en": ["CSRF attacks", "Network interception", "Brute-forcing the signing secret", "Reading the token from injected JavaScript (XSS)"],
+      "answer": 3,
+      "explain_fr": "httpOnly rend le cookie invisible à document.cookie et à tout JS : une XSS ne peut plus l'exfiltrer. Mais le cookie part automatiquement avec les requêtes → il faut traiter le CSRF séparément (SameSite, token anti-CSRF). L'interception réseau, c'est le rôle de Secure/TLS.",
+      "explain_en": "httpOnly makes the cookie invisible to document.cookie and any JS: an XSS can no longer exfiltrate it. But the cookie is sent automatically with requests → CSRF must be handled separately (SameSite, anti-CSRF token). Network interception is the job of Secure/TLS."
+    },
+    {
+      "q_fr": "Dans une intégration « Login with Google » (OIDC), quel token le front doit-il envoyer à votre API backend pour agir au nom de l'utilisateur ?",
+      "q_en": "In a \"Login with Google\" (OIDC) integration, which token should the front end send to your backend API to act on the user's behalf?",
+      "choices_fr": ["L'id_token, car il prouve l'identité", "Le code d'autorisation brut", "L'access token, destiné au resource server", "Le refresh token, car il dure plus longtemps"],
+      "choices_en": ["The id_token, since it proves identity", "The raw authorization code", "The access token, meant for the resource server", "The refresh token, since it lives longer"],
+      "answer": 2,
+      "explain_fr": "L'access token est fait pour être présenté à l'API (resource server). L'id_token est destiné au client pour savoir qui est connecté ; le code ne sert qu'à l'échange initial ; le refresh token ne quitte jamais le stockage sécurisé du client.",
+      "explain_en": "The access token is made to be presented to the API (resource server). The id_token is meant for the client to know who's logged in; the code is only for the initial exchange; the refresh token never leaves the client's secure storage."
+    }
+  ]
+}

@@ -1,0 +1,108 @@
+{
+  "flashcards": [
+    {
+      "q_fr": "Quels sont les trois bénéfices principaux d'une message queue entre deux services ?",
+      "a_fr": "Découplage (le producteur ignore qui consomme, le consommateur peut être down sans casser le producteur), lissage de charge (un pic s'empile dans la queue au lieu d'écrouler le consommateur), résilience (le message persiste jusqu'à son traitement, avec retry natif via la redélivrance).",
+      "q_en": "What are the three main benefits of a message queue between two services?",
+      "a_en": "Decoupling (the producer doesn't know who consumes, the consumer can be down without breaking the producer), load smoothing (a spike piles up in the queue instead of crushing the consumer), resilience (the message persists until processed, with native retry through redelivery)."
+    },
+    {
+      "q_fr": "Dans le modèle AMQP, où un producteur publie-t-il ses messages ?",
+      "a_fr": "Jamais directement dans une queue : dans un exchange, avec une routing key. L'exchange route ensuite le message vers zéro, une ou plusieurs queues selon ses bindings (les règles de liaison exchange → queue).",
+      "q_en": "In the AMQP model, where does a producer publish its messages?",
+      "a_en": "Never directly to a queue: to an exchange, with a routing key. The exchange then routes the message to zero, one or several queues according to its bindings (the exchange → queue link rules)."
+    },
+    {
+      "q_fr": "Quels sont les trois types d'exchange principaux et leur logique de routage ?",
+      "a_fr": "Direct : correspondance exacte entre routing key et binding. Fanout : diffusion à toutes les queues liées, routing key ignorée (pub/sub pur). Topic : pattern matching sur la clé segmentée par des points, avec `*` = exactement un mot et `#` = zéro ou plusieurs mots.",
+      "q_en": "What are the three main exchange types and their routing logic?",
+      "a_en": "Direct: exact match between routing key and binding. Fanout: broadcast to all bound queues, routing key ignored (pure pub/sub). Topic: pattern matching on the dot-separated key, with `*` = exactly one word and `#` = zero or more words."
+    },
+    {
+      "q_fr": "Que se passe-t-il si un consumer meurt avant d'avoir acquitté un message ?",
+      "a_fr": "Le broker détecte la fermeture du canal et remet le message en queue avec le flag redelivered ; un autre consumer le reprend. Rien n'est perdu (at-least-once), mais le traitement a pu être partiellement appliqué — d'où l'exigence d'idempotence côté consumer.",
+      "q_en": "What happens if a consumer dies before acknowledging a message?",
+      "a_en": "The broker detects the channel closing and requeues the message with the redelivered flag; another consumer picks it up. Nothing is lost (at-least-once), but processing may have been partially applied — hence the idempotence requirement on the consumer side."
+    },
+    {
+      "q_fr": "At-most-once vs at-least-once : quelle différence et quel réglage les produit ?",
+      "a_fr": "Auto-ack = at-most-once : le message est considéré livré dès l'envoi, un crash du consumer le perd. Ack manuel après traitement = at-least-once : rien n'est perdu, mais un crash entre traitement et ack produit un doublon. L'exactly-once de bout en bout n'existe pas sans coopération applicative.",
+      "q_en": "At-most-once vs at-least-once: what's the difference and which setting produces each?",
+      "a_en": "Auto-ack = at-most-once: the message is considered delivered as soon as it's sent, a consumer crash loses it. Manual ack after processing = at-least-once: nothing is lost, but a crash between processing and ack produces a duplicate. End-to-end exactly-once doesn't exist without application-level cooperation."
+    },
+    {
+      "q_fr": "Pourquoi et comment rendre un consumer idempotent ?",
+      "a_fr": "Parce que le at-least-once produit des doublons lors des redélivrances. Techniques : déduplication par message id (stocké en base avec contrainte unique, le doublon échoue proprement) ou opérations naturellement idempotentes (upsert, `SET status = 'paid'` plutôt que `balance += x`).",
+      "q_en": "Why and how do you make a consumer idempotent?",
+      "a_en": "Because at-least-once produces duplicates on redeliveries. Techniques: deduplication by message id (stored in the database with a unique constraint, the duplicate fails cleanly) or naturally idempotent operations (upsert, `SET status = 'paid'` rather than `balance += x`)."
+    },
+    {
+      "q_fr": "Qu'est-ce qu'une dead letter queue (DLQ) et pourquoi est-elle indispensable ?",
+      "a_fr": "Une queue vers laquelle un dead-letter exchange (DLX) route les messages rejetés sans requeue, expirés (TTL) ou en dépassement de longueur max. Sans elle, un message empoisonné qui fait crasher le consumer revient en boucle et bloque la queue ; avec elle, on l'isole, on l'inspecte et on le rejoue.",
+      "q_en": "What is a dead letter queue (DLQ) and why is it essential?",
+      "a_en": "A queue to which a dead-letter exchange (DLX) routes messages rejected without requeue, expired (TTL) or overflowing the max length. Without it, a poison message that crashes the consumer loops forever and blocks the queue; with it, you isolate, inspect and replay it."
+    },
+    {
+      "q_fr": "RabbitMQ vs Kafka : quelle différence de modèle et quand choisir l'un ou l'autre ?",
+      "a_fr": "Rabbit est une queue : broker intelligent qui route finement, message supprimé après ack — idéal pour la distribution de tâches, le routage riche, la latence faible. Kafka est un log append-only : les messages restent, chaque consumer avance son offset — replay possible, lectures indépendantes du même flux, très haut débit via les partitions. Event streaming → Kafka ; task queues → Rabbit.",
+      "q_en": "RabbitMQ vs Kafka: what's the model difference and when do you choose which?",
+      "a_en": "Rabbit is a queue: a smart broker with fine-grained routing, messages deleted after ack — ideal for task distribution, rich routing, low latency. Kafka is an append-only log: messages stay, each consumer advances its offset — replay possible, independent reads of the same stream, very high throughput via partitions. Event streaming → Kafka; task queues → Rabbit."
+    }
+  ],
+  "qcm": [
+    {
+      "q_fr": "Dans RabbitMQ, vers quoi un producteur publie-t-il un message ?",
+      "q_en": "In RabbitMQ, what does a producer publish a message to?",
+      "choices_fr": ["Un exchange, qui route vers les queues selon les bindings", "Directement la queue de destination", "Le consumer, via le broker", "Une partition choisie par hash de la clé"],
+      "choices_en": ["An exchange, which routes to queues according to bindings", "The destination queue directly", "The consumer, through the broker", "A partition chosen by hashing the key"],
+      "answer": 0,
+      "explain_fr": "En AMQP, le producteur ne connaît que l'exchange et la routing key ; le routage vers les queues est déclaré par les bindings. Les partitions par hash de clé, c'est le modèle Kafka.",
+      "explain_en": "In AMQP, the producer only knows the exchange and the routing key; routing to queues is declared through bindings. Partitions chosen by key hash are the Kafka model."
+    },
+    {
+      "q_fr": "Avec un topic exchange, quelle routing key matche le binding `logs.*.error` ?",
+      "q_en": "With a topic exchange, which routing key matches the binding `logs.*.error`?",
+      "choices_fr": ["logs.api.error", "logs.api.db.error", "logs.error", "api.logs.error"],
+      "choices_en": ["logs.api.error", "logs.api.db.error", "logs.error", "api.logs.error"],
+      "answer": 0,
+      "explain_fr": "`*` matche exactement un mot entre deux points : `logs.api.error` colle. `logs.api.db.error` a deux mots au milieu (il faudrait `#`), `logs.error` n'en a aucun, et `api.logs.error` ne commence pas par `logs`.",
+      "explain_en": "`*` matches exactly one word between dots: `logs.api.error` fits. `logs.api.db.error` has two words in the middle (you'd need `#`), `logs.error` has none, and `api.logs.error` doesn't start with `logs`."
+    },
+    {
+      "q_fr": "Quelle garantie de livraison obtient-on avec l'auto-ack activé ?",
+      "q_en": "Which delivery guarantee do you get with auto-ack enabled?",
+      "choices_fr": ["At-most-once : un crash du consumer perd le message", "At-least-once : le message est redélivré en cas de crash", "Exactly-once : le broker déduplique", "Aucune : les messages ne sont jamais livrés"],
+      "choices_en": ["At-most-once: a consumer crash loses the message", "At-least-once: the message is redelivered on crash", "Exactly-once: the broker deduplicates", "None: messages are never delivered"],
+      "answer": 0,
+      "explain_fr": "En auto-ack, le message est considéré livré dès l'envoi au consumer : s'il crashe en plein traitement, le broker ne redélivre rien. L'at-least-once exige l'ack manuel après traitement.",
+      "explain_en": "With auto-ack, the message is considered delivered as soon as it's sent to the consumer: if it crashes mid-processing, the broker redelivers nothing. At-least-once requires a manual ack after processing."
+    },
+    {
+      "q_fr": "Quels messages sont routés vers un dead-letter exchange (DLX) ?",
+      "q_en": "Which messages are routed to a dead-letter exchange (DLX)?",
+      "choices_fr": ["Rejetés sans requeue, expirés (TTL) ou en dépassement de longueur max", "Uniquement les messages malformés (JSON invalide)", "Tous les messages acquittés avec succès", "Les messages publiés sans routing key"],
+      "choices_en": ["Rejected without requeue, expired (TTL) or overflowing the max length", "Only malformed messages (invalid JSON)", "All successfully acknowledged messages", "Messages published without a routing key"],
+      "answer": 0,
+      "explain_fr": "Trois causes de dead-lettering : reject/nack avec requeue=false, expiration TTL, dépassement de max-length. Le broker n'inspecte jamais le contenu du message — un JSON invalide ne l'intéresse pas.",
+      "explain_en": "Three causes of dead-lettering: reject/nack with requeue=false, TTL expiry, max-length overflow. The broker never inspects message content — invalid JSON means nothing to it."
+    },
+    {
+      "q_fr": "À quoi sert le prefetch (QoS) côté consumer ?",
+      "q_en": "What is prefetch (QoS) for on the consumer side?",
+      "choices_fr": ["Limiter le nombre de messages non acquittés par consumer, pour une répartition équitable", "Précharger les messages en cache pour accélérer le réseau", "Compresser les messages avant livraison", "Garantir l'ordre de traitement entre consumers"],
+      "choices_en": ["Limit the number of unacknowledged messages per consumer, for fair dispatch", "Preload messages in a cache to speed up the network", "Compress messages before delivery", "Guarantee processing order across consumers"],
+      "answer": 0,
+      "explain_fr": "Sans prefetch, le broker déverse tous les messages disponibles sur le premier consumer connecté, même s'il est lent. `prefetch=N` borne les messages en vol non acquittés : les consumers rapides en reçoivent plus. L'ordre entre consumers, lui, n'est jamais garanti.",
+      "explain_en": "Without prefetch, the broker dumps every available message on the first connected consumer, even a slow one. `prefetch=N` caps unacked in-flight messages: fast consumers receive more. Order across consumers is never guaranteed."
+    },
+    {
+      "q_fr": "Quelle différence fondamentale entre le modèle de Kafka et celui de RabbitMQ ?",
+      "q_en": "What is the fundamental difference between Kafka's model and RabbitMQ's?",
+      "choices_fr": ["Kafka est un log append-only où les consumers avancent un offset ; Rabbit supprime le message après ack", "Kafka ne garantit jamais la livraison, Rabbit toujours", "Kafka est synchrone, Rabbit asynchrone", "Kafka ne supporte qu'un seul consumer par topic"],
+      "choices_en": ["Kafka is an append-only log where consumers advance an offset; Rabbit deletes the message after ack", "Kafka never guarantees delivery, Rabbit always does", "Kafka is synchronous, Rabbit asynchronous", "Kafka supports only one consumer per topic"],
+      "answer": 0,
+      "explain_fr": "Dans Kafka, les messages restent dans le log (rétention configurable) et chaque consumer group lit à son propre offset — d'où le replay et les lectures indépendantes. Dans Rabbit, un message acquitté est supprimé de la queue. Les deux sont asynchrones et offrent des garanties de livraison.",
+      "explain_en": "In Kafka, messages stay in the log (configurable retention) and each consumer group reads at its own offset — hence replay and independent reads. In Rabbit, an acknowledged message is deleted from the queue. Both are asynchronous and offer delivery guarantees."
+    }
+  ]
+}
