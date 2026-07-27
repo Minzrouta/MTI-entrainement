@@ -19,6 +19,18 @@ TOPICS = Path(__file__).resolve().parent.parent / 'src/content/topics'
 SITE = 'https://mti-training.bantou.me'
 MAX = 1900  # marge sous la limite Discord de 2000
 
+JOURS = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche']
+MOIS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet',
+        'août', 'septembre', 'octobre', 'novembre', 'décembre']
+EMOJIS = {
+    "L'essentiel": '📖',
+    'Comment ça marche': '⚙️',
+    'Concepts clés à maîtriser': '🧠',
+    'En entretien': '🎤',
+    'Pièges & idées reçues': '⚠️',
+    'Pour aller plus loin': '🔭',
+}
+
 
 def post(url: str, payload: dict) -> dict:
     headers = {'Content-Type': 'application/json', 'User-Agent': 'mti-training (https://mti-training.bantou.me, 1.0)'}
@@ -74,8 +86,12 @@ def main() -> None:
     fm = dict(re.findall(r'^(\w+):\s*"(.*)"\s*$', m.group(1), re.M))
     body = raw[m.end():].strip()
 
+    body = re.sub(r'^## (.+)$', lambda m: f"## {EMOJIS.get(m.group(1), '▫️')} {m.group(1)}", body, flags=re.M)
+
+    d = date.fromisoformat(dirname[:10])
+    date_fr = f'{JOURS[d.weekday()]} {d.day} {MOIS[d.month - 1]} {d.year}'
     name = f"Jour {day_no} · {fm['title']}"[:100]
-    intro = f"**{fm['category']} · {fm['level']}** — {fm['summary']}"
+    intro = f"**📅 Jour {day_no} — {date_fr}**\n🏷️ {fm['category']} · {fm['level']}\n\n_{fm['summary']}_"
     first = post(f'{webhook}?wait=true', {'content': intro, 'thread_name': name})
     thread = first['channel_id']
     for c in chunk(body):
