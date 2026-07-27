@@ -16,17 +16,60 @@ A **message queue** inserts a durable intermediary between a producer and a cons
 
 The AMQP model has a subtlety beginners miss: **a producer never publishes directly to a queue**. It publishes to an **exchange**, with a **routing key**; the exchange routes the message to zero, one or several queues according to its **bindings** (the exchange → queue link rules).
 
-Three exchange types to know:
+```text
+            routing key
+Producer ───────────────▶ Exchange
+                           │ bindings
+             ┌─────────────┼─────────────┐
+             ▼             ▼             ▼
+          Queue A       Queue B       Queue C
+             │             │             │
+             ▼             ▼             ▼
+        Consumer 1    Consumer 2    Consumer 3
+                    (ack / nack)
+```
 
-- **direct** — routes to the queues whose binding matches the routing key exactly. E.g.: `payment.failed` → the queue bound with key `payment.failed`.
-- **fanout** — broadcasts to every bound queue, routing key ignored. Pure pub/sub.
-- **topic** — pattern matching on the dot-separated routing key: `*` = exactly one word, `#` = zero or more words. `logs.*.error` matches `logs.api.error` but not `logs.api.db.error`.
+The four exchange types:
 
-(The fourth type, headers, is rarely used.)
+| Type | Routing | Typical case |
+|---|---|---|
+| **direct** | exact routing key | `payment.failed` → the queue bound with that key |
+| **fanout** | every bound queue, key ignored | pure pub/sub, cache invalidation |
+| **topic** | pattern on the dot-separated key: `*` = exactly one word, `#` = zero or more | `logs.*.error` matches `logs.api.error`, not `logs.api.db.error` |
+| **headers** | on message headers | rarely used |
 
 On the consumer side: the broker pushes messages, and the consumer **acknowledges** (`ack`) each one once processing is done. If the consumer dies before the ack (crash, dropped connection), the broker **redelivers** the message — `redelivered` flag set — to another consumer. `nack`/`reject` refuse a message, with or without requeueing. **Prefetch** (QoS) caps the number of unacknowledged messages per consumer: it's what ensures fair dispatch instead of dumping everything on the first connected consumer.
 
-Durability is declared **at both levels**: *durable* queue and *persistent* message (delivery_mode=2). One without the other does not survive a broker restart. On the producer side, **publisher confirms** provide the broker's acknowledgment of receipt.
+Publish and consume, in Python (pika):
+
+```python
+import pika
+
+conn = pika.BlockingConnection(pika.ConnectionParameters("localhost"))
+ch = conn.channel()
+ch.queue_declare(queue="tasks", durable=True)  # durable queue
+
+# --- Producer ---
+ch.basic_publish(
+    exchange="",                    # default exchange (direct)
+    routing_key="tasks",            # here: the queue name
+    body=b"resize image 42",
+    properties=pika.BasicProperties(delivery_mode=2),  # persistent message
+)
+
+# --- Consumer ---
+def handle(ch, method, props, body):
+    process(body)                                   # the real work first
+    ch.basic_ack(delivery_tag=method.delivery_tag)  # ack AFTER, never before
+
+ch.basic_qos(prefetch_count=10)  # caps unacknowledged messages
+ch.basic_consume(queue="tasks", on_message_callback=handle)
+ch.start_consuming()
+```
+
+> ⚠️ **The forgotten ack** — consuming with manual ack but never calling `basic_ack`: messages pile up as *unacked*, the prefetch fills up, the consumer receives nothing more — and everything is redelivered at once on reconnection. Classic symptom: "the queue looks empty but nothing moves" — check the *unacked* column in the management UI.
+
+> 💡 **Both levels or nothing** — durability is declared *durable* queue **and** *persistent* message (`delivery_mode=2`): one without the other does not survive a broker restart. On the producer side, **publisher confirms** provide the broker's acknowledgment of receipt.
 
 **Dead letter queue (DLQ)**: a queue can declare a dead-letter exchange (DLX); messages rejected without requeue, expired (TTL) or overflowing the max length are routed there. Essential in production: a poison message (one that crashes the consumer) goes to the DLQ after N attempts instead of looping forever, and you can inspect it then replay it.
 
@@ -39,6 +82,8 @@ Durability is declared **at both levels**: *durable* queue and *persistent* mess
 - **Ordering**: FIFO guaranteed within a queue… for a single consumer. With competing consumers or redeliveries, *processing* order is no longer guaranteed — never promise it in an interview.
 
 ## In an interview
+
+> 🎤 **In an interview** — the thread that impresses: manual ack → at-least-once → possible duplicates → idempotent consumer. Unrolling this cause-and-effect chain unprompted is exactly what's expected from a backend profile.
 
 **"Why put a queue between two services rather than an HTTP call?"** — Temporal decoupling (B can be down, the message waits), spike smoothing (the queue absorbs, B consumes at its own pace), native retry through redelivery, and fan-out to several consumers without touching the producer. Trade-offs to mention unprompted: end-to-end latency, eventual consistency, and one more piece of infrastructure to operate and monitor.
 

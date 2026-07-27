@@ -12,7 +12,7 @@ Kubernetes (K8s) is a **container orchestrator**: it manages the lifecycle of co
 
 Its core is the **declarative model**: you don't tell K8s *what to do* but *the desired state* ("I want 3 replicas of this image, reachable on this port"), in YAML. **Controllers** continuously compare the actual state to the desired state and correct the gap: that's the **reconciliation loop**. A Pod dies → another is recreated automatically (**self-healing**), with no human intervention. Scaling is a field change (`replicas: 10`), a rolling update is an image tag change.
 
-Something to say honestly in an interview: K8s solves **fleet and scale** problems. For a project with one service and one database on a single server, a VPS + Docker Compose (or a PaaS like Coolify) does the job with 10% of the complexity.
+> 🎤 **In an interview** — knowing when K8s is **overkill** is a sign of maturity: it solves **fleet and scale** problems. One service and one database on a single server? A VPS + Docker Compose (or a PaaS like Coolify) does the job with 10% of the complexity. K8s is justified with multiple services, multiple machines, real scaling/HA needs — or a platform team to operate it.
 
 ## How it works
 
@@ -28,17 +28,69 @@ A cluster has two halves:
 - **kubelet** — the agent on each node: it watches the API server, starts the containers of the Pods assigned to it through the container runtime (containerd — not the Docker daemon), and reports their status.
 - **kube-proxy** — programs the network rules (iptables/IPVS) so Services route traffic to the right Pods.
 
+```text
+        CONTROL PLANE (the brain)
+ ┌────────────────────────────────────┐
+ │ kube-apiserver ◀───────▶ etcd      │
+ │    ▲          ▲                    │
+ │ scheduler    controller manager    │
+ └─────▲──────────────▲───────────────┘
+       │ watch        │ watch
+ ┌─────┴───────┐ ┌────┴────────┐
+ │ kubelet     │ │ kubelet     │
+ │ kube-proxy  │ │ kube-proxy  │
+ │ [Pod] [Pod] │ │ [Pod] [Pod] │
+ │   node 1    │ │   node 2    │
+ └─────────────┘ └─────────────┘
+        WORKER NODES (the arms)
+```
+
 The flow of a `kubectl apply -f deployment.yaml`: the API server validates and writes to etcd → the Deployment controller creates a **ReplicaSet** → the ReplicaSet creates the Pod objects → the scheduler assigns them a node → that node's kubelet starts the containers. Every actor only ever talks to the API server: that decoupling is what makes the system resilient.
+
+The minimal manifest this chain consumes:
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api
+spec:
+  replicas: 3                     # desired state, not a command
+  selector:
+    matchLabels: { app: api }     # which Pods this Deployment manages
+  template:                       # template for the Pods to create
+    metadata:
+      labels: { app: api }        # must match the selector
+    spec:
+      containers:
+        - name: api
+          image: registry.io/api:1.4.2  # immutable tag, never latest
+          resources:
+            requests: { cpu: 100m, memory: 128Mi }  # for the scheduler
+            limits: { memory: 256Mi }   # exceeded → OOMKilled
+```
 
 ## Key concepts to master
 
 - **Pod** — the smallest deployable unit: one or more containers sharing network (same IP) and volumes. Ephemeral by design: you almost never create a bare Pod — you go through a Deployment.
 - **Deployment → ReplicaSet → Pods** — the Deployment manages versions and **rolling updates** (new ReplicaSet scaled up progressively, old one scaled down, rollback possible); the ReplicaSet maintains the replica count.
-- **Service** — a stable virtual IP + DNS name in front of ephemeral Pods, selected by **labels**. Three types: **ClusterIP** (cluster-internal, the default), **NodePort** (a port opened on every node, mostly for testing), **LoadBalancer** (provisions a cloud load balancer, one public IP per service).
+- **Service** — a stable virtual IP + DNS name in front of ephemeral Pods, selected by **labels**.
 - **Ingress** — the cluster's HTTP reverse proxy: host/path routing (`api.example.com` → api service), TLS termination, a single entry point for N services. Requires an Ingress controller (nginx, Traefik).
-- **ConfigMap & Secret** — config outside the image, injected as environment variables or mounted files. Classic trap: Secrets are **base64-encoded, not encrypted** — without etcd encryption at rest and strict RBAC, they're just ConfigMaps in disguise.
+
+The four ways to expose a service, compared:
+
+| | Scope | Typical use |
+|---|---|---|
+| **ClusterIP** | Cluster-internal (default) | Service → service traffic |
+| **NodePort** | Port (30000+) opened on every node | Testing, on-prem without a load balancer |
+| **LoadBalancer** | Public cloud IP, one per service | Direct exposure (expensive) |
+| **Ingress** | HTTP host/path routing + TLS | One entry point for N services |
+
+- **ConfigMap & Secret** — config outside the image, injected as environment variables or mounted files (see the Secrets pitfall below).
 - **Requests & limits** — `requests` = guaranteed resources, used by the scheduler to place the Pod; `limits` = ceiling (CPU throttled beyond it, RAM exceeded → **OOMKilled**). Without requests, the scheduler places blindly; without limits, one Pod can starve the node.
-- **Probes** — **liveness** ("is the process alive?": failure → container restart) and **readiness** ("can it receive traffic?": failure → removed from the Service's endpoints, no restart). Confusing them is a trap: a liveness probe that tests an external dependency (the DB) restarts the app in a loop whenever the DB has an issue.
+- **Probes** — **liveness** ("is the process alive?": failure → container restart) and **readiness** ("can it receive traffic?": failure → removed from the Service's endpoints, no restart).
+
+> 💡 **Probe reflex** — liveness must only test the process itself, never an external dependency: a liveness probe that pings the DB restarts the app in a loop whenever the DB hiccups. Readiness is the one allowed to wait for a dependency.
 
 ## In an interview
 
@@ -48,17 +100,18 @@ The flow of a `kubectl apply -f deployment.yaml`: the API server validates and w
 
 **"What happens when you apply a Deployment?"** — API server → etcd → the Deployment controller creates a ReplicaSet → which creates the Pods → the scheduler picks the nodes → the kubelets start the containers → kube-proxy and Services make it all reachable. Walking calmly through this chain makes a very good impression.
 
-**"ClusterIP, NodePort, LoadBalancer: when to use which?"** — ClusterIP for all internal traffic (the default). NodePort exposes a port on every node: debugging or an on-prem cluster without a load balancer. LoadBalancer for public exposure through the cloud provider — but one IP per service gets expensive, so in practice: a single LoadBalancer in front of an Ingress routing to N ClusterIP services.
+**"ClusterIP, NodePort, LoadBalancer: when to use which?"** — walk through the table above, then land the pattern that impresses: one LoadBalancer IP per service gets expensive, so in practice a single LoadBalancer sits in front of an Ingress routing to N ClusterIP services.
 
 **"Liveness vs readiness probe?"** — Liveness: detects a stuck process, failure = restart. Readiness: detects a Pod that isn't ready (starting up, slow dependency), failure = removed from load balancing, no restart. Classic mistake to cite: putting an external dependency in the liveness probe → a cascade of pointless restarts.
 
 ## Pitfalls & misconceptions
 
-- **"We need Kubernetes"** — often false. One service, one DB, one server: Compose + systemd or a PaaS is enough. K8s is justified with multiple services, multiple machines, real scaling/HA needs, or a platform team to operate it. Saying this in an interview is a sign of maturity, not weakness.
+> ⚠️ **Secrets are not encrypted** — base64 decodes in one command. Without etcd encryption at rest and strict RBAC, a Secret is just a ConfigMap in disguise. In practice: Vault, External Secrets, or cloud provider secrets.
+
+- **"We need Kubernetes"** — often false: without multiple services, multiple machines or real scaling/HA needs, Compose + systemd or a PaaS is enough (see the callout above).
 - **`latest` in production** — combined with `imagePullPolicy`, you no longer know which version runs where, and rollback becomes impossible. Always an immutable tag (commit SHA, version).
 - **No requests/limits** — blind scheduling, one greedy Pod starves the others, and Pods without requests are the first evicted under memory pressure.
-- **"Secure" Secrets** — base64 decodes in one command. You need etcd encryption at rest, restrictive RBAC, and ideally an external manager (Vault, External Secrets, cloud provider secrets).
-- **Confusing the probes** (see above) — liveness must only test the process itself.
+- **Confusing the probes** (see the reflex above) — liveness only tests the process itself.
 - **Treating Pods like servers** — no `kubectl exec` to patch production: Pods are replaceable at any moment. Every change goes through the image or the manifests.
 
 ## Going further

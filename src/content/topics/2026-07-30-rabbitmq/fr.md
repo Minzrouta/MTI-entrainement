@@ -16,17 +16,60 @@ Une **message queue** insère un intermédiaire durable entre un producteur et u
 
 Le modèle AMQP a une subtilité que les débutants ratent : **un producteur ne publie jamais directement dans une queue**. Il publie dans un **exchange**, avec une **routing key** ; l'exchange route le message vers zéro, une ou plusieurs queues selon ses **bindings** (les règles de liaison exchange → queue).
 
-Trois types d'exchange à connaître :
+```text
+             routing key
+Producteur ─────────────▶ Exchange
+                           │ bindings
+             ┌─────────────┼─────────────┐
+             ▼             ▼             ▼
+          Queue A       Queue B       Queue C
+             │             │             │
+             ▼             ▼             ▼
+        Consumer 1    Consumer 2    Consumer 3
+                    (ack / nack)
+```
 
-- **direct** — route vers les queues dont le binding correspond exactement à la routing key. Ex. : `payment.failed` → la queue liée avec la clé `payment.failed`.
-- **fanout** — diffuse à toutes les queues liées, routing key ignorée. Le pub/sub pur.
-- **topic** — pattern matching sur la routing key segmentée par des points : `*` = exactement un mot, `#` = zéro ou plusieurs mots. `logs.*.error` matche `logs.api.error` mais pas `logs.api.db.error`.
+Les quatre types d'exchange :
 
-(Le quatrième type, headers, est rarement utilisé.)
+| Type | Routage | Cas typique |
+|---|---|---|
+| **direct** | routing key exacte | `payment.failed` → la queue liée avec cette clé |
+| **fanout** | toutes les queues liées, clé ignorée | pub/sub pur, invalidation de cache |
+| **topic** | motif sur la clé segmentée par des points : `*` = exactement un mot, `#` = zéro ou plus | `logs.*.error` matche `logs.api.error`, pas `logs.api.db.error` |
+| **headers** | sur les en-têtes du message | rarement utilisé |
 
 Côté consommateur : le broker pousse les messages, et le consumer les **acquitte** (`ack`) une fois le traitement terminé. Si le consumer meurt avant l'ack (crash, connexion coupée), le broker **redélivre** le message — flag `redelivered` positionné — à un autre consumer. `nack`/`reject` refusent un message, avec ou sans remise en queue. Le **prefetch** (QoS) borne le nombre de messages non acquittés par consumer : c'est lui qui assure une répartition équitable au lieu de tout déverser sur le premier connecté.
 
-La durabilité se déclare **aux deux niveaux** : queue *durable* et message *persistent* (delivery_mode=2). L'un sans l'autre ne survit pas à un redémarrage du broker. Côté producteur, les **publisher confirms** donnent l'accusé de réception du broker.
+Publier et consommer, en Python (pika) :
+
+```python
+import pika
+
+conn = pika.BlockingConnection(pika.ConnectionParameters("localhost"))
+ch = conn.channel()
+ch.queue_declare(queue="tasks", durable=True)  # queue durable
+
+# --- Producteur ---
+ch.basic_publish(
+    exchange="",                    # exchange par défaut (direct)
+    routing_key="tasks",            # ici : le nom de la queue
+    body=b"resize image 42",
+    properties=pika.BasicProperties(delivery_mode=2),  # message persistent
+)
+
+# --- Consommateur ---
+def handle(ch, method, props, body):
+    process(body)                                   # le vrai travail d'abord
+    ch.basic_ack(delivery_tag=method.delivery_tag)  # l'ack APRÈS, jamais avant
+
+ch.basic_qos(prefetch_count=10)  # borne les messages non acquittés
+ch.basic_consume(queue="tasks", on_message_callback=handle)
+ch.start_consuming()
+```
+
+> ⚠️ **L'ack oublié** — consommer en ack manuel sans jamais appeler `basic_ack` : les messages s'entassent en *unacked*, le prefetch se remplit, le consumer ne reçoit plus rien — et tout est redélivré d'un coup à la reconnexion. Symptôme classique : « la queue a l'air vide mais rien n'avance » — regarder la colonne *unacked* du management UI.
+
+> 💡 **Deux niveaux, sinon rien** — la durabilité se déclare queue *durable* **et** message *persistent* (`delivery_mode=2`) : l'un sans l'autre ne survit pas à un redémarrage du broker. Côté producteur, les **publisher confirms** donnent l'accusé de réception du broker.
 
 **Dead letter queue (DLQ)** : une queue peut déclarer un dead-letter exchange (DLX) ; y sont routés les messages rejetés sans requeue, expirés (TTL) ou en dépassement de longueur maximale. Indispensable en production : un message empoisonné (qui fait crasher le consumer) part en DLQ après N tentatives au lieu de tourner en boucle, et on peut l'inspecter puis le rejouer.
 
@@ -39,6 +82,8 @@ La durabilité se déclare **aux deux niveaux** : queue *durable* et message *pe
 - **Ordering** : garanti FIFO au sein d'une queue… pour un seul consumer. Avec des consumers en compétition ou des redélivrances, l'ordre de *traitement* n'est plus garanti — à ne jamais promettre en entretien.
 
 ## En entretien
+
+> 🎤 **En entretien** — le fil rouge qui impressionne : ack manuel → at-least-once → doublons possibles → consumer idempotent. Dérouler cette chaîne de cause à effet sans qu'on vous la demande, c'est exactement ce qu'on attend d'un profil backend.
 
 **« Pourquoi mettre une queue entre deux services plutôt qu'un appel HTTP ? »** — Découplage temporel (B peut être down, le message attend), lissage des pics (la queue absorbe, B consomme à son rythme), retry natif via la redélivrance, et fan-out vers plusieurs consommateurs sans toucher au producteur. Contreparties à citer spontanément : latence de bout en bout, cohérence éventuelle, et une brique d'infra de plus à opérer et monitorer.
 

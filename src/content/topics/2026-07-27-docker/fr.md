@@ -10,7 +10,15 @@ summary: "Images, conteneurs, volumes, réseaux : comprendre ce que Docker fait 
 
 Docker est un outil de **conteneurisation** : il permet d'empaqueter une application avec toutes ses dépendances (runtime, bibliothèques, config) dans une unité standardisée — le conteneur — qui s'exécute de façon identique sur n'importe quelle machine équipée d'un moteur de conteneurs. C'est la réponse au classique « ça marche sur ma machine ».
 
-Contrairement à une machine virtuelle, un conteneur **ne virtualise pas de matériel et n'embarque pas de noyau** : tous les conteneurs partagent le noyau Linux de l'hôte. Un conteneur n'est qu'un processus ordinaire, isolé par des mécanismes du noyau. Résultat : démarrage en millisecondes, quelques Mo d'overhead, densité bien supérieure aux VM.
+Contrairement à une machine virtuelle, un conteneur **ne virtualise pas de matériel et n'embarque pas de noyau** : tous les conteneurs partagent le noyau Linux de l'hôte. Un conteneur n'est qu'un processus ordinaire, isolé par des mécanismes du noyau.
+
+| | Machine virtuelle | Conteneur |
+|---|---|---|
+| Virtualise | Du matériel (hyperviseur) | Rien : un processus isolé |
+| Noyau | Le sien, complet | Celui de l'hôte, partagé |
+| Démarrage | Minutes | Millisecondes |
+| Empreinte | Go de RAM | Quelques Mo |
+| Isolation | Forte (frontière matérielle) | Plus légère (namespaces) |
 
 ## Comment ça marche
 
@@ -20,9 +28,19 @@ Trois briques du noyau Linux font tout le travail :
 - **Cgroups** — limitent ce que le processus *consomme* : CPU, RAM, I/O. C'est ce qui permet de dire `--memory=512m`.
 - **Union filesystem** (OverlayFS) — les images sont constituées de **couches en lecture seule** empilées ; le conteneur ajoute une fine couche accessible en écriture au sommet. Deux conteneurs issus de la même image partagent toutes les couches : c'est ce qui rend les images si économes.
 
-Le cycle de vie : un `Dockerfile` décrit la construction → `docker build` produit une **image** (immuable, versionnée par tag et par digest) → `docker run` instancie un **conteneur** (éphémère) → l'image est distribuée via un **registry** (Docker Hub, GHCR, registry privé).
+Le cycle de vie complet tient dans un schéma :
 
-Architecture : le CLI `docker` parle à un démon (`dockerd`) via une API REST ; le démon délègue l'exécution à `containerd` puis `runc` (le standard OCI). C'est pour ça que Kubernetes peut utiliser containerd sans Docker.
+```text
+Dockerfile ──build──▶ Image (couches RO) ──run──▶ Conteneur (+ couche RW)
+                        │      ▲
+                   push │      │ pull
+                        ▼      │
+                    Registry (Docker Hub, GHCR, privé…)
+```
+
+L'image est **immuable** (versionnée par tag et par digest), le conteneur est **éphémère**. Architecture : le CLI `docker` parle à un démon (`dockerd`) via une API REST ; le démon délègue l'exécution à `containerd` puis `runc` (le standard OCI). C'est pour ça que Kubernetes peut utiliser containerd sans Docker.
+
+> 🎤 **En entretien** — le combo gagnant : expliquer namespaces + cgroups en trente secondes, puis enchaîner naturellement sur « et c'est pour ça qu'un conteneur démarre en millisecondes là où une VM met des minutes ». Vous venez de montrer le *pourquoi* derrière le *quoi*.
 
 ## Concepts clés à maîtriser
 
@@ -32,6 +50,28 @@ Architecture : le CLI `docker` parle à un démon (`dockerd`) via une API REST ;
 - **Docker Compose** : décrit une stack multi-conteneurs (app + DB + cache) en YAML déclaratif. `docker compose up -d` et tout démarre dans le bon ordre, sur un réseau commun.
 - **Multi-stage builds** : on compile dans une image lourde (SDK), on copie l'artefact dans une image minimale (runtime). Image finale plus petite et sans outils de build = surface d'attaque réduite.
 - **Cache de build** : chaque instruction du Dockerfile crée une couche mise en cache, invalidée dès qu'une instruction change. D'où la règle : les instructions qui changent le moins souvent en premier (dépendances avant le code source).
+
+Les deux réunis dans un Dockerfile Node typique :
+
+```dockerfile
+# --- Étape 1 : build, avec tout le SDK ---
+FROM node:20 AS build
+WORKDIR /app
+COPY package*.json ./     # les dépendances d'abord → couche mise en cache
+RUN npm ci
+COPY . .                  # le code ensuite : lui seul invalide les couches suivantes
+RUN npm run build
+
+# --- Étape 2 : runtime minimal, sans outils de build ---
+FROM node:20-alpine
+WORKDIR /app
+COPY --from=build /app/dist ./dist
+COPY --from=build /app/node_modules ./node_modules
+USER node                 # jamais root en production
+CMD ["node", "dist/server.js"]
+```
+
+> 💡 **Réflexe à montrer** — si on vous demande « pourquoi copier `package.json` avant le reste ? », la réponse tient en un mot : le cache. Tant que les dépendances ne changent pas, `npm ci` n'est jamais réexécuté.
 
 ## En entretien
 
@@ -47,8 +87,9 @@ Architecture : le CLI `docker` parle à un démon (`dockerd`) via une API REST ;
 
 ## Pièges & idées reçues
 
+> ⚠️ **Piège vécu** — Docker publie ses ports **en contournant le pare-feu UFW** : `-p 0.0.0.0:5432:5432` expose votre base à Internet même si UFW la bloque (les règles iptables de Docker passent avant). Binder sur `127.0.0.1:5432:5432` quand c'est local. Vérifier avec `ss -tlnp`, jamais avec `ufw status` seul.
+
 - **« Docker isole autant qu'une VM »** — non : noyau partagé, donc une faille noyau peut toucher l'hôte. Ne jamais lancer un conteneur en `--privileged` sans raison, éviter root dans le conteneur (`USER node`).
-- **Docker publie ses ports en contournant le pare-feu UFW** : `-p 0.0.0.0:5432:5432` expose la base à Internet même si UFW la bloque (règles iptables insérées avant). Binder sur `127.0.0.1:5432:5432` quand c'est local.
 - **`latest` n'est pas « la dernière version »** — c'est juste un tag par défaut, mutable. En prod : tag de version explicite, idéalement un digest.
 - **Un conteneur = un processus** : pas de SSH ni de superviseur dans le conteneur ; les logs vont sur stdout/stderr (récupérés par `docker logs`).
 - Oublier le `.dockerignore` → le contexte de build embarque `node_modules` et `.git`, builds lents et images obèses.

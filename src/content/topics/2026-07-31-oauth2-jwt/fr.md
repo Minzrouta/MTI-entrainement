@@ -23,25 +23,76 @@ Un JWT, ce sont trois parties encodées en **base64url**, séparées par des poi
 - **Payload** : les **claims** — `sub` (sujet), `iss` (émetteur), `aud` (audience), `exp` (expiration), `iat` (émission), plus des claims métier (rôles, email).
 - **Signature** : calculée sur header + payload. **HS256** = HMAC avec un **secret partagé** (le même secret signe et vérifie — symétrique). **RS256** = RSA : la clé **privée** signe, la clé **publique** vérifie. En microservices, RS256 s'impose : les services vérifient avec la clé publique (publiée via un endpoint **JWKS**) sans jamais détenir la clé privée.
 
-Point crucial : un JWT est **signé, pas chiffré**. Le payload se décode en un clic (jwt.io). La signature garantit l'intégrité et l'origine, pas la confidentialité.
+Décodé, ça donne :
+
+```jsonc
+// Header — 1re partie
+{ "alg": "RS256", "typ": "JWT", "kid": "2026-key-1" }
+
+// Payload — 2e partie : les claims, lisibles par tous
+{
+  "sub": "user-42",                  // qui (le sujet)
+  "iss": "https://auth.exemple.com", // émis par qui
+  "aud": "api.exemple.com",          // pour quelle API
+  "exp": 1754061600,                 // expire à (timestamp Unix)
+  "iat": 1754060700,                 // émis à
+  "roles": ["dev"]                   // claim métier
+}
+
+// Signature — 3e partie : signe header + payload
+```
+
+Point crucial : un JWT est **signé, pas chiffré**. Le payload ci-dessus se décode en un clic (jwt.io). La signature garantit l'intégrité et l'origine, pas la confidentialité.
+
+> 💡 **À faire une fois** — coller un vrai token dans [jwt.io](https://jwt.io/) et voir son payload en clair vaut tous les rappels : base64 ≠ chiffrement. Donc jamais de mot de passe ni de donnée personnelle inutile dans un JWT.
 
 **Le problème de la révocation** : un JWT reste valide jusqu'à son `exp` — le serveur ne « voit » pas un logout ou un bannissement. La réponse standard : **access token court** (5-15 min) + **refresh token** long, stocké et révocable côté serveur. Un access token volé a une fenêtre d'exploitation courte ; le refresh token, lui, se révoque — et se **rotate** : chaque usage en émet un nouveau, et la réutilisation d'un ancien signale un vol.
 
 **OAuth 2.0** définit quatre rôles : **resource owner** (l'utilisateur), **client** (l'application), **authorization server** (émet les tokens), **resource server** (l'API protégée). Les flows à connaître :
 
-- **Authorization code + PKCE** — le flow de référence. Le client redirige vers l'authorization server ; l'utilisateur s'authentifie et consent ; le serveur renvoie un `code` éphémère que le client échange contre les tokens. **PKCE** : le client génère un `code_verifier` aléatoire, envoie son hash SHA-256 (`code_challenge`) au départ, puis prouve la possession du verifier à l'échange — un code intercepté est inexploitable. Recommandé pour **tous** les clients (SPA, mobile, backend), obligatoire dans OAuth 2.1.
+- **Authorization code + PKCE** — le flow de référence (schéma ci-dessous). **PKCE** : le client génère un `code_verifier` aléatoire, envoie son hash SHA-256 (`code_challenge`) au départ, puis prouve la possession du verifier à l'échange — un code intercepté est inexploitable. Recommandé pour **tous** les clients (SPA, mobile, backend), obligatoire dans OAuth 2.1.
 - **Client credentials** — machine-to-machine, aucun utilisateur : le client s'authentifie directement (batch, service interne).
 - **Implicit** (token renvoyé dans le fragment d'URL) et **ROPC** (mot de passe saisi dans le client) : **dépréciés**, supprimés d'OAuth 2.1. À citer comme tels, pas à utiliser.
 
-**OIDC** standardise l'identité au-dessus d'OAuth : le scope `openid`, un **`id_token`** (un JWT) portant qui est l'utilisateur (claims standardisés : `sub`, `email`, `name`…), et un endpoint `/userinfo`. « Login with Google », c'est OIDC. Retenir la répartition : **access token → appeler l'API ; id_token → savoir qui est connecté**. Ne jamais utiliser l'un pour l'autre.
+Le flow authorization code + PKCE en séquence :
+
+```text
+Client (SPA)          Authorization Server       API
+  │ 1. redirect + code_challenge│                  │
+  ├────────────────────────────▶│                  │
+  │ 2. login + consentement     │                  │
+  │◀───────────────────────────▶│                  │
+  │ 3. code (éphémère)          │                  │
+  │◀────────────────────────────┤                  │
+  │ 4. code + code_verifier     │                  │
+  ├────────────────────────────▶│                  │
+  │ 5. access + refresh         │                  │
+  │    (+ id_token si OIDC)     │                  │
+  │◀────────────────────────────┤                  │
+  │ 6. Authorization: Bearer <access_token>        │
+  ├─────────────────────────────┴─────────────────▶│
+```
+
+**OIDC** standardise l'identité au-dessus d'OAuth : le scope `openid`, un **`id_token`** (un JWT) portant qui est l'utilisateur (claims standardisés : `sub`, `email`, `name`…), et un endpoint `/userinfo`. « Login with Google », c'est OIDC. Trois tokens circulent désormais — ne jamais utiliser l'un pour l'autre :
+
+| | Access token | Refresh token | ID token (OIDC) |
+|---|---|---|---|
+| Sert à | Appeler l'API | Obtenir de nouveaux access tokens | Savoir qui est connecté |
+| Consommé par | Resource server | Authorization server | Le client |
+| Durée de vie | Courte (5-15 min) | Longue (jours), révocable | Courte, lu à la connexion |
+| Stockage type | Mémoire JS | Cookie httpOnly, avec rotation | Pas stocké |
+
+> 🎤 **En entretien** — la métaphore qui marche : l'access token est le ticket de cinéma (courte durée, donne l'accès), le refresh token la carte d'abonnement (en génère de nouveaux, révocable au guichet), l'id_token la pièce d'identité (dit qui vous êtes, ne donne accès à rien).
 
 ## Concepts clés à maîtriser
 
 - **Valider un JWT côté serveur** : vérifier la signature avec l'algorithme **attendu** (imposé par le serveur, jamais lu aveuglément dans le header), puis `exp`, `iss` et `aud`. Toujours via une lib éprouvée (jose, jsonwebtoken, PyJWT) — jamais de crypto maison.
-- **Stockage côté front** : `localStorage` est lisible par tout JavaScript de la page → une faille **XSS** exfiltre le token. Un cookie `httpOnly` + `Secure` + `SameSite` est invisible pour JS, mais envoyé automatiquement → surface **CSRF** (atténuée par `SameSite=Lax/Strict` et un token anti-CSRF). Pattern robuste : access token **en mémoire** (variable JS, perdu au refresh, renouvelé silencieusement), refresh token en **cookie httpOnly**.
+- **Stockage côté front** : le pattern robuste — access token **en mémoire** (variable JS, perdu au refresh, renouvelé silencieusement), refresh token en **cookie httpOnly**. Le pourquoi est dans l'encadré ci-dessous.
 - **Scopes** : le périmètre demandé par le client (`repo:read`) — de l'autorisation, pas de l'identité. Le resource server doit les vérifier.
 - **Expiration et horloges** : `exp` se vérifie côté serveur avec une petite tolérance (clock skew) ; côté client, on rafraîchit avant l'expiration.
 - **JWKS et rotation de clés** : l'authorization server publie ses clés publiques avec un identifiant `kid` ; on fait tourner les clés sans redéployer les services.
+
+> ⚠️ **localStorage vs cookie httpOnly** — un token dans `localStorage` est lisible par n'importe quel script de la page : une faille **XSS** (ou un paquet npm compromis) suffit à l'exfiltrer. Un cookie `httpOnly` + `Secure` + `SameSite` est invisible pour JS, mais envoyé automatiquement → surface **CSRF** (atténuée par `SameSite=Lax/Strict` et un token anti-CSRF). Aucune option n'est sûre « toute seule » : c'est un arbitrage, et il faut savoir le défendre.
 
 ## En entretien
 
@@ -53,13 +104,12 @@ Point crucial : un JWT est **signé, pas chiffré**. Le payload se décode en un
 
 **« Pourquoi PKCE ? »** — Historiquement pour les clients publics (mobile/SPA) incapables de garder un `client_secret` : le hash du `code_verifier` lie le code au client qui l'a demandé, donc un code volé ne s'échange pas. Aujourd'hui recommandé partout, même avec un secret.
 
-**« Où stockes-tu le token côté front ? »** — Réponse structurée : localStorage = vulnérable XSS ; cookie httpOnly = protégé XSS mais penser CSRF (SameSite, token anti-CSRF) ; le compromis access-en-mémoire + refresh-en-cookie-httpOnly. Montrer qu'on connaît les deux attaques vaut plus que la réponse elle-même.
+**« Où stockes-tu le token côté front ? »** — Dérouler l'arbitrage XSS vs CSRF de l'encadré plus haut, puis conclure : access token en mémoire + refresh token en cookie httpOnly. Montrer qu'on connaît les deux attaques vaut plus que la réponse elle-même.
 
 ## Pièges & idées reçues
 
 - **`alg: none` et confusion d'algorithme** : de vieilles libs acceptaient un token déclarant `"alg":"none"` (signature vide !) ou vérifiaient un token RS256 en HS256 avec la clé publique comme secret HMAC. Parade : imposer côté serveur la liste des algorithmes acceptés.
 - **Secret HS256 faible** : la signature se brute-force **hors ligne** (hashcat) — un secret type « secret123 » tombe en quelques secondes, et l'attaquant forge ensuite des tokens admin. Secret long et aléatoire (256 bits), ou RS256.
-- **Données sensibles dans le payload** : base64 ≠ chiffrement. Pas de mot de passe, pas de données personnelles inutiles dans un JWT.
 - **« JWT = moderne, sessions = obsolète »** : pour une app web monolithe, une session server-side est plus simple ET révocable. Le JWT se justifie par le multi-services, pas par la mode.
 - **Oublier `aud`/`iss`** : un token émis pour le service A accepté par le service B — le claim d'audience existe précisément pour ça.
 

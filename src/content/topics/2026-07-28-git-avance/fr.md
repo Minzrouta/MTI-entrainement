@@ -23,9 +23,45 @@ Le modèle objet tient en quatre types, stockés dans `.git/objects` :
 
 Une **branche n'est qu'un pointeur** : un fichier de 41 octets dans `.git/refs/heads/` contenant un hash de commit. `HEAD` pointe vers la branche courante. Créer une branche est instantané et gratuit — c'est la killer feature de Git, et l'historique complet n'est qu'un graphe orienté acyclique (DAG) de commits.
 
-**Merge vs rebase** : `git merge feature` crée un commit de fusion à deux parents et préserve l'historique tel qu'il s'est réellement passé. `git rebase main` (depuis `feature`) **rejoue** chaque commit de la branche par-dessus `main` : Git calcule le diff de chacun et crée de **nouveaux commits** — nouveaux hashes, historique linéaire, mais réécrit. Les anciens commits existent toujours dans `.git/objects` ; simplement, plus rien ne pointe dessus.
+**Merge vs rebase** : `git merge feature` crée un commit de fusion à deux parents et préserve l'historique tel qu'il s'est réellement passé. `git rebase main` (depuis `feature`) **rejoue** chaque commit par-dessus `main` : de **nouveaux commits** (nouveaux hashes), un historique linéaire mais réécrit — les anciens commits existent toujours dans `.git/objects`, plus rien ne pointe dessus.
+
+```text
+avant                        après `git rebase main`
+
+      A──B  feature
+     /                       ──C──D──E──A'──B'  feature
+──C──D──E  main                      ▲
+                                     main
+```
+
+| | `git merge` | `git rebase` |
+|---|---|---|
+| Historique | Réel, non linéaire | Réécrit, linéaire |
+| Commits | 1 commit de fusion (2 parents) | Nouveaux commits, nouveaux hashes |
+| Lecture & bisect | Plus bruyant | Ligne droite, facile à bisecter |
+| Branche partagée | Sûr | Interdit |
+| Usage type | Intégrer la PR | Mettre sa branche à jour sur `main` |
+
+> 🎤 **En entretien** — à « merge ou rebase ? », le réflexe qui marque des points : dessiner ce schéma. Deux flèches, cinq commits, et vous montrez que vous comprenez le modèle objet au lieu de réciter une préférence.
 
 Le **rebase interactif** (`git rebase -i HEAD~5`) ouvre la liste des commits dans l'éditeur : `pick` (garder), `reword` (changer le message), `squash`/`fixup` (fusionner avec le précédent), `edit` (s'arrêter pour amender), `drop` (supprimer) — et on peut réordonner les lignes. C'est l'outil standard pour nettoyer une branche avant d'ouvrir la pull request.
+
+Une session type :
+
+```bash
+$ git rebase -i HEAD~4      # retravailler les 4 derniers commits
+
+# --- le fichier todo ouvert dans l'éditeur ---
+pick   a1b2c3d feat: formulaire de login
+reword f4e5d6c fix typo          # s'arrêter pour réécrire ce message
+squash 9a8b7c6 wip               # fusionner dans le commit précédent
+drop   3c2b1a0 logs de debug     # supprimer ce commit
+
+# sauvegarder et quitter : Git rejoue tout dans l'ordre.
+# Ça tourne mal ? `git rebase --abort` remet tout comme avant.
+```
+
+> 💡 **Filet de sécurité** — un rebase raté ne détruit rien : `git reflog` donne le hash d'avant l'opération, `git reset --hard HEAD@{n}` restaure. Le dire spontanément montre que l'outil ne vous fait pas peur.
 
 ## Concepts clés à maîtriser
 
@@ -50,7 +86,8 @@ Le **rebase interactif** (`git rebase -i HEAD~5`) ouvre la liste des commits dan
 
 ## Pièges & idées reçues
 
-- **Rebaser une branche partagée** : le rebase crée de nouveaux hashes ; les collègues qui avaient basé leur travail sur les anciens commits se retrouvent avec des historiques divergents pénibles à réconcilier. Rebase autorisé uniquement sur ses commits locaux non partagés.
+> ⚠️ **La règle d'or** — on ne rebase jamais une branche **partagée** : les nouveaux hashes laissent les collègues qui avaient basé leur travail sur les anciens commits avec des historiques divergents pénibles à réconcilier. Rebase uniquement sur ses commits locaux non poussés ; dans le doute, merge.
+
 - **`git push --force` par réflexe** : préférer `--force-with-lease` — même effet quand tout va bien, mais échoue si la branche distante a bougé depuis le dernier fetch. Écraser le travail d'un collègue avec `--force`, c'est le faux pas classique.
 - **« Le rebase a supprimé mes commits »** — non : les anciens commits ne sont plus référencés mais restent dans `.git/objects` et dans le reflog pendant des semaines.
 - **`git pull` n'est pas anodin** : c'est `fetch` + `merge`, source de commits de merge parasites. `git pull --rebase` (ou `pull.rebase=true` en config) garde l'historique local propre.

@@ -25,24 +25,70 @@ The interview question is never "which one is better" but "which one for which p
 
 **The four NoSQL families**:
 
-- **Document** (MongoDB): nested JSON; what is read together is stored together (denormalization by design). Flexible schema, natural aggregates.
-- **Key-value** (Redis, DynamoDB): GET/PUT by key, minimal latency, no rich queries — the simplest and fastest model.
-- **Wide-column** (Cassandra): built for massive writes distributed across dozens of nodes; you model tables from your queries, not the other way around.
-- **Graph** (Neo4j): nodes and relationships as first-class citizens; traversals ("friends of friends of friends") stay efficient where SQL would pile up self-joins.
+| Family | Examples | Key idea | Typical use cases |
+|---|---|---|---|
+| Document | MongoDB | Nested JSON: what is read together is stored together | Catalogs, profiles, shifting schema |
+| Key-value | Redis, DynamoDB | GET/PUT by key, minimal latency, no rich queries | Cache, sessions, carts |
+| Wide-column | Cassandra | Massive distributed writes; tables modeled from your queries | Time series, IoT, ingestion |
+| Graph | Neo4j | First-class nodes and relationships, efficient deep traversals (where SQL piles up self-joins) | Social network, recommendations, fraud |
+
+The difference in philosophy fits in two queries — recomposing through a join vs reading an aggregate:
+
+```sql
+-- Relational: normalized, every fact in one place
+SELECT o.id, o.total, c.name, c.email
+FROM orders o
+JOIN customers c ON c.id = o.customer_id   -- recomposition
+WHERE o.id = 42;
+```
+
+```js
+// Document: the whole aggregate, read in a single access
+db.orders.findOne({ _id: 42 })
+// → { _id: 42, total: 99.9,
+//     customer: { name: "Ada", email: "ada@ex.io" } }
+// Denormalized: if the email changes, update it everywhere
+```
 
 **The CAP theorem, without butchering it**: in a **distributed** system, when a **network partition** occurs (P — not a choice, it happens), you must choose between **Consistency** (refuse to answer rather than risk a wrong answer) and **Availability** (answer, even if it means diverging and reconciling later). The "pick 2 out of 3" framing is misleading: the dilemma only exists **during** a partition; the rest of the time, the real trade-off is latency versus consistency (the **PACELC** extension). And CAP doesn't apply to a single-node database.
 
 **Eventual consistency**: replicas converge "eventually"; in the meantime, a read can return a stale value (the like that disappears then comes back). Many systems offer intermediate guarantees (read-your-writes, session consistency) or per-request tuning (Cassandra: `QUORUM` vs `ONE`).
 
-**Scaling**: **vertical** (a bigger machine — simple, effective for a long time, but it plateaus and gets expensive at the top) vs **horizontal** (more machines). Two tools: **replication** (leader-follower: reads spread across replicas — beware of **replica lag**) and **sharding** (partitioning data by a **shard key**; a bad key creates a hot shard, and cross-shard queries are expensive). The relational model replicates very well; it's transactional sharding that is hard (Citus and Vitess exist for that).
+**Scaling**: **vertical** (a bigger machine — simple, effective for a long time, but it plateaus and gets expensive at the top) vs **horizontal** (more machines). Two tools: **replication** (leader-follower: reads spread across replicas — beware of **replica lag**) and **sharding** (partitioning data by a **shard key**; a bad key creates a hot shard, and cross-shard queries are expensive). The relational model replicates very well; it's transactional sharding that is hard (Citus and Vitess exist for that). Both tools at a glance:
+
+```text
+Replication (scale reads)
+             writes
+                │
+           ┌────▼───┐
+           │ Leader │
+           └────┬───┘
+      async ────┤──── (replica lag!)
+      ┌─────────┴─────────┐
+ ┌────▼────┐         ┌────▼────┐
+ │Replica 1│         │Replica 2│ ◀── reads
+ └─────────┘         └─────────┘
+
+Sharding (scale data & writes, by shard key)
+ ┌─────────┐   ┌─────────┐   ┌─────────┐
+ │ shard A │   │ shard B │   │ shard C │
+ │  (a-h)  │   │  (i-p)  │   │  (q-z)  │
+ └─────────┘   └─────────┘   └─────────┘
+```
+
+> ⚠️ **Replica lag** — the user updates their profile (write on the leader), the page reloads (read from a lagging replica)… and shows the old value. This is exactly what "read-your-writes" guarantees fix: read from the leader right after your own write.
 
 ## Key concepts to master
 
-- **B-tree index**: a balanced tree, O(log n) lookup, serves equality, ranges (`WHERE created_at > …`) and sorting. It's the default in every relational DBMS. Every index speeds up some reads and **slows down all writes** (it must be maintained).
-- **When an index is useless**: a low-selectivity column (a boolean — the planner prefers a scan), a function applied to the column (`WHERE lower(email) = …` without an expression index), `LIKE '%foo'` (leading wildcard), columns outside the prefix of a composite index. The reflex: `EXPLAIN ANALYZE`.
-- **Postgres + JSONB**: a binary JSON column, indexable (GIN), queryable — document flexibility **inside** an ACID engine. The pragmatic answer to 80% of "we need MongoDB": relational columns for the structured part, JSONB for the variable part.
+- **B-tree index**: a balanced tree, O(log n) lookup, serves equality, ranges (`WHERE created_at > …`) and sorting. It's the default in every relational DBMS.
+- **When an index is useless**: a low-selectivity column (a boolean — the planner prefers a scan), a function applied to the column (`WHERE lower(email) = …` without an expression index), `LIKE '%foo'` (leading wildcard), columns outside the prefix of a composite index.
+
+> 💡 **An index is never free** — every INSERT/UPDATE must maintain it, and the optimizer ignores it if it doesn't filter enough. Index based on real queries (WHERE, JOIN, ORDER BY), and prove it with `EXPLAIN ANALYZE` — before and after.
+
 - **ORMs and N+1**: load a list (1 query) then access a relation via lazy loading in a loop (N queries). Symptom: slow page, log full of identical queries. Fix: eager loading (`JOIN FETCH`, `include`, `select_related`/`prefetch_related`).
 - **Denormalization**: deliberately duplicating to read fast; you pay for it at write time (keeping copies in sync). Document stores do it by design; relational stores can do it selectively (computed column, materialized view).
+
+> 🎤 **In an interview** — "Postgres + JSONB" is the pragmatic answer to 80% of "we need MongoDB": a binary JSON column, indexable (GIN), queryable — document flexibility **inside** an ACID engine. Relational columns for the structured part, JSONB for the variable part. Phrasing it this way shows you reason in trade-offs, not logos.
 
 ## In an interview
 

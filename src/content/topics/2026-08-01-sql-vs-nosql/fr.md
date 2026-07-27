@@ -25,24 +25,70 @@ La question d'entretien n'est jamais « lequel est le meilleur » mais « lequel
 
 **Les quatre familles NoSQL** :
 
-- **Document** (MongoDB) : des JSON imbriqués ; ce qui est lu ensemble est stocké ensemble (dénormalisation par design). Schéma flexible, agrégats naturels.
-- **Clé-valeur** (Redis, DynamoDB) : GET/PUT par clé, latence minimale, pas de requêtes riches — le modèle le plus simple et le plus rapide.
-- **Colonnes larges** (Cassandra) : conçu pour des écritures massives distribuées sur des dizaines de nœuds ; on modélise les tables à partir des requêtes, pas l'inverse.
-- **Graphe** (Neo4j) : nœuds et relations de première classe ; les traversées (« amis d'amis d'amis ») restent efficaces là où le SQL empilerait des self-joins.
+| Famille | Exemples | Idée clé | Cas d'usage typiques |
+|---|---|---|---|
+| Document | MongoDB | JSON imbriqués : ce qui est lu ensemble est stocké ensemble | Catalogues, profils, schéma mouvant |
+| Clé-valeur | Redis, DynamoDB | GET/PUT par clé, latence minimale, pas de requêtes riches | Cache, sessions, paniers |
+| Colonnes larges | Cassandra | Écritures massives distribuées ; tables modélisées d'après les requêtes | Time series, IoT, ingestion |
+| Graphe | Neo4j | Nœuds et relations de première classe, traversées profondes efficaces (là où le SQL empile des self-joins) | Réseau social, recommandation, fraude |
+
+La différence de philosophie tient en deux requêtes — recomposer par jointure vs lire un agrégat :
+
+```sql
+-- Relationnel : normalisé, chaque fait à un seul endroit
+SELECT o.id, o.total, c.name, c.email
+FROM orders o
+JOIN customers c ON c.id = o.customer_id   -- recomposition
+WHERE o.id = 42;
+```
+
+```js
+// Document : l'agrégat entier, lu en un seul accès
+db.orders.findOne({ _id: 42 })
+// → { _id: 42, total: 99.9,
+//     customer: { name: "Ada", email: "ada@ex.io" } }
+// Dénormalisé : si l'email change, le mettre à jour partout
+```
 
 **Le théorème CAP, sans le massacrer** : dans un système **distribué**, quand une **partition réseau** survient (P — ce n'est pas un choix, ça arrive), il faut trancher entre **Consistency** (refuser de répondre plutôt que risquer une réponse fausse) et **Availability** (répondre, quitte à diverger puis réconcilier). Le « choisis 2 parmi 3 » est trompeur : le dilemme n'existe que **pendant** une partition ; le reste du temps, le vrai trade-off est latence contre cohérence (extension **PACELC**). Et CAP ne concerne pas une base sur un seul nœud.
 
 **Cohérence éventuelle** : les répliques convergent « à terme » ; entre-temps, une lecture peut renvoyer une valeur périmée (le like qui disparaît puis revient). Beaucoup de systèmes offrent des garanties intermédiaires (read-your-writes, cohérence par session) ou réglables par requête (Cassandra : `QUORUM` vs `ONE`).
 
-**Scaling** : **vertical** (machine plus grosse — simple, efficace longtemps, mais plafonne et coûte cher au sommet) vs **horizontal** (plus de machines). Deux outils : la **réplication** (leader-follower : les lectures se distribuent sur les replicas — attention au **replica lag**) et le **sharding** (partitionner les données par une **shard key** ; une mauvaise clé crée un hot shard, et les requêtes cross-shard coûtent cher). Le relationnel se réplique très bien ; c'est le sharding transactionnel qui est difficile (Citus, Vitess existent pour ça).
+**Scaling** : **vertical** (machine plus grosse — simple, efficace longtemps, mais plafonne et coûte cher au sommet) vs **horizontal** (plus de machines). Deux outils : la **réplication** (leader-follower : les lectures se distribuent sur les replicas — attention au **replica lag**) et le **sharding** (partitionner les données par une **shard key** ; une mauvaise clé crée un hot shard, et les requêtes cross-shard coûtent cher). Le relationnel se réplique très bien ; c'est le sharding transactionnel qui est difficile (Citus, Vitess existent pour ça). Les deux outils en image :
+
+```text
+Réplication (scaler les lectures)
+            écritures
+                │
+           ┌────▼───┐
+           │ Leader │
+           └────┬───┘
+      async ────┤──── (replica lag !)
+      ┌─────────┴─────────┐
+ ┌────▼────┐         ┌────▼────┐
+ │Replica 1│         │Replica 2│ ◀── lectures
+ └─────────┘         └─────────┘
+
+Sharding (scaler données & écritures, par shard key)
+ ┌─────────┐   ┌─────────┐   ┌─────────┐
+ │ shard A │   │ shard B │   │ shard C │
+ │  (a-h)  │   │  (i-p)  │   │  (q-z)  │
+ └─────────┘   └─────────┘   └─────────┘
+```
+
+> ⚠️ **Replica lag** — l'utilisateur modifie son profil (écriture sur le leader), la page se recharge (lecture sur un replica en retard)… et affiche l'ancienne valeur. C'est exactement ce que les garanties « read-your-writes » corrigent : lire sur le leader juste après sa propre écriture.
 
 ## Concepts clés à maîtriser
 
-- **Index B-tree** : arbre équilibré, recherche en O(log n), sert l'égalité, les ranges (`WHERE created_at > …`) et le tri. C'est le défaut de tous les SGBD relationnels. Chaque index accélère des lectures et **ralentit toutes les écritures** (il faut le maintenir).
-- **Quand un index ne sert à rien** : colonne à faible sélectivité (un booléen — le planner préfère un scan), fonction appliquée à la colonne (`WHERE lower(email) = …` sans index d'expression), `LIKE '%foo'` (wildcard en tête), colonnes hors du préfixe d'un index composite. Réflexe : `EXPLAIN ANALYZE`.
-- **Postgres + JSONB** : colonne JSON binaire, indexable (GIN), requêtable — la flexibilité documentaire **dans** un moteur ACID. La réponse pragmatique à 80 % des « il nous faut MongoDB » : colonnes relationnelles pour le structuré, JSONB pour le variable.
+- **Index B-tree** : arbre équilibré, recherche en O(log n), sert l'égalité, les ranges (`WHERE created_at > …`) et le tri. C'est le défaut de tous les SGBD relationnels.
+- **Quand un index ne sert à rien** : colonne à faible sélectivité (un booléen — le planner préfère un scan), fonction appliquée à la colonne (`WHERE lower(email) = …` sans index d'expression), `LIKE '%foo'` (wildcard en tête), colonnes hors du préfixe d'un index composite.
+
+> 💡 **Un index n'est jamais gratuit** — chaque INSERT/UPDATE doit le maintenir, et l'optimiseur l'ignore s'il ne filtre pas assez. On indexe d'après les requêtes réelles (WHERE, JOIN, ORDER BY), et on prouve avec `EXPLAIN ANALYZE` — avant et après.
+
 - **ORM et N+1** : charger une liste (1 requête) puis accéder à une relation en lazy loading dans une boucle (N requêtes). Symptôme : page lente, log rempli de requêtes identiques. Fix : eager loading (`JOIN FETCH`, `include`, `select_related`/`prefetch_related`).
 - **Dénormalisation** : dupliquer sciemment pour lire vite ; se paie à l'écriture (tenir les copies à jour). Le documentaire le fait par design ; le relationnel peut le faire ponctuellement (colonne calculée, vue matérialisée).
+
+> 🎤 **En entretien** — « Postgres + JSONB » est la réponse pragmatique à 80 % des « il nous faut MongoDB » : une colonne JSON binaire, indexable (GIN), requêtable — la flexibilité documentaire **dans** un moteur ACID. Colonnes relationnelles pour le structuré, JSONB pour le variable. Formulé ainsi, on montre qu'on raisonne en trade-offs, pas en logos.
 
 ## En entretien
 

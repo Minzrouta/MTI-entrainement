@@ -12,11 +12,44 @@ Automated tests have one purpose: **catching regressions before users do**, and 
 
 The reference mental model is the **test pyramid**: many **unit tests** (fast, isolated, precise), fewer **integration tests** (several components together, with real dependencies), very few **E2E tests** (the whole application driven like a user). The higher you climb, the more realistic the test — and the slower, the more expensive to maintain, and the harder to diagnose when it fails. A broken unit test points at the guilty function; a broken E2E test just says "something is wrong somewhere".
 
+```text
+           ╱╲
+          ╱E2E╲        few — slow, realistic
+         ╱──────╲       (critical journeys)
+        ╱ Integra-╲    some — real
+       ╱   tion    ╲    dependencies (DB, API)
+      ╱─────────────╲
+     ╱  Unit tests   ╲ many — fast, isolated,
+    ╱─────────────────╲ business logic
+```
+
+> 💡 **The right question** — never "unit or E2E?" in the abstract, but "what is the lowest test in the pyramid that would catch this bug?". The lower it sits, the faster the feedback and the sharper the diagnosis.
+
 In an interview, nobody expects an intern to recite Kent Beck — but you should be able to say **what to test at which level and why**.
 
 ## How it works
 
-A good unit test follows the **AAA** pattern: **Arrange** (prepare the data and the object under test), **Act** (call the function), **Assert** (check the result). Three non-negotiable qualities:
+A good unit test follows the **AAA** pattern: **Arrange** (prepare the data and the object under test), **Act** (call the function), **Assert** (check the result).
+
+```js
+import { describe, it, expect } from "vitest"; // same API as Jest
+import { computeTotal } from "./cart";
+
+describe("computeTotal", () => {
+  it("applies a 10% discount above €100", () => {
+    // Arrange — prepare the data
+    const cart = [{ price: 80 }, { price: 40 }];
+
+    // Act — a single action
+    const total = computeTotal(cart);
+
+    // Assert — check observable behavior, not internals
+    expect(total).toBe(108); // €120 − 10%
+  });
+});
+```
+
+Three non-negotiable qualities:
 
 - **Isolation**: the test depends neither on the network, nor the database, nor the clock, nor another test. Tests must be able to run in parallel and in any order.
 - **Determinism**: same code = same result, every time. The enemies: `Date.now()`, `Math.random()`, timeouts, unspecified iteration order. Inject time and randomness as dependencies.
@@ -24,10 +57,12 @@ A good unit test follows the **AAA** pattern: **Arrange** (prepare the data and 
 
 To isolate, you replace dependencies with **test doubles** — and precise vocabulary makes a good impression:
 
-- **Stub**: returns pre-programmed answers ("when `getUser` is called, return this"). Feeds the test with data.
-- **Mock**: programmed with **expectations about interactions** — the test fails if `sendEmail` wasn't called with the right arguments. Verifies a side effect.
-- **Spy**: records the calls it receives (arguments, count) without changing behavior, for later inspection.
-- **Fake**: a real but simplified implementation — an in-memory repository backed by a `Map` instead of Postgres. More robust than mocks for slightly higher-level tests.
+| Double | What it does | Used for | Example |
+|---|---|---|---|
+| **Stub** | returns pre-programmed answers | feeding the test with data | `getUser` always returns Alice |
+| **Mock** | expects precise **interactions** | verifying a side effect | the test fails if `sendEmail` isn't called with the right arguments |
+| **Spy** | records calls without changing behavior | inspecting after the fact | how many calls, with what arguments |
+| **Fake** | a real but simplified implementation | testing without the infra | in-memory repository (`Map` instead of Postgres), more robust than a mock |
 
 **TDD (Test-Driven Development)** reverses the writing order: **red** (write a failing test), **green** (the minimal code that makes it pass), **refactor** (clean up with tests green). What it actually brings: you define the expected behavior *before* coding (which forces you to clarify the API), every line of code exists to make a test pass, and you get a safety net for free. What it isn't: a religion — plenty of excellent developers practice partial TDD (on complex business logic, not on glue code).
 
@@ -41,6 +76,8 @@ To isolate, you replace dependencies with **test doubles** — and precise vocab
 
 ## In an interview
 
+> 🎤 **In an interview** — "how do you test your code?" calls for an answer structured by level: unit tests on business logic (AAA, test doubles), integration with real dependencies (Testcontainers), E2E on critical journeys (Playwright), all in a CI that blocks the merge. Four sentences, question closed.
+
 **"What makes a good unit test?"** — Fast (milliseconds), isolated (no network, no database, no execution-order dependency), deterministic, structured as Arrange-Act-Assert, and verifying observable behavior — not implementation details. Bonus: a good test fails for exactly one reason, and its name says which.
 
 **"Mock vs stub?"** — The stub *provides* data to the test (pre-programmed answers); the mock *verifies* interactions (the test fails if the expected method wasn't called correctly). In one sentence: stub = state, mock = behavior. Adding fake (a simplified but real implementation) and spy (records without altering) shows you own the vocabulary.
@@ -53,7 +90,8 @@ To isolate, you replace dependencies with **test doubles** — and precise vocab
 
 ## Pitfalls & misconceptions
 
-- **Mock overuse**: when a test mocks five dependencies and verifies every internal call, it no longer tests behavior — it transcribes the implementation. The smallest refactoring breaks ten tests that were all green for the wrong reasons. Prefer fakes and test slightly larger units.
+> ⚠️ **Mock overuse** — a test that mocks five dependencies and verifies every internal call no longer tests behavior: it transcribes the implementation. The smallest refactoring breaks ten tests that were all green for the wrong reasons. Prefer fakes, and test slightly larger units.
+
 - **Testing the implementation**: verifying that a private method gets called, asserting on internal state… These tests obstruct the very refactoring they were supposed to enable.
 - **`sleep()` in E2E tests**: the number one cause of flakiness. Always wait for a condition (element visible, request finished), never for a duration.
 - **"Tests slow development down"** — true the first week, false from the first refactoring or the first regression bug avoided. The real cost is maintaining *bad* tests (implementation-coupled, flaky).

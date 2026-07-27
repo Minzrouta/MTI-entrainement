@@ -16,12 +16,14 @@ The architecture point you absolutely must know: Redis executes commands on **a 
 
 Redis is not just a giant `Map<String, String>`. Its **data structures**:
 
-- **Strings** — arbitrary binary value; atomic `INCR` → counters, rate limiting.
-- **Hashes** — field → value (`HSET user:42 name "Ada" role "dev"`): the lightweight object.
-- **Lists** — a deque; `LPUSH` + `BRPOP` (blocking pop) = a basic task queue.
-- **Sets** — uniqueness and set operations (`SINTER`): tags, unique visitors.
-- **Sorted sets** — members ordered by score: leaderboards (`ZADD`/`ZRANGE`), sliding-window rate limiting, priority queues.
-- **Streams** — an append-only log with **consumer groups** and acknowledgments (`XADD`/`XREADGROUP`/`XACK`): the closest thing to a real message queue.
+| Structure | Typical commands | Use cases |
+|---|---|---|
+| String | `SET`/`GET`, atomic `INCR` | Cache, counters, rate limiting |
+| Hash | `HSET`/`HGETALL` | Lightweight object (`user:42` → fields) |
+| List | `LPUSH` + `BRPOP` (blocking pop) | Basic task queue |
+| Set | `SADD`/`SINTER` | Tags, unique visitors |
+| Sorted set | `ZADD`/`ZRANGE` (score-ordered) | Leaderboards, sliding windows, priorities |
+| Stream | `XADD`/`XREADGROUP`/`XACK` | Message queue: acks + consumer groups |
 
 **TTL and eviction**: `SET key val EX 300` or `EXPIRE`. Expiration is **lazy** (checked on access) plus an **active** sampling cycle. When `maxmemory` is reached, the eviction policy decides: `noeviction` (writes fail — it's the default!), `allkeys-lru` (the caching classic), `volatile-lru` (only keys with a TTL), `allkeys-lfu` (by frequency, often better for a real cache).
 
@@ -30,6 +32,32 @@ Redis is not just a giant `Map<String, String>`. Its **data structures**:
 - **Cache-aside** (lazy loading — the standard): the app reads the cache; on a miss, it reads the DB then populates the cache with a TTL. Simple, and the cache can go down without breaking the app; in exchange: slow first access and an inconsistency window after a DB write.
 - **Write-through**: every write goes through the cache, which writes to the DB synchronously. Cache always fresh, slower writes.
 - **Write-behind** (write-back): you write to the cache, which flushes to the DB asynchronously. Ultra-fast writes, but **possible data loss** if a crash occurs before the flush.
+
+> 🎤 **In an interview** — don't just recite the three patterns: name each one's flaw. Cache-aside = inconsistency window, write-through = write latency, write-behind = possible data loss. The flaw is what proves you understood.
+
+Cache-aside in practice (Node):
+
+```js
+// Read: cache first, DB on miss, then repopulate
+async function getUser(id) {
+  const key = `user:${id}`;
+  const hit = await redis.get(key);
+  if (hit) return JSON.parse(hit);          // ~1 ms, DB spared
+
+  const user = await db.users.findById(id); // miss → DB
+  const ttl = 300 + Math.floor(Math.random() * 60); // jitter
+  await redis.set(key, JSON.stringify(user), 'EX', ttl);
+  return user;
+}
+
+// Write: DB first, then invalidate the key
+async function updateUser(id, data) {
+  await db.users.update(id, data);
+  await redis.del(`user:${id}`); // next miss repopulates
+}
+```
+
+> 💡 **Jitter costs one line** — a thousand keys created at the same moment expire at the same moment. `TTL ± random` desynchronizes expirations: the cheapest defense against a mass stampede.
 
 **Persistence** — Redis can survive a restart:
 
@@ -41,6 +69,20 @@ Redis is not just a giant `Map<String, String>`. Its **data structures**:
 
 - **Invalidation, the hard problem** ("There are only two hard things in computer science…"). Three approaches: **TTL** (bounded staleness, the universal safety net), **explicit invalidation** (delete the key when the source changes — precise, but you must not miss a single write path), **versioned keys** (change the key, the old one expires on its own). In practice: TTL everywhere, plus explicit invalidation on critical data.
 - **Cache stampede** (dogpile): a hot key expires → hundreds of requests miss at the same time → all hit the DB, which collapses. Countermeasures: a **lock** (`SET lock:k v NX EX 10` — only one recomputes, the others wait or serve the old value), **TTL jitter** (TTL ± random to desynchronize expirations), early recomputation before expiry.
+
+The stampede in one picture:
+
+```text
+t=0 : the hot key expires
+      │
+      ▼  500 simultaneous requests → 500 misses
+ ┌───────┐    0 hits    ┌──────┐
+ │ Redis │─────────────▶│  DB  │ ×500 → overload
+ └───────┘              └──────┘
+Fix: SET lock:k v NX EX 10
+ → only 1 request recomputes the value,
+   the other 499 wait or serve the stale one
+```
 - **Rate limiting**: fixed window = `INCR` + `EXPIRE` (simple, but edge effects at window boundaries); sliding window = a sorted set of timestamps (`ZADD` + `ZREMRANGEBYSCORE` + `ZCARD`).
 - **Multi-command atomicity**: `MULTI`/`EXEC` (transaction without rollback) and above all **Lua scripts** (`EVAL`), executed atomically — that's how you write a correct rate limiter.
 - **Redis as a message queue — and its limits**: pub/sub = fire-and-forget (a disconnected subscriber loses everything); lists = no acknowledgment (crash after `BRPOP` = message lost); **streams** = acks, consumer groups, replay. For rich routing, dead-letter queues and strong contractual guarantees, a real MQ (RabbitMQ, Kafka) remains the dedicated tool.
@@ -59,9 +101,10 @@ Redis is not just a giant `Map<String, String>`. Its **data structures**:
 
 ## Pitfalls & misconceptions
 
+> ⚠️ **Cache without a TTL** — memory fills up inexorably; with `noeviction` (the default!) writes eventually start failing, with `allkeys-lru` data you thought durable silently disappears. A cache without a TTL is a polite memory leak: put a TTL everywhere, even a long one.
+
 - **Hot key**: one extremely popular key (a celebrity's profile) saturates the single thread or a single cluster node. Countermeasures: a local in-process cache in front of Redis, key duplication (`key:1`, `key:2`… read at random).
 - **Big key**: a hash with a million fields → `HGETALL` blocks the event loop for everyone; `DEL` on a big key blocks too → `UNLINK` (asynchronous) and batched traversal (`HSCAN`). And never `KEYS *` in production: `SCAN`.
-- **Cache without TTL**: memory fills up inexorably; with `noeviction` (the default) writes start failing, with `allkeys-lru` data you thought durable silently disappears. A cache without a TTL is a polite memory leak.
 - **Redis as a primary database without thinking**: between two RDB snapshots, a crash loses minutes of data. If the data is precious: AOF everysec at minimum, replication — and ask yourself whether a real DB wouldn't do better.
 - **Caching without measuring**: a cache is judged by its **hit ratio** (`INFO stats`: keyspace_hits/misses). Caching data that's never read again, or huge serialized objects, costs more than it earns.
 

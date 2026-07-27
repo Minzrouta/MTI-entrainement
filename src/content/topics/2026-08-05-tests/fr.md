@@ -12,11 +12,44 @@ Les tests automatisés ont un seul but : **détecter les régressions avant les 
 
 Le modèle mental de référence est la **pyramide de tests** : beaucoup de **tests unitaires** (rapides, isolés, précis), moins de **tests d'intégration** (plusieurs composants ensemble, avec de vraies dépendances), très peu de **tests E2E** (l'application entière pilotée comme un utilisateur). Plus on monte, plus le test est réaliste — et plus il est lent, cher à maintenir et difficile à diagnostiquer quand il échoue. Un test unitaire qui casse pointe la fonction fautive ; un test E2E qui casse dit juste « quelque chose ne va pas quelque part ».
 
+```text
+           ╱╲
+          ╱E2E╲        peu — lents, réalistes
+         ╱──────╲       (parcours critiques)
+        ╱ Intégra-╲    quelques-uns — vraies
+       ╱   tion    ╲    dépendances (DB, API)
+      ╱─────────────╲
+     ╱   Unitaires   ╲ beaucoup — rapides,
+    ╱─────────────────╲ isolés, logique métier
+```
+
+> 💡 **La bonne question** — jamais « unitaire ou E2E ? » dans l'absolu, mais « quel est le test le plus bas de la pyramide qui attraperait ce bug ? ». Plus c'est bas, plus le feedback est rapide et le diagnostic précis.
+
 En entretien, on n'attend pas d'un stagiaire qu'il récite Kent Beck, mais qu'il sache dire **quoi tester à quel niveau et pourquoi**.
 
 ## Comment ça marche
 
-Un bon test unitaire suit le pattern **AAA** : **Arrange** (préparer les données et l'objet testé), **Act** (appeler la fonction), **Assert** (vérifier le résultat). Trois qualités non négociables :
+Un bon test unitaire suit le pattern **AAA** : **Arrange** (préparer les données et l'objet testé), **Act** (appeler la fonction), **Assert** (vérifier le résultat).
+
+```js
+import { describe, it, expect } from "vitest"; // API identique à Jest
+import { computeTotal } from "./cart";
+
+describe("computeTotal", () => {
+  it("applique 10 % de remise au-delà de 100 €", () => {
+    // Arrange — préparer les données
+    const cart = [{ price: 80 }, { price: 40 }];
+
+    // Act — une seule action
+    const total = computeTotal(cart);
+
+    // Assert — vérifier le comportement observable, pas l'interne
+    expect(total).toBe(108); // 120 € − 10 %
+  });
+});
+```
+
+Trois qualités non négociables :
 
 - **Isolation** : le test ne dépend ni du réseau, ni de la base, ni de l'horloge, ni d'un autre test. Les tests doivent pouvoir tourner en parallèle et dans n'importe quel ordre.
 - **Déterminisme** : même code = même résultat, à chaque fois. Les ennemis : `Date.now()`, `Math.random()`, les timeouts, l'ordre d'itération non garanti. On injecte le temps et l'aléa comme des dépendances.
@@ -24,10 +57,12 @@ Un bon test unitaire suit le pattern **AAA** : **Arrange** (préparer les donné
 
 Pour isoler, on remplace les dépendances par des **doubles de test** — et le vocabulaire précis fait bonne impression :
 
-- **Stub** : renvoie des réponses préprogrammées (« quand on appelle `getUser`, renvoie ça »). Sert à alimenter le test.
-- **Mock** : programmé avec des **attentes sur les interactions** — le test échoue si `sendEmail` n'a pas été appelé avec les bons arguments. Sert à vérifier un effet de bord.
-- **Spy** : enregistre les appels reçus (arguments, nombre) sans changer le comportement, pour inspection après coup.
-- **Fake** : une vraie implémentation, simplifiée — un repository en mémoire avec une `Map` au lieu de Postgres. Plus robuste que les mocks pour les tests d'un peu plus haut niveau.
+| Double | Ce qu'il fait | Sert à | Exemple |
+|---|---|---|---|
+| **Stub** | renvoie des réponses préprogrammées | alimenter le test en données | `getUser` renvoie toujours Alice |
+| **Mock** | attend des **interactions** précises | vérifier un effet de bord | le test échoue si `sendEmail` n'est pas appelé avec les bons arguments |
+| **Spy** | enregistre les appels sans changer le comportement | inspecter après coup | combien d'appels, avec quels arguments |
+| **Fake** | vraie implémentation, simplifiée | tester sans l'infra | repository en mémoire (`Map` au lieu de Postgres), plus robuste qu'un mock |
 
 Le **TDD (Test-Driven Development)** inverse l'ordre d'écriture : **red** (écrire un test qui échoue), **green** (le code minimal qui le fait passer), **refactor** (nettoyer, les tests au vert). Ce que ça apporte vraiment : on définit le comportement attendu *avant* de coder (ce qui force à clarifier l'API), chaque ligne de code existe pour faire passer un test, et on obtient un filet de sécurité gratuit. Ce que ça n'est pas : une religion — beaucoup d'excellents devs pratiquent un TDD partiel (sur la logique métier complexe, pas sur le code de glue).
 
@@ -41,6 +76,8 @@ Le **TDD (Test-Driven Development)** inverse l'ordre d'écriture : **red** (écr
 
 ## En entretien
 
+> 🎤 **En entretien** — « comment testes-tu ton code ? » appelle une réponse structurée par niveaux : unitaires sur la logique métier (AAA, doubles de test), intégration avec de vraies dépendances (Testcontainers), E2E sur les parcours critiques (Playwright), le tout en CI qui bloque le merge. Quatre phrases, question pliée.
+
 **« C'est quoi un bon test unitaire ? »** — Rapide (millisecondes), isolé (ni réseau, ni base, ni ordre d'exécution), déterministe, structuré en Arrange-Act-Assert, et qui vérifie un comportement observable — pas les détails d'implémentation. Bonus : un bon test échoue pour une seule raison, et son nom dit laquelle.
 
 **« Mock vs stub ? »** — Le stub *fournit* des données au test (réponses préprogrammées) ; le mock *vérifie* des interactions (le test échoue si la méthode attendue n'est pas appelée correctement). En une phrase : stub = état, mock = comportement. Ajouter fake (implémentation simplifiée mais réelle) et spy (enregistre sans modifier) montre que le vocabulaire est maîtrisé.
@@ -53,7 +90,8 @@ Le **TDD (Test-Driven Development)** inverse l'ordre d'écriture : **red** (écr
 
 ## Pièges & idées reçues
 
-- **L'abus de mocks** : quand un test mocke cinq dépendances et vérifie chaque appel interne, il ne teste plus le comportement mais recopie l'implémentation — le moindre refactoring casse dix tests qui étaient tous verts pour de mauvaises raisons. Préférer les fakes et tester des unités un peu plus grosses.
+> ⚠️ **L'abus de mocks** — un test qui mocke cinq dépendances et vérifie chaque appel interne ne teste plus le comportement : il recopie l'implémentation. Le moindre refactoring casse dix tests qui étaient tous verts pour de mauvaises raisons. Préférer les fakes, et tester des unités un peu plus grosses.
+
 - **Tester l'implémentation** : vérifier qu'une méthode privée est appelée, asserter sur l'état interne… Ces tests gênent le refactoring qu'ils étaient censés permettre.
 - **Le `sleep()` dans les tests E2E** : la cause n°1 de flakiness. Toujours attendre une condition (élément visible, requête terminée), jamais une durée.
 - **« Les tests ralentissent le développement »** — vrai la première semaine, faux dès le premier refactoring ou le premier bug de régression évité. Le coût réel, c'est la maintenance de *mauvais* tests (couplés à l'implémentation, flaky).

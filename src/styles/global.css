@@ -336,13 +336,50 @@ h1, h2, h3 {
   line-height: 1.55;
 }
 .prose pre code { background: none; padding: 0; }
+/* Callouts : tout blockquote est un encadré (💡 astuce, ⚠️ piège, 🎤 entretien) */
 .prose blockquote {
   margin-inline: 0;
-  padding-inline-start: 1rem;
-  border-inline-start: 2px solid var(--marge);
-  color: var(--ink-muted);
-  font-style: italic;
+  margin-block: 1.25rem;
+  padding: 0.8rem 1.1rem;
+  background: var(--bic-soft);
+  border-inline-start: 3px solid var(--bic);
+  border-radius: 0 6px 6px 0;
+  font-size: 0.97rem;
 }
+.prose blockquote p { margin: 0.25em 0; }
+
+.prose table {
+  display: block;
+  overflow-x: auto;
+  border-collapse: collapse;
+  margin-block: 1.25rem;
+  font-size: 0.92rem;
+}
+.prose th {
+  font-family: var(--display);
+  font-weight: 650;
+  text-align: start;
+  border-bottom: 2px solid var(--bic);
+  padding: 0.4rem 1rem 0.4rem 0;
+  white-space: nowrap;
+}
+.prose td {
+  border-bottom: 1px solid var(--line);
+  padding: 0.45rem 1rem 0.45rem 0;
+  vertical-align: top;
+}
+
+.toc {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1.1rem;
+  margin-top: 1.5rem;
+  font-family: var(--mono);
+  font-size: 0.8rem;
+}
+.toc a { color: var(--ink-muted); text-decoration: none; }
+.toc a:hover { color: var(--bic); }
+.toc a::before { content: '§ '; color: var(--marge); }
 
 /* ---------- Entraînement ---------- */
 

@@ -23,9 +23,45 @@ The object model fits in four types, stored in `.git/objects`:
 
 A **branch is just a pointer**: a 41-byte file in `.git/refs/heads/` containing a commit hash. `HEAD` points to the current branch. Creating a branch is instant and free — that's Git's killer feature, and the whole history is just a directed acyclic graph (DAG) of commits.
 
-**Merge vs rebase**: `git merge feature` creates a merge commit with two parents and preserves history as it actually happened. `git rebase main` (from `feature`) **replays** each commit of the branch on top of `main`: Git computes each diff and creates **new commits** — new hashes, linear history, but rewritten. The old commits still exist in `.git/objects`; simply, nothing points to them anymore.
+**Merge vs rebase**: `git merge feature` creates a merge commit with two parents and preserves history as it actually happened. `git rebase main` (from `feature`) **replays** each commit on top of `main`: **new commits** (new hashes), a linear but rewritten history — the old commits still exist in `.git/objects`, nothing points to them anymore.
+
+```text
+before                       after `git rebase main`
+
+      A──B  feature
+     /                       ──C──D──E──A'──B'  feature
+──C──D──E  main                      ▲
+                                     main
+```
+
+| | `git merge` | `git rebase` |
+|---|---|---|
+| History | Real, non-linear | Rewritten, linear |
+| Commits | 1 merge commit (2 parents) | New commits, new hashes |
+| Reading & bisect | Noisier | Straight line, easy to bisect |
+| Shared branch | Safe | Forbidden |
+| Typical use | Integrating the PR | Updating your branch onto `main` |
+
+> 🎤 **In an interview** — when asked "merge or rebase?", the point-scoring reflex: draw this diagram. Two arrows, five commits, and you show you understand the object model instead of reciting a preference.
 
 **Interactive rebase** (`git rebase -i HEAD~5`) opens the list of commits in your editor: `pick` (keep), `reword` (change the message), `squash`/`fixup` (fold into the previous one), `edit` (stop to amend), `drop` (delete) — and you can reorder the lines. It's the standard tool for cleaning up a branch before opening the pull request.
+
+A typical session:
+
+```bash
+$ git rebase -i HEAD~4      # rework the last 4 commits
+
+# --- the todo file opened in the editor ---
+pick   a1b2c3d feat: login form
+reword f4e5d6c fix typo          # stop to rewrite this message
+squash 9a8b7c6 wip               # fold into the previous commit
+drop   3c2b1a0 debug logs        # delete this commit
+
+# save and quit: Git replays everything in order.
+# Going wrong? `git rebase --abort` puts everything back.
+```
+
+> 💡 **Safety net** — a botched rebase destroys nothing: `git reflog` gives you the hash from before the operation, `git reset --hard HEAD@{n}` restores it. Saying this unprompted shows the tool doesn't scare you.
 
 ## Key concepts to master
 
@@ -50,7 +86,8 @@ A **branch is just a pointer**: a 41-byte file in `.git/refs/heads/` containing 
 
 ## Pitfalls & misconceptions
 
-- **Rebasing a shared branch**: rebase creates new hashes; colleagues who based their work on the old commits end up with diverged histories that are painful to reconcile. Rebase is allowed only on your local, unshared commits.
+> ⚠️ **The golden rule** — never rebase a **shared** branch: the new hashes leave colleagues who based their work on the old commits with diverged histories that are painful to reconcile. Rebase only your local, unpushed commits; when in doubt, merge.
+
 - **`git push --force` as a reflex**: prefer `--force-with-lease` — same effect when all is well, but it fails if the remote branch moved since your last fetch. Wiping out a colleague's work with `--force` is the classic blunder.
 - **"The rebase deleted my commits"** — no: the old commits are no longer referenced but remain in `.git/objects` and in the reflog for weeks.
 - **`git pull` is not harmless**: it's `fetch` + `merge`, a source of noisy merge commits. `git pull --rebase` (or `pull.rebase=true` in config) keeps local history clean.

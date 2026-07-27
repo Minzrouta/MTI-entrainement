@@ -10,9 +10,20 @@ summary: "Savoir défendre le monolithe ET expliquer quand les microservices se 
 
 Un **monolithe** est une application déployée comme une seule unité : un processus, une base de données, un déploiement. Des **microservices** découpent le système en services indépendants, chacun avec son code, sa base et son cycle de déploiement, communiquant par le réseau.
 
-Le point que les entretiens cherchent à vérifier : **le monolithe est souvent le bon choix**, surtout en début de projet. Un appel de fonction est infiniment plus simple qu'un appel réseau : pas de latence, pas de panne partielle, pas de sérialisation, une transaction ACID couvre tout, un seul déploiement, un debugging avec une stack trace. Le mauvais réflexe « startup = microservices » a coulé plus de projets que les monolithes qu'il prétendait éviter.
+| | Monolithe | Microservices |
+|---|---|---|
+| Déploiement | une unité, atomique | indépendant, service par service |
+| Données | une base, transactions ACID | database-per-service, cohérence à terme |
+| Appels | fonctions — gratuits, fiables | réseau — latence, pannes partielles |
+| Ops | 1 pipeline, 1 monitoring | N pipelines, tracing distribué, plateforme |
+| Équipe | une petite équipe suffit | exige plusieurs équipes autonomes |
+| Debugging | une stack trace | une enquête multi-services |
+
+Le point que les entretiens cherchent à vérifier : **le monolithe est souvent le bon choix**, surtout en début de projet. Un appel de fonction est infiniment plus simple qu'un appel réseau — toute la colonne de droite se paie cash. Le mauvais réflexe « startup = microservices » a coulé plus de projets que les monolithes qu'il prétendait éviter.
 
 La vraie alternative au plat de spaghetti n'est pas le microservice, c'est le **monolithe modulaire** : un seul déployable, mais des modules internes aux frontières nettes (le module `billing` n'accède au module `users` que par son interface publique). On garde la simplicité opérationnelle, on prépare un éventuel découpage futur — et si les frontières sont bonnes, extraire un module en service devient un déménagement, pas une réécriture.
+
+> 🎤 **En entretien** — savoir défendre le monolithe est le vrai signal de maturité. « Pour ce projet, je garderais un monolithe modulaire : une seule équipe, un domaine encore mouvant, aucun besoin de scaling asymétrique » vaut plus que n'importe quel buzzword Kubernetes.
 
 ## Comment ça marche
 
@@ -21,6 +32,8 @@ La vraie alternative au plat de spaghetti n'est pas le microservice, c'est le **
 - **Déploiement indépendant** : l'équipe paiement déploie 10 fois par jour sans attendre le train de release des autres. C'est LA promesse centrale — si vos services doivent se déployer ensemble, vous n'avez pas des microservices.
 - **Scaling ciblé** : on réplique le service de recherche sous forte charge sans dupliquer tout le reste. (Honnêteté : un monolithe se réplique aussi très bien derrière un load balancer — l'argument vaut surtout pour des besoins très asymétriques : GPU, mémoire, langage spécifique.)
 - **Ownership d'équipe** : chaque équipe possède ses services de bout en bout — code, base, astreinte. C'est la **loi de Conway** appliquée volontairement : l'architecture reflète l'organisation, autant la choisir. Corollaire : découper en microservices une équipe de 3 devs, c'est créer des frontières entre… personne.
+
+> 💡 **Le test décisif** — une seule question juge une architecture microservices : « peux-tu déployer ce service seul, sans coordonner personne ? ». Si la réponse est non, vous payez le prix du distribué sans son bénéfice central.
 
 **Les coûts cachés** — tout ce qu'un appel de fonction faisait gratuitement :
 
@@ -34,10 +47,24 @@ La vraie alternative au plat de spaghetti n'est pas le microservice, c'est le **
 ## Concepts clés à maîtriser
 
 - **Monolithe modulaire** : la réponse nuancée qui fait mouche en entretien. Frontières logiques sans frontières réseau.
-- **Distributed monolith** : l'anti-pattern n°1 — des services séparés par le réseau mais couplés au point de devoir se déployer ensemble (API fragiles, base partagée, appels synchrones en chaîne). On paie tous les coûts du distribué sans aucun bénéfice.
+- **Distributed monolith** : l'anti-pattern n°1 — des services séparés par le réseau mais couplés au point de devoir se déployer ensemble. Tous les coûts du distribué, aucun bénéfice (voir l'encadré des pièges).
 - **Database-per-service** : condition nécessaire de l'indépendance. Deux services qui partagent une base sont couplés par le schéma — un `ALTER TABLE` de l'un casse l'autre.
 - **Saga** : la réponse aux transactions distribuées — transactions locales + compensations, orchestrées (un coordinateur) ou chorégraphiées (chaîne d'événements).
 - **Strangler fig** : la stratégie de migration raisonnable — on extrait du monolithe une capacité à la fois, un proxy route progressivement le trafic vers le nouveau service, le monolithe « s'étrangle » petit à petit. Jamais de big bang rewrite.
+
+```text
+             ┌───────┐
+ Clients ──▶ │ Proxy │  route de plus en plus
+             └───┬───┘  vers les services extraits
+        ┌────────┴────────┐
+        ▼                 ▼
+ ┌────────────┐    ┌──────────────┐
+ │ Monolithe  │    │ Service      │
+ │ (rétrécit) │    │ extrait n° 1 │
+ └────────────┘    └──────────────┘
+  /orders /users      /billing
+```
+
 - **Quand migrer** : quand les limites deviennent concrètes — des équipes qui se bloquent mutuellement au déploiement, un module aux besoins de scaling radicalement différents, une organisation qui dépasse ce qu'un déployable unique supporte. La douleur d'abord, le découpage ensuite.
 
 ## En entretien
@@ -53,6 +80,8 @@ La vraie alternative au plat de spaghetti n'est pas le microservice, c'est le **
 **« Comment migrer un monolithe vers des microservices ? »** — Strangler fig : d'abord modulariser le monolithe pour révéler les vraies frontières, puis extraire la capacité qui a le meilleur ratio douleur/risque (souvent un domaine périphérique), router le trafic via un proxy ou une gateway, répéter. Chaque extraction doit se justifier seule — si aucune ne se justifie, on garde le monolithe et c'est très bien.
 
 ## Pièges & idées reçues
+
+> ⚠️ **Le distributed monolith vous guette** — le symptôme infaillible : « on déploie les trois services ensemble le jeudi ». Base partagée, API fragiles, chaînes d'appels synchrones : vous payez la latence et les pannes partielles du distribué sans son seul vrai bénéfice, le déploiement indépendant.
 
 - **« Les microservices, c'est plus scalable »** — un monolithe répliqué derrière un load balancer scale très bien. Le scaling ciblé ne se justifie que pour des besoins vraiment asymétriques.
 - **Microservices à 3 devs** : les frontières de services servent à découpler des *équipes*. Sans équipes multiples, on hérite des coûts sans les bénéfices.

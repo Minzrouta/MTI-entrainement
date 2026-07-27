@@ -12,11 +12,43 @@ Three styles dominate API design. **REST** exposes **resources** manipulated thr
 
 None is "better": they are trade-offs. The interview question is never "which one is best" but "which would you choose here, and why".
 
+| | REST | GraphQL | gRPC |
+|---|---|---|---|
+| Transport | HTTP, textual JSON | HTTP, single `POST /graphql` | HTTP/2, binary protobuf |
+| Contract | OpenAPI (optional) | Typed schema (mandatory) | `.proto` (mandatory, codegen) |
+| Caching | Native HTTP (CDN, browser) | Hard (everything is POST) | Application's responsibility |
+| Streaming | No (polling, SSE) | Subscriptions | Native, 4 modes |
+| Use case | Public API | BFF, mobile, aggregation | Internal microservices |
+
+> 💡 **The decisive row** — caching: REST gets it for free (GET + CDN + browser), GraphQL loses it (everything goes through POST on a single endpoint). For a heavily read public API, that's often the argument that ends the debate.
+
 ## How it works
 
 **REST** (REpresentational State Transfer): resources named by URLs (`/users/42/orders`), manipulated through HTTP verbs — `GET` (read, no side effects), `POST` (create), `PUT` (replace), `PATCH` (partial update), `DELETE`. **Status codes** carry the outcome: 200 OK, 201 Created, 204 No Content, 400 bad request, 401 unauthenticated, 403 unauthorized, 404 not found, 409 Conflict, 422 validation error, 500 server error. **Stateless**: each request carries its full context (auth token included), the server keeps no session in memory — which makes horizontal scaling trivial. HATEOAS, in one sentence: the "pure" REST constraint where each response contains links to the possible next actions — rarely implemented in practice, but worth mentioning.
 
-**GraphQL**: a **strongly typed schema** (types, queries, mutations, subscriptions) exposed on a single endpoint, usually `POST /graphql`. The client sends a query describing precisely the fields it wants, across relations too: no more **over-fetching** (receiving 40 fields to display 3) and no more **under-fetching** (chaining 3 REST calls to fill a single screen). Server-side, each field is produced by a **resolver**; naively, a list of N articles with their author triggers 1 + N SQL queries — the famous **N+1 problem**, solved by batching (the DataLoader pattern).
+**GraphQL**: a **strongly typed schema** (types, queries, mutations, subscriptions) exposed on a single endpoint, usually `POST /graphql`. The client sends a query describing precisely the fields it wants, across relations too: no more **over-fetching** and no more **under-fetching** — both illustrated in the example below. Server-side, each field is produced by a **resolver**; naively, a list of N articles with their author triggers 1 + N SQL queries — the famous **N+1 problem**, solved by batching (the DataLoader pattern).
+
+The same "profile + latest orders" screen, in both styles:
+
+```bash
+# REST: two round trips, every field of each resource
+GET /users/42          # 40 fields received… to display 3
+GET /users/42/orders   # second call to fill the screen
+```
+
+```graphql
+# GraphQL: one round trip, exactly the fields you want
+query {
+  user(id: 42) {
+    name
+    avatarUrl
+    orders(last: 5) {   # the relation traversed in the same query
+      total
+      status
+    }
+  }
+}
+```
 
 **gRPC**: contract-first — you write a `.proto` file (messages + services), the **protobuf** compiler generates clients and servers in most languages. Compact binary serialization (numbered fields, no repeated key names like JSON), **HTTP/2** transport: call multiplexing over a single connection, header compression. Four call modes: unary (request/response), server streaming, client streaming, bidirectional streaming. Propagated deadlines between services and dedicated status codes complete the contract.
 
@@ -30,6 +62,8 @@ None is "better": they are trade-offs. The interview question is never "which on
 
 ## In an interview
 
+> 🎤 **In an interview** — to "which would you choose?", the right answer starts with "it depends", followed by concrete criteria: who consumes (public, mobile, internal), caching needs, streaming needs. REST by default, GraphQL or gRPC when a specific need justifies it — in that order.
+
 **"What is REST, exactly?"** — An architectural style (Roy Fielding's dissertation, 2000): resources identified by URLs, the uniform HTTP interface (verbs + status codes), stateless, cacheable responses. Bonus points: note that most real-world "REST APIs" are JSON-over-HTTP without HATEOAS — and that this is a perfectly deliberate compromise.
 
 **"PUT vs PATCH vs POST?"** — POST creates a resource (not idempotent: two POSTs = two resources). PUT fully replaces the resource at the given URL (idempotent: replaying it changes nothing more). PATCH applies a partial update (not guaranteed idempotent). Practical consequence: replaying a PUT on timeout is safe, replaying a POST is not without an idempotency key.
@@ -42,8 +76,9 @@ None is "better": they are trade-offs. The interview question is never "which on
 
 ## Pitfalls & misconceptions
 
+> ⚠️ **The anti-pattern to ban** — returning `200 OK` with `{"error": ...}` in the body: monitoring sees nothing, automatic retries never trigger, a cache may store the error. The status code is part of the contract.
+
 - **"REST = JSON over HTTP"** — REST is a set of constraints. `POST /getUserById` is RPC in disguise: verbs in URLs are a red flag in code review.
-- **Returning 200 with an error in the body**: breaks monitoring, automatic retries and caching. The status code is part of the contract.
 - **"GraphQL replaces REST"** — no: for a simple or heavily cacheable public API, GraphQL adds complexity with no benefit. It's a data composition tool, not a universal evolution of REST.
 - **"gRPC everywhere, even externally"** — careful: unreadable with curl without tooling (grpcurl), indirect browser support (grpc-web + proxy), and a binary contract is slower to debug than JSON.
 - **Statelessness misunderstood**: the server obviously has state (the database); it's *session* state that must not live in an instance's memory — otherwise load balancing and autoscaling break.

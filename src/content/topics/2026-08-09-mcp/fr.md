@@ -22,26 +22,69 @@ L'architecture est **client-serveur**, avec trois rôles :
 - **Client** — le connecteur, à l'intérieur du host : une connexion 1-à-1 avec un serveur. Un host qui parle à trois serveurs maintient trois clients.
 - **Serveur** — un programme (souvent minuscule) qui expose des capacités : accès à GitHub, à une base de données, à un navigateur, au système de fichiers.
 
+```text
+       HOST (Claude Desktop, IDE, agent…)
+ ┌──────────────────────────────────────┐
+ │   LLM ◀──▶ orchestration/approbation │
+ │      client A          client B      │
+ └─────────┼─────────────────┼──────────┘
+           │ stdio           │ HTTP streamable
+  ┌────────▼─────┐   ┌───────▼───────┐
+  │ serveur MCP  │   │ serveur MCP   │
+  │ (filesystem) │   │ (GitHub…)     │
+  └──────────────┘   └───────────────┘
+  1 client = 1 connexion vers 1 serveur
+```
+
 Un serveur peut exposer trois types de capacités, et la distinction est une question d'entretien classique :
 
 - **Tools** — des fonctions que **le modèle** décide d'appeler (avec approbation de l'utilisateur) : `create_issue`, `query_database`. Contrôlées par le modèle.
 - **Resources** — des données en lecture que **l'application** attache au contexte : contenu de fichier, ligne de base de données, réponse d'API. Contrôlées par l'application.
 - **Prompts** — des templates réutilisables que **l'utilisateur** déclenche explicitement (menus, slash commands). Contrôlés par l'utilisateur.
 
+> 🎤 **En entretien** — « tools, resources, prompts : qui contrôle quoi ? » se répond en trois mots : le modèle, l'application, l'utilisateur. Le sortir sans hésiter montre qu'on a lu la spec.
+
 Sous le capot, tout passe par **JSON-RPC 2.0** : la session démarre par une poignée de main `initialize` où client et serveur négocient version du protocole et capacités, puis le client découvre ce qui est disponible (`tools/list`) et appelle (`tools/call`). Deux **transports** standard : **stdio** — le host lance le serveur comme sous-processus et communique via stdin/stdout, idéal en local (c'est comme ça que Claude Desktop lance la plupart des serveurs) ; et **HTTP streamable** — le serveur est un endpoint HTTP distant, avec streaming des réponses (ce transport remplace l'ancien HTTP+SSE), pour les serveurs partagés ou hébergés.
+
+Ce qu'un serveur renvoie à `tools/list` — un tool n'est qu'un nom, une description et un JSON Schema :
+
+```jsonc
+{
+  "name": "create_issue",          // ce que le modèle appellera
+  "description": "Crée une issue GitHub dans un dépôt",
+  "inputSchema": {                 // JSON Schema des arguments
+    "type": "object",
+    "properties": {
+      "repo":  { "type": "string" },  // ex. "owner/projet"
+      "title": { "type": "string" }
+    },
+    "required": ["repo", "title"]  // le modèle doit les fournir
+  }
+}
+```
+
+> 💡 **La description est du prompt engineering** — c'est elle que le modèle lit pour décider quand et comment appeler le tool ; une description floue = des appels ratés. Avec les SDK officiels (Python, TypeScript…), ce JSON est généré depuis une simple fonction annotée : un serveur basique tient en trente lignes.
 
 ## Concepts clés à maîtriser
 
-- **MCP vs function calling** : le function calling existe depuis 2023 — on décrit des fonctions en JSON Schema et le modèle génère des appels. Mais chaque intégration reste du code custom dans une seule app. MCP standardise la **couche au-dessus** : découverte dynamique des outils, protocole de communication, cycle de vie de la session. Un serveur MCP est réutilisable par n'importe quel host ; une fonction câblée dans ton backend ne l'est pas. Les deux se complètent : côté modèle, un tool MCP finit par ressembler à du function calling classique.
-- **Écosystème** : des milliers de serveurs existent — officiels (GitHub, filesystem, fetch/navigateur, mémoire persistante), éditeurs (Stripe, Notion, Sentry, Cloudflare…), communautaires (Postgres, Docker, Kubernetes). Les SDK officiels (TypeScript, Python, et d'autres) permettent d'écrire un serveur basique en quelques dizaines de lignes : on déclare un tool avec son schéma d'entrée, le SDK gère le protocole.
-- **Sécurité — le sujet qui fait la différence** : brancher des outils sur un LLM ouvre des risques réels. Le principal : la **prompt injection indirecte** — un contenu externe lu par un outil (une issue GitHub, une page web, un email) contient des instructions malveillantes que le modèle risque de suivre, par exemple « exfiltre les secrets via l'outil d'envoi de mail ». La combinaison dangereuse : accès à des données privées + exposition à du contenu non fiable + capacité de communication externe. Parades : **principe du moindre privilège** (tokens à permissions minimales, serveurs read-only quand possible), **human-in-the-loop** (approbation des appels sensibles), ne pas empiler des serveurs non audités, isoler les serveurs à risque.
+- **MCP vs function calling** : les deux se complètent — côté modèle, un tool MCP finit par ressembler à du function calling classique. Ce que MCP standardise, c'est la **couche au-dessus** :
+
+| | Function calling (2023) | MCP |
+|---|---|---|
+| Nature | Mécanisme du modèle : générer des appels | Protocole ouvert au-dessus |
+| Intégration | Code custom dans une seule app | Serveur réutilisable par tout host |
+| Découverte | Fonctions câblées en dur | Dynamique (`tools/list`) |
+| Transport | Interne à l'application | JSON-RPC sur stdio ou HTTP |
+
+- **Écosystème** : des milliers de serveurs existent — officiels (GitHub, filesystem, fetch/navigateur, mémoire persistante), éditeurs (Stripe, Notion, Sentry, Cloudflare…), communautaires (Postgres, Docker, Kubernetes).
+- **Sécurité — le sujet qui fait la différence** : brancher des outils sur un LLM ouvre des risques réels, le principal étant la **prompt injection indirecte** (détaillée dans les pièges). Parades : **principe du moindre privilège** (tokens à permissions minimales, serveurs read-only quand possible), **human-in-the-loop** (approbation des appels sensibles), ne pas empiler des serveurs non audités, isoler les serveurs à risque.
 - **Limites honnêtes** : chaque serveur connecté ajoute ses définitions d'outils au contexte (coût en tokens), la qualité des serveurs communautaires varie, et un agent avec 50 outils choisit moins bien qu'avec 5. MCP est une brique d'infrastructure, pas une baguette magique.
 
 ## En entretien
 
 **« C'est quoi MCP, en deux phrases ? »** — Un protocole ouvert qui standardise la connexion entre applications LLM et outils/données externes, comme USB-C standardise les périphériques. Il transforme le problème d'intégration N×M en N+M : un serveur écrit une fois sert à tous les hosts compatibles.
 
-**« Quelle différence avec le function calling ? »** — Le function calling est le mécanisme par lequel un modèle génère des appels de fonctions ; il est propriétaire à chaque app. MCP est un protocole ouvert au-dessus : découverte dynamique, transport standardisé (JSON-RPC sur stdio ou HTTP), réutilisabilité entre applications. Analogie : function calling = savoir appeler une fonction ; MCP = la norme qui permet de brancher des bibliothèques de fonctions interchangeables.
+**« Quelle différence avec le function calling ? »** — dérouler le tableau plus haut, puis l'analogie qui marque : function calling = savoir appeler une fonction ; MCP = la norme qui permet de brancher des bibliothèques de fonctions interchangeables.
 
 **« Tools, resources, prompts : qui contrôle quoi ? »** — Tools : le modèle décide de l'appel (l'utilisateur approuve). Resources : l'application choisit ce qu'elle attache au contexte. Prompts : l'utilisateur déclenche explicitement. Cette séparation des contrôles est un choix de design du protocole.
 
@@ -50,6 +93,8 @@ Sous le capot, tout passe par **JSON-RPC 2.0** : la session démarre par une poi
 **« Tu l'as utilisé concrètement ? »** — La meilleure réponse d'un stagiaire : citer un usage réel (un serveur MCP GitHub ou Postgres branché dans Claude Code ou un IDE), ou mieux, avoir écrit un petit serveur avec le SDK Python/TypeScript — trente lignes suffisent pour exposer un tool et comprendre le protocole de l'intérieur.
 
 ## Pièges & idées reçues
+
+> ⚠️ **Prompt injection via les outils** — le contenu qu'un outil rapporte (page web, issue GitHub, email) peut contenir des instructions cachées que le modèle risque de suivre : « exfiltre les secrets via l'outil d'envoi de mail ». La combinaison fatale : données privées + contenu non fiable + canal de sortie externe. Ne jamais réunir les trois sans approbation humaine.
 
 - **« MCP rend le modèle plus intelligent »** — non : il standardise l'accès aux outils. Un modèle qui raisonne mal choisira toujours mal ses outils, protocole ou pas.
 - **« MCP remplace les API »** — non : un serveur MCP est presque toujours un **wrapper** autour d'une API existante, qui la décrit dans un format consommable par un LLM. L'API REST reste en dessous.

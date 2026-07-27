@@ -19,8 +19,10 @@ export async function getStaticPaths() {
 }
 
 const { topic, dayNo, older, newer } = Astro.props;
-const { Content: FrContent } = await render(topic.fr);
-const { Content: EnContent } = await render(topic.en);
+const { Content: FrContent, headings: frHeadings } = await render(topic.fr);
+const { Content: EnContent, headings: enHeadings } = await render(topic.en);
+const frToc = frHeadings.filter((h) => h.depth === 2);
+const enToc = enHeadings.filter((h) => h.depth === 2);
 ---
 
 <Base title={topic.fr.data.title} description={topic.fr.data.summary}>
@@ -48,6 +50,13 @@ const { Content: EnContent } = await render(topic.en);
         <span data-l="en">{topic.en.data.summary}</span>
       </p>
     </header>
+
+    <nav class="toc" data-l="fr" aria-label="Sommaire">
+      {frToc.map((h) => <a href={`#${h.slug}`}>{h.text}</a>)}
+    </nav>
+    <nav class="toc" data-l="en" aria-label="Contents">
+      {enToc.map((h) => <a href={`#${h.slug}`}>{h.text}</a>)}
+    </nav>
 
     <div class="prose" data-l="fr"><FrContent /></div>
     <div class="prose" data-l="en"><EnContent /></div>

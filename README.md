@@ -21,6 +21,12 @@ Créer `src/content/topics/YYYY-MM-DD-slug/` avec **trois fichiers** :
 - `fr.md` / `en.md` — frontmatter `title`, `date` (= la date du dossier),
   `category`, `level`, `summary`, puis l'exposé en markdown. Sections types :
   L'essentiel · Comment ça marche · Concepts clés · En entretien · Pièges · Pour aller plus loin.
+  Chaque fiche inclut (voir l'exemplaire `2026-07-27-docker/`) :
+  - 1 **tableau comparatif** markdown là où c'est pertinent
+  - 1 **exemple de code commenté** (bloc avec langage → coloration Shiki)
+  - 1 **schéma ASCII** dans un bloc ` ```text ` (≤ 60 colonnes — passe aussi sur Discord)
+  - 2-3 **callouts** en blockquote : `> 💡 **…** —`, `> ⚠️ **…** —`, `> 🎤 **En entretien** —`
+    (rendus en encadrés sur le site, en citations sur Discord)
 - `quiz.json` :
 
 ```json

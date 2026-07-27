@@ -14,6 +14,8 @@ Le **CD** recouvre deux pratiques qu'il faut distinguer en entretien. **Continuo
 
 Le tout repose sur un principe : **si c'est manuel, ça sera oublié ou raté un vendredi soir**. On automatise pour rendre les déploiements ennuyeux.
 
+> 🎤 **En entretien** — le recruteur ne veut pas la théorie, il veut VOTRE pipeline : « sur mon projet X, chaque push lance lint + tests ; un merge sur `main` construit l'image et la déploie ». Trois jobs sur un projet perso valent tous les buzzwords.
+
 ## Comment ça marche
 
 Un pipeline typique s'exécute à chaque push ou pull request, en étapes ordonnées qui échouent vite :
@@ -24,16 +26,71 @@ Un pipeline typique s'exécute à chaque push ou pull request, en étapes ordonn
 4. **Artefact** — le produit du build (image taguée par SHA de commit, binaire, bundle) est publié sur un registry. Règle d'or : **on construit une fois, on déploie ce même artefact partout** — pas de rebuild entre staging et prod.
 5. **Déploiement** — automatique vers staging, puis prod (avec ou sans approbation manuelle selon delivery/deployment).
 
+```text
+push
+  │
+  ▼
+lint ──✖ stop (30 s)
+  │
+  ▼
+tests ──✖ stop
+  │
+  ▼
+build ──▶ artefact (image:sha) ──▶ registry
+                                      │
+                        staging ◀─────┘
+                           │  smoke tests
+                           ▼
+                         prod (approbation ou auto)
+```
+
 Côté outils, GitHub Actions et GitLab CI partagent les mêmes concepts sous des noms proches. Un **workflow** (Actions) ou une **pipeline** (GitLab) est décrit en YAML versionné avec le code (`.github/workflows/ci.yml`, `.gitlab-ci.yml`). Il contient des **jobs** — unités d'exécution isolées, chacune sur une machine fraîche — regroupés en **stages** (GitLab) ou ordonnés par `needs` (Actions). Les jobs tournent sur des **runners** : machines hébergées par la plateforme ou auto-hébergées (self-hosted, utile pour du GPU ou un réseau privé). Comme chaque job part d'un environnement vierge, le **cache** (node_modules, `~/.cargo`, couches Docker) est ce qui fait la différence entre un pipeline de 3 minutes et un de 15.
+
+Les mêmes concepts, en vrai, dans un workflow Actions minimal :
+
+```yaml
+name: ci
+on: [push]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest          # runner hébergé par GitHub
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20, cache: npm }  # le cache qui change tout
+      - run: npm ci
+      - run: npm run lint           # le moins cher d'abord (fail fast)
+      - run: npm test
+
+  build:
+    needs: test                     # ne tourne que si `test` est vert
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # taguée par SHA : le MÊME artefact ira en staging et en prod
+      - run: docker build -t ghcr.io/org/api:${{ github.sha }} .
+      - run: docker push ghcr.io/org/api:${{ github.sha }}
+        env:
+          GH_TOKEN: ${{ secrets.GHCR_TOKEN }}   # chiffré côté plateforme
+```
+
+> 💡 **Réflexe à montrer** — le tag par SHA n'est pas un détail : c'est lui qui rend le « build once, deploy everywhere » vérifiable. `api:3f2c1d9` est identique bit à bit en staging et en prod ; `api:latest` ne garantit rien.
 
 Les **environnements** (staging, production) portent leur configuration et leurs **secrets** : stockés chiffrés côté plateforme, injectés en variables d'environnement à l'exécution, masqués dans les logs. Jamais dans le repo, jamais dans l'image Docker.
 
 ## Concepts clés à maîtriser
 
 - **Delivery vs deployment** : la distinction précise (voir ci-dessus) est une question piège classique. La différence tient en une phrase : qui appuie sur le bouton.
-- **Rolling deployment** : on remplace les instances une par une derrière le load balancer. Pas d'interruption, mais deux versions coexistent pendant la bascule — le code et les migrations DB doivent être rétro-compatibles.
-- **Blue-green** : deux environnements complets ; on déploie sur l'inactif (green), on teste, on bascule le trafic d'un coup. Rollback = rebasculer. Coût : doubler l'infra.
-- **Canary** : la nouvelle version reçoit d'abord 1-5 % du trafic ; on surveille les métriques (erreurs, latence) avant d'élargir. C'est la stratégie qui limite le mieux le rayon d'impact d'un bug.
+- **Stratégies de déploiement** : trois façons de mettre la nouvelle version face au trafic — les compromis tiennent dans un tableau :
+
+| | Rolling | Blue-green | Canary |
+|---|---|---|---|
+| Principe | instances remplacées une à une | 2 environnements, bascule totale | 1-5 % du trafic d'abord |
+| Rollback | redéployer l'artefact précédent | rebasculer (instantané) | couper le canary |
+| Coût infra | aucun surcoût | infra doublée | faible |
+| Bug en prod | s'étend au fil de la bascule | 100 % du trafic d'un coup | 1-5 % des utilisateurs |
+| Prérequis | rétro-compatibilité (2 versions coexistent) | — | métriques solides + routage fin |
 - **Rollback** : redéployer l'artefact précédent (immutable, donc toujours disponible). Le vrai piège : les **migrations de base de données**, rarement réversibles — d'où la pratique des migrations rétro-compatibles (expand/contract : ajouter la colonne, migrer, supprimer l'ancienne plus tard).
 - **Trunk-based development + feature flags** : tout le monde merge sur `main` fréquemment (branches courtes, < 1-2 jours), et le code inachevé part en prod *désactivé* derrière un flag. On sépare ainsi **déploiement** (mettre le code sur les serveurs) et **release** (l'activer pour les utilisateurs) — et un flag se coupe en secondes, plus vite que n'importe quel rollback.
 
@@ -51,9 +108,10 @@ Les **environnements** (staging, production) portent leur configuration et leurs
 
 ## Pièges & idées reçues
 
+> ⚠️ **Secrets dans les logs** — un `echo $DATABASE_URL` de debug, un outil verbeux qui affiche sa config, et le secret est archivé pour toujours dans les logs du job. Le masquage automatique ne couvre pas un secret transformé (base64, URL-encodé). Un secret leaké se **révoque**, il ne se supprime pas des logs.
+
 - **Tests flaky** : un test qui échoue aléatoirement détruit la confiance dans le pipeline — l'équipe se met à relancer les jobs sans lire les logs, et un vrai bug finit par passer. Le retry automatique masque le symptôme ; la seule vraie réponse est de corriger ou quarantainer le test.
 - **Pipeline lent** : au-delà de ~10 minutes, les devs cessent d'attendre le résultat, empilent les commits et contournent le process. Paralléliser les tests, soigner le cache, sortir les jobs lourds du chemin critique.
-- **Secrets en clair dans les logs** : un `echo $DATABASE_URL` de debug, un outil verbeux qui affiche sa config, et le secret est archivé dans les logs du job. Le masquage automatique ne couvre pas un secret transformé (base64, URL-encodé). Un secret leaké se **révoque**, il ne se supprime pas des logs.
 - **« La CI, c'est juste lancer les tests »** — non : c'est surtout la pratique d'intégrer *fréquemment* sur une branche partagée. Une branche de trois semaines avec un pipeline vert n'est pas de l'intégration continue.
 - **Rebuilder l'image entre staging et prod** : deux builds ne sont jamais garantis identiques (dépendances mises à jour entre-temps). On promeut le même artefact d'un environnement à l'autre.
 

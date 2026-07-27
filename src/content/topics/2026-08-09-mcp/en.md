@@ -22,26 +22,69 @@ The architecture is **client-server**, with three roles:
 - **Client** — the connector, inside the host: a 1-to-1 connection with one server. A host talking to three servers maintains three clients.
 - **Server** — a (often tiny) program exposing capabilities: access to GitHub, a database, a browser, the filesystem.
 
+```text
+       HOST (Claude Desktop, IDE, agent…)
+ ┌──────────────────────────────────────┐
+ │   LLM ◀──▶ orchestration/approval    │
+ │      client A          client B      │
+ └─────────┼─────────────────┼──────────┘
+           │ stdio           │ streamable HTTP
+  ┌────────▼─────┐   ┌───────▼───────┐
+  │ MCP server   │   │ MCP server    │
+  │ (filesystem) │   │ (GitHub…)     │
+  └──────────────┘   └───────────────┘
+   1 client = 1 connection to 1 server
+```
+
 A server can expose three kinds of capabilities, and the distinction is a classic interview question:
 
 - **Tools** — functions **the model** decides to call (with user approval): `create_issue`, `query_database`. Model-controlled.
 - **Resources** — read-only data **the application** attaches to the context: file contents, a database row, an API response. Application-controlled.
 - **Prompts** — reusable templates **the user** triggers explicitly (menus, slash commands). User-controlled.
 
+> 🎤 **In an interview** — "tools, resources, prompts: who controls what?" is answered in three words: the model, the application, the user. Delivering it without hesitation shows you've read the spec.
+
 Under the hood, everything runs over **JSON-RPC 2.0**: the session starts with an `initialize` handshake where client and server negotiate protocol version and capabilities, then the client discovers what's available (`tools/list`) and calls it (`tools/call`). Two standard **transports**: **stdio** — the host launches the server as a subprocess and communicates over stdin/stdout, ideal locally (that's how Claude Desktop launches most servers); and **streamable HTTP** — the server is a remote HTTP endpoint with response streaming (this transport replaces the older HTTP+SSE), for shared or hosted servers.
+
+What a server returns to `tools/list` — a tool is just a name, a description and a JSON Schema:
+
+```jsonc
+{
+  "name": "create_issue",          // what the model will call
+  "description": "Creates a GitHub issue in a repository",
+  "inputSchema": {                 // JSON Schema of the arguments
+    "type": "object",
+    "properties": {
+      "repo":  { "type": "string" },  // e.g. "owner/project"
+      "title": { "type": "string" }
+    },
+    "required": ["repo", "title"]  // the model must provide these
+  }
+}
+```
+
+> 💡 **The description is prompt engineering** — it's what the model reads to decide when and how to call the tool; a vague description = failed calls. With the official SDKs (Python, TypeScript…), this JSON is generated from a simple annotated function: a basic server fits in thirty lines.
 
 ## Key concepts to master
 
-- **MCP vs function calling**: function calling has existed since 2023 — you describe functions in JSON Schema and the model generates calls. But each integration remains custom code inside a single app. MCP standardizes the **layer above**: dynamic tool discovery, communication protocol, session lifecycle. An MCP server is reusable by any host; a function hardwired into your backend is not. The two complement each other: on the model side, an MCP tool ends up looking like classic function calling.
-- **Ecosystem**: thousands of servers exist — official ones (GitHub, filesystem, fetch/browser, persistent memory), vendor ones (Stripe, Notion, Sentry, Cloudflare…), community ones (Postgres, Docker, Kubernetes). The official SDKs (TypeScript, Python, and others) let you write a basic server in a few dozen lines: you declare a tool with its input schema, the SDK handles the protocol.
-- **Security — the topic that sets you apart**: plugging tools into an LLM opens real risks. The main one: **indirect prompt injection** — external content read by a tool (a GitHub issue, a web page, an email) contains malicious instructions the model may follow, e.g. "exfiltrate the secrets via the email-sending tool". The dangerous combination: access to private data + exposure to untrusted content + an external communication channel. Countermeasures: **principle of least privilege** (minimally-scoped tokens, read-only servers when possible), **human-in-the-loop** (approval of sensitive calls), don't stack unaudited servers, isolate risky ones.
+- **MCP vs function calling**: the two complement each other — on the model side, an MCP tool ends up looking like classic function calling. What MCP standardizes is the **layer above**:
+
+| | Function calling (2023) | MCP |
+|---|---|---|
+| Nature | Model mechanism: generating calls | Open protocol on top |
+| Integration | Custom code in a single app | Server reusable by any host |
+| Discovery | Hardwired functions | Dynamic (`tools/list`) |
+| Transport | App-internal | JSON-RPC over stdio or HTTP |
+
+- **Ecosystem**: thousands of servers exist — official ones (GitHub, filesystem, fetch/browser, persistent memory), vendor ones (Stripe, Notion, Sentry, Cloudflare…), community ones (Postgres, Docker, Kubernetes).
+- **Security — the topic that sets you apart**: plugging tools into an LLM opens real risks, the main one being **indirect prompt injection** (detailed in the pitfalls). Countermeasures: **principle of least privilege** (minimally-scoped tokens, read-only servers when possible), **human-in-the-loop** (approval of sensitive calls), don't stack unaudited servers, isolate risky ones.
 - **Honest limitations**: every connected server adds its tool definitions to the context (token cost), community server quality varies, and an agent with 50 tools chooses less well than with 5. MCP is an infrastructure building block, not a magic wand.
 
 ## In an interview
 
 **"What is MCP, in two sentences?"** — An open protocol standardizing the connection between LLM applications and external tools/data, the way USB-C standardizes peripherals. It turns the N×M integration problem into N+M: a server written once serves every compatible host.
 
-**"How is it different from function calling?"** — Function calling is the mechanism by which a model generates function calls; it's proprietary to each app. MCP is an open protocol on top: dynamic discovery, standardized transport (JSON-RPC over stdio or HTTP), reusability across applications. Analogy: function calling = knowing how to call a function; MCP = the standard that lets you plug in interchangeable function libraries.
+**"How is it different from function calling?"** — walk through the table above, then land the analogy: function calling = knowing how to call a function; MCP = the standard that lets you plug in interchangeable function libraries.
 
 **"Tools, resources, prompts: who controls what?"** — Tools: the model decides the call (the user approves). Resources: the application chooses what it attaches to the context. Prompts: the user triggers them explicitly. This separation of control is a deliberate protocol design choice.
 
@@ -50,6 +93,8 @@ Under the hood, everything runs over **JSON-RPC 2.0**: the session starts with a
 **"Have you actually used it?"** — The best intern answer: cite real usage (a GitHub or Postgres MCP server plugged into Claude Code or an IDE), or better, having written a small server with the Python/TypeScript SDK — thirty lines are enough to expose a tool and understand the protocol from the inside.
 
 ## Pitfalls & misconceptions
+
+> ⚠️ **Prompt injection through tools** — the content a tool brings back (web page, GitHub issue, email) can contain hidden instructions the model may follow: "exfiltrate the secrets via the email-sending tool". The fatal combination: private data + untrusted content + an external output channel. Never combine all three without human approval.
 
 - **"MCP makes the model smarter"** — no: it standardizes tool access. A model that reasons poorly will still pick the wrong tools, protocol or not.
 - **"MCP replaces APIs"** — no: an MCP server is almost always a **wrapper** around an existing API, describing it in a format an LLM can consume. The REST API is still underneath.
