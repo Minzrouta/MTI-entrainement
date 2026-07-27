@@ -1,11 +1,97 @@
 ---
+import Base from '../layouts/Base.astro';
 import { getTopics } from '../lib/topics';
-const topics = await getTopics();
+import { dateFr, dateEn } from '../lib/format';
+
+const topics = await getTopics(); // du plus récent au plus ancien
+const total = topics.length;
+const dayNo = (i: number) => total - i; // Jour 1 = le plus ancien
 ---
 
-<html lang="fr">
-  <body>
-    <h1>MTI Training</h1>
-    <ul>{topics.map((t) => <li>{t.date} — {t.fr.data.title}</li>)}</ul>
-  </body>
-</html>
+<Base>
+  <section aria-label="La fiche du jour">
+    {
+      topics.map((t, i) => (
+        <article class="fiche hero-candidate" data-date={t.date} data-dir={t.dir}>
+          <p class="eyebrow">
+            <span>
+              <span data-l="fr">Jour {dayNo(i)}</span>
+              <span data-l="en">Day {dayNo(i)}</span>
+            </span>
+            <span class="sep">·</span>
+            <span>
+              <span data-l="fr">{dateFr(t.date)}</span>
+              <span data-l="en">{dateEn(t.date)}</span>
+            </span>
+            <span class="chip">{t.category}</span>
+          </p>
+          <h1 class="display-title">
+            <span data-l="fr">{t.fr.data.title}</span>
+            <span data-l="en">{t.en.data.title}</span>
+          </h1>
+          <p class="summary">
+            <span data-l="fr">{t.fr.data.summary}</span>
+            <span data-l="en">{t.en.data.summary}</span>
+          </p>
+          <p>
+            <a class="cta" href={`/sujet/${t.slug}`}>
+              <span data-l="fr">Lire la fiche →</span>
+              <span data-l="en">Read the sheet →</span>
+            </a>
+          </p>
+        </article>
+      ))
+    }
+    <div class="empty-state" id="no-topic" hidden>
+      <span data-l="fr">La première fiche arrive bientôt. Reviens demain !</span>
+      <span data-l="en">The first sheet is coming soon. Come back tomorrow!</span>
+    </div>
+  </section>
+
+  <h2 class="section-title">
+    <span data-l="fr">Les fiches précédentes</span>
+    <span data-l="en">Previous sheets</span>
+  </h2>
+  <ul class="card-grid" id="previous">
+    {
+      topics.map((t, i) => (
+        <li class="topic-card" data-date={t.date} data-dir={t.dir}>
+          <p class="meta">
+            <span>
+              <span data-l="fr">Jour {dayNo(i)}</span>
+              <span data-l="en">Day {dayNo(i)}</span>
+            </span>
+            <span>{t.date}</span>
+            <span class="chip">{t.category}</span>
+          </p>
+          <h3>
+            <a href={`/sujet/${t.slug}`}>
+              <span data-l="fr">{t.fr.data.title}</span>
+              <span data-l="en">{t.en.data.title}</span>
+            </a>
+          </h3>
+          <p>
+            <span data-l="fr">{t.fr.data.summary}</span>
+            <span data-l="en">{t.en.data.summary}</span>
+          </p>
+        </li>
+      ))
+    }
+  </ul>
+
+  <script>
+    // La fiche du jour = la plus récente non future ; à défaut (avant le lancement), la plus ancienne.
+    document.addEventListener('dates-filtered', () => {
+      const candidates = [...document.querySelectorAll<HTMLElement>('.hero-candidate')];
+      const hero = candidates.find((c) => !c.classList.contains('future')) ?? candidates.at(-1);
+      if (!hero) {
+        document.getElementById('no-topic')!.hidden = false;
+        return;
+      }
+      hero.classList.remove('future');
+      hero.classList.add('show');
+      // Pas de doublon : la fiche du jour ne réapparaît pas dans la liste.
+      document.querySelector(`#previous .topic-card[data-dir="${hero.dataset.dir}"]`)?.remove();
+    });
+  </script>
+</Base>

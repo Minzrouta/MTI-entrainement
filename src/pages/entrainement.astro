@@ -1,0 +1,156 @@
+---
+import Base from '../layouts/Base.astro';
+import { getTopics } from '../lib/topics';
+
+const topics = await getTopics(); // desc
+const total = topics.length;
+const dayNo = (i: number) => total - i;
+---
+
+<Base title="Entraînement">
+  <h1 class="display-title" style="margin-top: 1.5rem;">
+    <span data-l="fr">Entraînement</span>
+    <span data-l="en">Practice</span>
+  </h1>
+  <p class="summary">
+    <span data-l="fr">
+      Flashcards pour répéter tes réponses à voix haute, QCM pour vérifier que c'est acquis. Comme en entretien : réponds avant de révéler.
+    </span>
+    <span data-l="en">
+      Flashcards to rehearse answers out loud, quizzes to check they stuck. Like a real interview: answer before revealing.
+    </span>
+  </p>
+
+  <p style="margin-top: 1.5rem;">
+    <label>
+      <span class="eyebrow" style="display: inline;">
+        <span data-l="fr">Sujet&nbsp;:</span>
+        <span data-l="en">Topic:</span>
+      </span>
+      <select id="topic-filter" style="font: inherit; padding: 0.3rem 0.5rem; margin-inline-start: 0.5rem; max-width: 100%;">
+        <option value="" data-fr="Tous les sujets" data-en="All topics">Tous les sujets</option>
+        {
+          topics.map((t, i) => (
+            <option
+              value={t.slug}
+              data-fr={`Jour ${dayNo(i)} — ${t.fr.data.title}`}
+              data-en={`Day ${dayNo(i)} — ${t.en.data.title}`}
+            >
+              Jour {dayNo(i)} — {t.fr.data.title}
+            </option>
+          ))
+        }
+      </select>
+    </label>
+  </p>
+
+  {
+    topics.map((t, i) => (
+      <section class="training-topic" id={`t-${t.slug}`} data-date={t.date} data-slug={t.slug}>
+        <h2>
+          <span class="eyebrow" style="display: inline;">
+            <span data-l="fr">Jour {dayNo(i)}</span>
+            <span data-l="en">Day {dayNo(i)}</span>
+          </span>
+          <span>
+            <span data-l="fr">{t.fr.data.title}</span>
+            <span data-l="en">{t.en.data.title}</span>
+          </span>
+          <span class="score-line" data-total={t.quiz.data.qcm.length} />
+        </h2>
+
+        <h3>
+          <span data-l="fr">Flashcards</span>
+          <span data-l="en">Flashcards</span>
+        </h3>
+        {t.quiz.data.flashcards.map((f) => (
+          <details class="flashcard">
+            <summary>
+              <span>
+                <span data-l="fr">{f.q_fr}</span>
+                <span data-l="en">{f.q_en}</span>
+              </span>
+            </summary>
+            <p class="answer">
+              <span data-l="fr">{f.a_fr}</span>
+              <span data-l="en">{f.a_en}</span>
+            </p>
+          </details>
+        ))}
+
+        <h3>
+          <span data-l="fr">QCM</span>
+          <span data-l="en">Quiz</span>
+        </h3>
+        {t.quiz.data.qcm.map((q) => (
+          <div class="qcm-item" data-answer={q.answer}>
+            <p class="q">
+              <span data-l="fr">{q.q_fr}</span>
+              <span data-l="en">{q.q_en}</span>
+            </p>
+            <div class="qcm-choices">
+              {q.choices_fr.map((c, j) => (
+                <button type="button">
+                  <span data-l="fr">{c}</span>
+                  <span data-l="en">{q.choices_en[j]}</span>
+                </button>
+              ))}
+            </div>
+            <p class="explain" hidden>
+              <span data-l="fr">{q.explain_fr}</span>
+              <span data-l="en">{q.explain_en}</span>
+            </p>
+          </div>
+        ))}
+      </section>
+    ))
+  }
+
+  <script>
+    // Filtre par sujet (+ pré-sélection via l'ancre #t-slug)
+    const select = document.getElementById('topic-filter') as HTMLSelectElement;
+    const sections = document.querySelectorAll<HTMLElement>('.training-topic');
+    const applyFilter = () => {
+      sections.forEach((s) => s.classList.toggle('filtered-out', select.value !== '' && s.dataset.slug !== select.value));
+    };
+    select.addEventListener('change', applyFilter);
+    if (location.hash.startsWith('#t-')) {
+      select.value = location.hash.slice(3);
+      applyFilter();
+    }
+
+    // Les libellés du <select> ne peuvent pas être doublés en CSS : on les synchronise à la main.
+    const syncSelect = () => {
+      const lang = document.documentElement.dataset.lang === 'en' ? 'en' : 'fr';
+      select.querySelectorAll('option').forEach((o) => (o.textContent = o.dataset[lang] ?? ''));
+    };
+    syncSelect();
+    document.addEventListener('click', (e) => {
+      if ((e.target as HTMLElement).closest('[data-set-lang]')) syncSelect();
+    });
+
+    // QCM : correction immédiate + score par sujet
+    document.querySelectorAll<HTMLElement>('.qcm-item').forEach((item) => {
+      const answer = Number(item.dataset.answer);
+      const buttons = item.querySelectorAll<HTMLButtonElement>('.qcm-choices button');
+      buttons.forEach((btn, i) =>
+        btn.addEventListener('click', () => {
+          if (item.dataset.done) return;
+          item.dataset.done = '1';
+          buttons.forEach((b, j) => {
+            b.disabled = true;
+            if (j === answer) b.classList.add('correct');
+            else if (j === i) b.classList.add('wrong');
+          });
+          item.querySelector<HTMLElement>('.explain')!.hidden = false;
+
+          const section = item.closest<HTMLElement>('.training-topic')!;
+          const score = (Number(section.dataset.score) || 0) + (i === answer ? 1 : 0);
+          section.dataset.score = String(score);
+          const line = section.querySelector<HTMLElement>('.score-line')!;
+          line.textContent = `${score}/${line.dataset.total}`;
+        })
+      );
+    });
+  </script>
+</Base>

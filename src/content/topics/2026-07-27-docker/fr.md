@@ -1,6 +1,6 @@
 ---
 title: "Docker & la conteneurisation"
-date: "2026-07-28"
+date: "2026-07-27"
 category: "DevOps"
 level: "Fondamental"
 summary: "Images, conteneurs, volumes, réseaux : comprendre ce que Docker fait vraiment (et ce qu'il n'est pas) — le sujet DevOps le plus fréquent en entretien de stage."

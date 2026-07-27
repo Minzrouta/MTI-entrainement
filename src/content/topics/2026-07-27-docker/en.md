@@ -1,6 +1,6 @@
 ---
 title: "Docker & containerization"
-date: "2026-07-28"
+date: "2026-07-27"
 category: "DevOps"
 level: "Fondamental"
 summary: "Images, containers, volumes, networks: understand what Docker actually does (and what it isn't) — the most common DevOps topic in internship interviews."

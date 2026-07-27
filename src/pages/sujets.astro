@@ -1,0 +1,73 @@
+---
+import Base from '../layouts/Base.astro';
+import { getTopics } from '../lib/topics';
+
+const topics = await getTopics();
+const total = topics.length;
+const dayNo = (i: number) => total - i;
+const categories = [...new Set(topics.map((t) => t.category))].sort();
+---
+
+<Base title="Toutes les fiches">
+  <h1 class="display-title" style="margin-top: 1.5rem;">
+    <span data-l="fr">Toutes les fiches</span>
+    <span data-l="en">All topics</span>
+  </h1>
+  <p class="summary">
+    <span data-l="fr">Une fiche par jour depuis le lancement. Rattrape celles que tu as manquées.</span>
+    <span data-l="en">One sheet a day since launch. Catch up on the ones you missed.</span>
+  </p>
+
+  <div class="filters" role="group" aria-label="Filtrer par catégorie">
+    <button type="button" data-cat="" aria-pressed="true">
+      <span data-l="fr">Tout</span><span data-l="en">All</span>
+    </button>
+    {
+      categories.map((c) => (
+        <button type="button" data-cat={c} aria-pressed="false">
+          {c}
+        </button>
+      ))
+    }
+  </div>
+
+  <ul class="card-grid">
+    {
+      topics.map((t, i) => (
+        <li class="topic-card" data-date={t.date} data-category={t.category}>
+          <p class="meta">
+            <span>
+              <span data-l="fr">Jour {dayNo(i)}</span>
+              <span data-l="en">Day {dayNo(i)}</span>
+            </span>
+            <span>{t.date}</span>
+            <span class="chip">{t.category}</span>
+          </p>
+          <h3>
+            <a href={`/sujet/${t.slug}`}>
+              <span data-l="fr">{t.fr.data.title}</span>
+              <span data-l="en">{t.en.data.title}</span>
+            </a>
+          </h3>
+          <p>
+            <span data-l="fr">{t.fr.data.summary}</span>
+            <span data-l="en">{t.en.data.summary}</span>
+          </p>
+        </li>
+      ))
+    }
+  </ul>
+
+  <script>
+    const buttons = document.querySelectorAll<HTMLButtonElement>('.filters button');
+    buttons.forEach((btn) =>
+      btn.addEventListener('click', () => {
+        buttons.forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
+        const cat = btn.dataset.cat!;
+        document.querySelectorAll<HTMLElement>('.topic-card').forEach((card) => {
+          card.classList.toggle('filtered-out', cat !== '' && card.dataset.category !== cat);
+        });
+      })
+    );
+  </script>
+</Base>

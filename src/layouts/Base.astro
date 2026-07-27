@@ -1,0 +1,63 @@
+---
+import Header from '../components/Header.astro';
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+const { title, description } = Astro.props;
+const fullTitle = title ? `${title} — MTI Training` : 'MTI Training — la veille quotidienne de la majeure MTI';
+---
+
+<!doctype html>
+<html lang="fr" data-lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta
+      name="description"
+      content={description ?? "Un sujet d'informatique par jour, expliqué à fond, avec les questions d'entretien qui vont avec. Par et pour la majeure MTI (EPITA)."}
+    />
+    <link rel="preload" href="/fonts/bricolage.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/literata.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='80' font-size='80'>📘</text></svg>" />
+    <script is:inline>
+      // Avant le premier paint : langue mémorisée, sinon français.
+      document.documentElement.dataset.lang = localStorage.getItem('lang') || 'fr';
+    </script>
+  </head>
+  <body>
+    <Header />
+    <main class="wrap">
+      <slot />
+    </main>
+    <footer class="site-footer">
+      <div class="wrap">
+        <span>
+          <span data-l="fr">Une fiche par jour, pour arriver prêt en entretien.</span>
+          <span data-l="en">One study sheet a day, to walk into interviews ready.</span>
+        </span>
+        <span>Majeure MTI · EPITA</span>
+      </div>
+    </footer>
+    <script>
+      // Toggle de langue
+      document.querySelectorAll<HTMLButtonElement>('[data-set-lang]').forEach((b) =>
+        b.addEventListener('click', () => {
+          const lang = b.dataset.setLang!;
+          localStorage.setItem('lang', lang);
+          document.documentElement.dataset.lang = lang;
+        })
+      );
+
+      // Les fiches datées d'après aujourd'hui n'existent pas encore.
+      const today = new Date().toLocaleDateString('sv'); // YYYY-MM-DD local
+      document.querySelectorAll<HTMLElement>('[data-date]').forEach((el) => {
+        if (el.dataset.date! > today) el.classList.add('future');
+      });
+      document.dispatchEvent(new CustomEvent('dates-filtered'));
+    </script>
+  </body>
+</html>

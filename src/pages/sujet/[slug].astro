@@ -1,0 +1,85 @@
+---
+import { render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import { getTopics } from '../../lib/topics';
+import { dateFr, dateEn } from '../../lib/format';
+
+export async function getStaticPaths() {
+  const topics = await getTopics(); // desc
+  const total = topics.length;
+  return topics.map((t, i) => ({
+    params: { slug: t.slug },
+    props: {
+      topic: t,
+      dayNo: total - i,
+      older: topics[i + 1] ?? null,
+      newer: topics[i - 1] ?? null,
+    },
+  }));
+}
+
+const { topic, dayNo, older, newer } = Astro.props;
+const { Content: FrContent } = await render(topic.fr);
+const { Content: EnContent } = await render(topic.en);
+---
+
+<Base title={topic.fr.data.title} description={topic.fr.data.summary}>
+  <article>
+    <header class="fiche" style="margin-top: 2rem;">
+      <p class="eyebrow">
+        <span>
+          <span data-l="fr">Jour {dayNo}</span>
+          <span data-l="en">Day {dayNo}</span>
+        </span>
+        <span class="sep">·</span>
+        <span>
+          <span data-l="fr">{dateFr(topic.date)}</span>
+          <span data-l="en">{dateEn(topic.date)}</span>
+        </span>
+        <span class="chip">{topic.category}</span>
+        <span class="chip">{topic.level}</span>
+      </p>
+      <h1 class="display-title">
+        <span data-l="fr">{topic.fr.data.title}</span>
+        <span data-l="en">{topic.en.data.title}</span>
+      </h1>
+      <p class="summary">
+        <span data-l="fr">{topic.fr.data.summary}</span>
+        <span data-l="en">{topic.en.data.summary}</span>
+      </p>
+    </header>
+
+    <div class="prose" data-l="fr"><FrContent /></div>
+    <div class="prose" data-l="en"><EnContent /></div>
+
+    <p style="margin-top: 3rem;">
+      <a class="cta" href={`/entrainement#t-${topic.slug}`}>
+        <span data-l="fr">S'entraîner sur ce sujet →</span>
+        <span data-l="en">Practice this topic →</span>
+      </a>
+    </p>
+
+    <nav class="site-footer" aria-label="Autres fiches" style="border: none; margin-top: 2rem; padding: 0;">
+      <div style="display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap;">
+        {
+          older ? (
+            <a href={`/sujet/${older.slug}`}>
+              ← <span data-l="fr">{older.fr.data.title}</span>
+              <span data-l="en">{older.en.data.title}</span>
+            </a>
+          ) : (
+            <span />
+          )
+        }
+        {
+          newer && (
+            <a href={`/sujet/${newer.slug}`} data-date={newer.date}>
+              <span data-l="fr">{newer.fr.data.title}</span>
+              <span data-l="en">{newer.en.data.title}</span> →
+            </a>
+          )
+        }
+      </div>
+    </nav>
+  </article>
+</Base>
