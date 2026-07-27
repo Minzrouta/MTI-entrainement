@@ -1,0 +1,108 @@
+{
+  "flashcards": [
+    {
+      "q_fr": "Quelle est la différence fondamentale entre un conteneur et une machine virtuelle ?",
+      "a_fr": "La VM virtualise du matériel et embarque un OS complet avec son propre noyau via un hyperviseur. Le conteneur est un simple processus isolé (namespaces + cgroups) qui partage le noyau de l'hôte : démarrage en millisecondes et overhead de quelques Mo, contre minutes et Go pour la VM.",
+      "q_en": "What is the fundamental difference between a container and a virtual machine?",
+      "a_en": "A VM virtualizes hardware and ships a full OS with its own kernel via a hypervisor. A container is just an isolated process (namespaces + cgroups) sharing the host kernel: millisecond startup and a few MB of overhead, versus minutes and GBs for a VM."
+    },
+    {
+      "q_fr": "Quels mécanismes du noyau Linux rendent les conteneurs possibles ?",
+      "a_fr": "Les namespaces (isolent ce que le processus voit : PID, réseau, montages, hostname…), les cgroups (limitent CPU/RAM/I/O) et un union filesystem comme OverlayFS (couches d'image en lecture seule + couche d'écriture éphémère).",
+      "q_en": "Which Linux kernel mechanisms make containers possible?",
+      "a_en": "Namespaces (isolate what the process sees: PID, network, mounts, hostname…), cgroups (limit CPU/RAM/I/O) and a union filesystem like OverlayFS (read-only image layers + an ephemeral writable layer)."
+    },
+    {
+      "q_fr": "Quelle différence entre une image et un conteneur ?",
+      "a_fr": "L'image est le modèle immuable construit depuis un Dockerfile (comme une classe) ; le conteneur est une instance en cours d'exécution de cette image (comme un objet), avec sa couche d'écriture propre et éphémère.",
+      "q_en": "What's the difference between an image and a container?",
+      "a_en": "The image is the immutable template built from a Dockerfile (like a class); the container is a running instance of that image (like an object), with its own ephemeral writable layer."
+    },
+    {
+      "q_fr": "Pourquoi et comment persister les données d'une base de données conteneurisée ?",
+      "a_fr": "La couche d'écriture du conteneur disparaît avec lui. On monte donc un volume nommé (ou un bind mount) sur le répertoire de données, ex. `-v pgdata:/var/lib/postgresql/data` : le volume survit aux recréations du conteneur et se sauvegarde indépendamment.",
+      "q_en": "Why and how do you persist a containerized database's data?",
+      "a_en": "The container's writable layer disappears with it. You mount a named volume (or bind mount) on the data directory, e.g. `-v pgdata:/var/lib/postgresql/data`: the volume outlives container recreations and can be backed up independently."
+    },
+    {
+      "q_fr": "Qu'est-ce qu'un multi-stage build et pourquoi l'utiliser ?",
+      "a_fr": "Un Dockerfile avec plusieurs `FROM` : on compile dans une image lourde (SDK, outils de build) puis on copie uniquement l'artefact final dans une image runtime minimale. Résultat : image plus petite, plus rapide à distribuer, sans outils de build donc surface d'attaque réduite.",
+      "q_en": "What is a multi-stage build and why use it?",
+      "a_en": "A Dockerfile with several `FROM` stages: you compile in a heavy image (SDK, build tools) then copy only the final artifact into a minimal runtime image. Result: smaller image, faster to ship, no build tools inside so a reduced attack surface."
+    },
+    {
+      "q_fr": "CMD vs ENTRYPOINT : quelle différence ?",
+      "a_fr": "`ENTRYPOINT` définit l'exécutable fixe du conteneur ; `CMD` fournit ses arguments par défaut, remplaçables à l'exécution (`docker run image autre-arg`). Combinés : `ENTRYPOINT [\"node\"]` + `CMD [\"server.js\"]` lance `node server.js` par défaut.",
+      "q_en": "CMD vs ENTRYPOINT: what's the difference?",
+      "a_en": "`ENTRYPOINT` sets the container's fixed executable; `CMD` provides its default arguments, overridable at run time (`docker run image other-arg`). Combined: `ENTRYPOINT [\"node\"]` + `CMD [\"server.js\"]` runs `node server.js` by default."
+    },
+    {
+      "q_fr": "Comment deux conteneurs d'une même stack Compose communiquent-ils ?",
+      "a_fr": "Ils sont placés sur un même réseau bridge dédié et se joignent par leur nom de service via le DNS interne de Docker (ex. `postgres:5432` depuis le conteneur applicatif). Pas besoin de publier les ports sur l'hôte pour la communication interne.",
+      "q_en": "How do two containers in the same Compose stack communicate?",
+      "a_en": "They're placed on a dedicated bridge network and reach each other by service name through Docker's internal DNS (e.g. `postgres:5432` from the app container). No need to publish ports on the host for internal communication."
+    },
+    {
+      "q_fr": "Pourquoi l'ordre des instructions dans un Dockerfile est-il important ?",
+      "a_fr": "Chaque instruction crée une couche mise en cache ; modifier une instruction invalide toutes les couches suivantes. On place donc les étapes stables en premier (installation des dépendances) et le code source en dernier, pour que `docker build` ne réinstalle pas tout à chaque changement de code.",
+      "q_en": "Why does the order of instructions in a Dockerfile matter?",
+      "a_en": "Each instruction creates a cached layer; changing one invalidates all subsequent layers. Put stable steps first (dependency installation) and source code last, so `docker build` doesn't reinstall everything on every code change."
+    }
+  ],
+  "qcm": [
+    {
+      "q_fr": "Que partagent tous les conteneurs Docker tournant sur un même hôte Linux ?",
+      "q_en": "What do all Docker containers running on the same Linux host share?",
+      "choices_fr": ["Le noyau de l'hôte", "Leur système de fichiers racine", "Leur espace de processus (PID)", "Un hyperviseur commun"],
+      "choices_en": ["The host kernel", "Their root filesystem", "Their process (PID) space", "A shared hypervisor"],
+      "answer": 0,
+      "explain_fr": "Les conteneurs partagent le noyau de l'hôte — c'est ce qui les rend légers. Filesystem et espace PID sont isolés par conteneur, et il n'y a pas d'hyperviseur.",
+      "explain_en": "Containers share the host kernel — that's what makes them lightweight. Filesystem and PID space are isolated per container, and there is no hypervisor."
+    },
+    {
+      "q_fr": "Où finissent les données écrites dans un conteneur sans volume monté ?",
+      "q_en": "Where does data written in a container without a mounted volume end up?",
+      "choices_fr": ["Dans la couche d'écriture, perdue à la suppression du conteneur", "Dans l'image, partagée par tous les conteneurs", "Sur le registry", "Dans /var/lib/docker/volumes automatiquement"],
+      "choices_en": ["In the writable layer, lost when the container is removed", "In the image, shared by all containers", "On the registry", "Automatically in /var/lib/docker/volumes"],
+      "answer": 0,
+      "explain_fr": "Sans volume, tout va dans la couche d'écriture éphémère du conteneur : elle disparaît avec lui. L'image, elle, reste immuable.",
+      "explain_en": "Without a volume, everything goes to the container's ephemeral writable layer, which disappears with it. The image itself stays immutable."
+    },
+    {
+      "q_fr": "Que fait exactement `docker run -p 8080:80 nginx` ?",
+      "q_en": "What exactly does `docker run -p 8080:80 nginx` do?",
+      "choices_fr": ["Publie le port 80 du conteneur sur le port 8080 de l'hôte", "Publie le port 8080 du conteneur sur le port 80 de l'hôte", "Ouvre les ports 8080 et 80 dans le conteneur", "Redirige le trafic du conteneur vers nginx"],
+      "choices_en": ["Publishes container port 80 on host port 8080", "Publishes container port 8080 on host port 80", "Opens ports 8080 and 80 inside the container", "Redirects container traffic to nginx"],
+      "answer": 0,
+      "explain_fr": "La syntaxe est `-p <port-hôte>:<port-conteneur>`. Attention : par défaut c'est bindé sur 0.0.0.0, donc joignable depuis l'extérieur, en contournant UFW.",
+      "explain_en": "The syntax is `-p <host-port>:<container-port>`. Careful: it binds to 0.0.0.0 by default, reachable from outside and bypassing UFW."
+    },
+    {
+      "q_fr": "Quel est le risque principal du tag `latest` en production ?",
+      "q_en": "What is the main risk of the `latest` tag in production?",
+      "choices_fr": ["Il est mutable : deux pulls peuvent donner deux images différentes", "Il est plus lent à télécharger", "Il n'est pas compatible avec Compose", "Il expire au bout de 30 jours"],
+      "choices_en": ["It's mutable: two pulls can return different images", "It's slower to download", "It's incompatible with Compose", "It expires after 30 days"],
+      "answer": 0,
+      "explain_fr": "`latest` n'est qu'un tag par défaut que l'éditeur peut réécrire à tout moment : déploiements non reproductibles. En prod, on épingle une version, idéalement un digest.",
+      "explain_en": "`latest` is just a default tag the publisher can rewrite at any time: non-reproducible deployments. In production, pin a version, ideally a digest."
+    },
+    {
+      "q_fr": "Dans quel ordre le CLI Docker délègue-t-il l'exécution d'un conteneur ?",
+      "q_en": "In what order does the Docker CLI delegate container execution?",
+      "choices_fr": ["docker → dockerd → containerd → runc", "docker → runc → containerd → dockerd", "docker → containerd → dockerd → runc", "docker → hyperviseur → noyau"],
+      "choices_en": ["docker → dockerd → containerd → runc", "docker → runc → containerd → dockerd", "docker → containerd → dockerd → runc", "docker → hypervisor → kernel"],
+      "answer": 0,
+      "explain_fr": "Le CLI parle au démon dockerd (API REST), qui délègue à containerd, qui invoque runc (runtime OCI) pour créer le processus isolé. D'où Kubernetes utilisant containerd sans Docker.",
+      "explain_en": "The CLI talks to the dockerd daemon (REST API), which delegates to containerd, which invokes runc (OCI runtime) to create the isolated process. Hence Kubernetes using containerd without Docker."
+    },
+    {
+      "q_fr": "Pourquoi copie-t-on package.json et lance-t-on `npm install` AVANT de copier le reste du code dans un Dockerfile Node ?",
+      "q_en": "Why copy package.json and run `npm install` BEFORE copying the rest of the code in a Node Dockerfile?",
+      "choices_fr": ["Pour que le cache de build réutilise la couche des dépendances tant que package.json ne change pas", "Parce que npm exige que le code soit absent", "Pour réduire la taille de l'image finale", "Pour éviter les conflits de versions de Node"],
+      "choices_en": ["So the build cache reuses the dependency layer as long as package.json doesn't change", "Because npm requires the code to be absent", "To reduce the final image size", "To avoid Node version conflicts"],
+      "answer": 0,
+      "explain_fr": "Le cache est invalidé couche par couche : si seul le code change, la couche `npm install` reste en cache et le build est quasi instantané. La taille finale, elle, ne change pas.",
+      "explain_en": "The cache is invalidated layer by layer: if only the code changes, the `npm install` layer stays cached and the build is nearly instant. Final size is unchanged."
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+---
+import { getTopics } from '../lib/topics';
+const topics = await getTopics();
+---
+
+<html lang="fr">
+  <body>
+    <h1>MTI Training</h1>
+    <ul>{topics.map((t) => <li>{t.date} — {t.fr.data.title}</li>)}</ul>
+  </body>
+</html>
