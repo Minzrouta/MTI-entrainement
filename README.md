@@ -1,0 +1,56 @@
+# MTI Training
+
+Veille quotidienne pour la majeure MTI (EPITA) : une fiche par jour sur un sujet
+d'informatique (Docker, RabbitMQ, MCP, …) avec exposé complet, questions
+d'entretien, flashcards et QCM — bilingue FR/EN.
+
+**Prod** : https://mti-training.bantou.me (Coolify, redéploiement auto au push sur `main`).
+
+## Développement
+
+```bash
+npm install
+npm run dev      # http://localhost:4321
+npm run build    # valide le contenu puis construit dist/
+```
+
+## Ajouter une fiche
+
+Créer `src/content/topics/YYYY-MM-DD-slug/` avec **trois fichiers** :
+
+- `fr.md` / `en.md` — frontmatter `title`, `date` (= la date du dossier),
+  `category`, `level`, `summary`, puis l'exposé en markdown. Sections types :
+  L'essentiel · Comment ça marche · Concepts clés · En entretien · Pièges · Pour aller plus loin.
+- `quiz.json` :
+
+```json
+{
+  "flashcards": [{ "q_fr": "…", "a_fr": "…", "q_en": "…", "a_en": "…" }],
+  "qcm": [{
+    "q_fr": "…", "q_en": "…",
+    "choices_fr": ["a", "b", "c", "d"], "choices_en": ["a", "b", "c", "d"],
+    "answer": 0, "explain_fr": "…", "explain_en": "…"
+  }]
+}
+```
+
+Une fiche datée dans le futur est masquée jusqu'à sa date (filtre côté client).
+`npm run build` vérifie la cohérence (fichiers présents, dates uniques et alignées).
+
+Les fiches sont rédigées en avance via Claude Code, par lots : rédaction →
+`npm run build` → commit → push (→ redéploiement auto).
+
+## Webhook Discord
+
+Le cron du VPS (`crontab -l`, 8h) lance `scripts/discord-daily.sh`, qui poste la
+fiche du jour si `~/.config/mti-training/webhook` contient l'URL d'un webhook
+Discord. Sans ce fichier, le script ne fait rien. Phase 2 prévue : bot interactif.
+
+## Redéploiement manuel
+
+Si besoin (le push suffit normalement) :
+
+```bash
+curl -s -H "Authorization: Bearer $(cat ~/.claude/coolify_token)" \
+  "https://coolify.bantou.me/api/v1/deploy?uuid=<APP_UUID>"
+```
