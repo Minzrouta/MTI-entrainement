@@ -1,0 +1,168 @@
+{
+  "flashcards": [
+    {
+      "q_fr": "Quelles sont les quatre valeurs du manifeste agile ?",
+      "a_fr": "Les individus et leurs interactions plus que les processus et outils ; un logiciel qui fonctionne plus qu'une doc exhaustive ; la collaboration avec le client plus que la négociation contractuelle ; l'adaptation au changement plus que le suivi d'un plan. Nuance clé : les seconds éléments ont de la valeur, on privilégie juste les premiers.",
+      "q_en": "What are the four values of the agile manifesto?",
+      "a_en": "Individuals and interactions over processes and tools; working software over comprehensive documentation; customer collaboration over contract negotiation; responding to change over following a plan. Key nuance: the items on the right have value, the left is just valued more."
+    },
+    {
+      "q_fr": "Quels sont les trois rôles de Scrum et leurs responsabilités ?",
+      "a_fr": "Le Product Owner porte la vision produit et priorise le backlog (le quoi). Le Scrum Master facilite, lève les obstacles et protège l'équipe — ce n'est pas un chef de projet. L'équipe de développement s'auto-organise et décide du comment.",
+      "q_en": "What are Scrum's three roles and their responsibilities?",
+      "a_en": "The Product Owner carries the product vision and prioritizes the backlog (the what). The Scrum Master facilitates, removes obstacles and protects the team — not a project manager. The development team self-organizes and decides the how."
+    },
+    {
+      "q_fr": "À quoi sert le daily, et quel est son format ?",
+      "a_fr": "15 minutes debout, chaque jour : ce que j'ai avancé, ce sur quoi je pars, ce qui me bloque. Objectif : synchroniser l'équipe et surfacer les blocages tôt — pas rapporter au manager. Les discussions de fond se prennent à deux, après.",
+      "q_en": "What is the daily for, and what is its format?",
+      "a_en": "15 minutes standing, every day: what I moved forward, what I'm on, what blocks me. Goal: sync the team and surface blockers early — not reporting to the manager. Deep discussions happen in pairs, afterwards."
+    },
+    {
+      "q_fr": "Quelle différence entre la sprint review et la rétrospective ?",
+      "a_fr": "La review regarde le produit : démo du logiciel qui marche aux parties prenantes, feedback. La rétro regarde le process : l'équipe, entre elle, identifie ce qui a frotté et décide d'une ou deux actions concrètes pour le sprint suivant.",
+      "q_en": "What's the difference between the sprint review and the retrospective?",
+      "a_en": "The review looks at the product: demo of working software to stakeholders, feedback. The retro looks at the process: the team, among itself, identifies friction and decides on one or two concrete actions for the next sprint."
+    },
+    {
+      "q_fr": "Que sont les story points et la vélocité, et quelle est leur dérive classique ?",
+      "a_fr": "Les story points estiment la complexité relative d'une story (Fibonacci : 1, 2, 3, 5, 8…), pas des heures. La vélocité = points livrés par sprint, outil de prévision interne. Dérive : en faire une métrique de performance ou comparer les équipes → les estimations gonflent (loi de Goodhart).",
+      "q_en": "What are story points and velocity, and what is their classic abuse?",
+      "a_en": "Story points estimate a story's relative complexity (Fibonacci: 1, 2, 3, 5, 8…), not hours. Velocity = points delivered per sprint, an internal forecasting tool. The abuse: turning it into a performance metric or comparing teams → estimates inflate (Goodhart's law)."
+    },
+    {
+      "q_fr": "Qu'est-ce que la definition of done et pourquoi est-elle indispensable ?",
+      "a_fr": "Une checklist commune qui rend « fini » objectif : par exemple code écrit + testé + relu + mergé + déployé en staging. Sans elle, chacun a sa définition de « fini » et le sprint « terminé » explose en recette.",
+      "q_en": "What is the definition of done and why is it essential?",
+      "a_en": "A shared checklist that makes \"finished\" objective: e.g. code written + tested + reviewed + merged + deployed to staging. Without it, everyone has their own definition of \"done\" and the \"finished\" sprint blows up in acceptance testing."
+    },
+    {
+      "q_fr": "Quand choisir kanban plutôt que Scrum ?",
+      "a_fr": "Quand le flux entrant est imprévisible (support, ops, maintenance) : pas de sprint figé, flux continu avec limite de WIP, mesuré au lead time / cycle time. Scrum convient mieux au développement produit planifiable avec un backlog priorisable.",
+      "q_en": "When should you pick kanban over Scrum?",
+      "a_en": "When the incoming flow is unpredictable (support, ops, maintenance): no frozen sprint, continuous flow with a WIP limit, measured by lead time / cycle time. Scrum fits plannable product development with a prioritizable backlog better."
+    },
+    {
+      "q_fr": "Qu'attend-on concrètement d'un stagiaire dans une équipe agile ?",
+      "a_fr": "Trois réflexes : découper une tâche floue en sous-tâches d'une journée testables ; signaler un blocage tôt (au daily ou avant, jamais la veille de la démo) ; demander de l'aide au bon moment — 30 à 60 minutes de recherche sérieuse, puis solliciter en montrant ce qu'on a déjà essayé.",
+      "q_en": "What is concretely expected of an intern on an agile team?",
+      "a_en": "Three reflexes: splitting a fuzzy task into one-day testable subtasks; flagging a blocker early (at the daily or before, never the eve of the demo); asking for help at the right time — 30 to 60 minutes of serious digging, then asking while showing what you already tried."
+    }
+  ],
+  "qcm": [
+    {
+      "q_fr": "Que dit exactement le manifeste agile à propos des processus et outils ?",
+      "q_en": "What exactly does the agile manifesto say about processes and tools?",
+      "choices_fr": [
+        "Ils sont inutiles dans une équipe agile",
+        "Ils ont de la valeur, mais on privilégie les individus et leurs interactions",
+        "Ils doivent être choisis par le Scrum Master",
+        "Ils priment sur les interactions tant que le produit est livré"
+      ],
+      "choices_en": [
+        "They are useless on an agile team",
+        "They have value, but individuals and interactions are valued more",
+        "They must be chosen by the Scrum Master",
+        "They outrank interactions as long as the product ships"
+      ],
+      "answer": 1,
+      "explain_fr": "La nuance oubliée du manifeste : « nous reconnaissons la valeur des seconds éléments, mais privilégions les premiers ». Agile n'élimine ni process ni doc — il les subordonne au feedback et aux gens.",
+      "explain_en": "The manifesto's forgotten nuance: \"while there is value in the items on the right, we value the items on the left more\". Agile eliminates neither process nor docs — it subordinates them to feedback and people."
+    },
+    {
+      "q_fr": "Quel est le rôle du Scrum Master ?",
+      "q_en": "What is the Scrum Master's role?",
+      "choices_fr": [
+        "Assigner les tâches et vérifier leur avancement",
+        "Prioriser le backlog produit",
+        "Faciliter, lever les obstacles et protéger l'équipe",
+        "Valider techniquement les merge requests"
+      ],
+      "choices_en": [
+        "Assigning tasks and checking their progress",
+        "Prioritizing the product backlog",
+        "Facilitating, removing obstacles and protecting the team",
+        "Technically approving merge requests"
+      ],
+      "answer": 2,
+      "explain_fr": "Le SM n'est pas un chef de projet : il ne distribue pas le travail (l'équipe s'auto-organise) et ne priorise pas le backlog (c'est le PO). Il déblaye et fait vivre le process.",
+      "explain_en": "The SM is not a project manager: they don't hand out work (the team self-organizes) and don't prioritize the backlog (that's the PO). They clear the path and keep the process alive."
+    },
+    {
+      "q_fr": "Un daily qui dure 45 minutes est le symptôme de quoi ?",
+      "q_en": "A 45-minute daily is a symptom of what?",
+      "choices_fr": [
+        "D'une équipe très communicante, c'est bon signe",
+        "D'un sprint trop court",
+        "D'un backlog mal priorisé",
+        "D'une réunion de statut déguisée : les discussions de fond devraient se prendre à part"
+      ],
+      "choices_en": [
+        "A very communicative team — a good sign",
+        "A sprint that is too short",
+        "A poorly prioritized backlog",
+        "A disguised status meeting: deep discussions should happen separately"
+      ],
+      "answer": 3,
+      "explain_fr": "Le daily synchronise et surface les blocages en 15 minutes. Les sujets de fond se traitent ensuite entre les personnes concernées — pas devant toute l'équipe qui attend son tour.",
+      "explain_en": "The daily syncs and surfaces blockers in 15 minutes. Deep topics are then handled between the people concerned — not in front of a whole team waiting its turn."
+    },
+    {
+      "q_fr": "Pourquoi ne faut-il jamais faire de la vélocité un objectif de management ?",
+      "q_en": "Why should velocity never become a management target?",
+      "choices_fr": [
+        "Parce que les estimations gonflent et la métrique perd toute valeur prédictive",
+        "Parce que la vélocité ne se calcule qu'en kanban",
+        "Parce que seule la direction peut fixer la vélocité",
+        "Parce que la vélocité mesure des heures, pas de la complexité"
+      ],
+      "choices_en": [
+        "Because estimates inflate and the metric loses all predictive value",
+        "Because velocity can only be computed in kanban",
+        "Because only management can set velocity",
+        "Because velocity measures hours, not complexity"
+      ],
+      "answer": 0,
+      "explain_fr": "Loi de Goodhart : une mesure qui devient un objectif cesse d'être une bonne mesure. Une équipe fliquée sur ses points les gonfle en silence — la vélocité redevient utile quand elle ne sert qu'à l'équipe pour prévoir.",
+      "explain_en": "Goodhart's law: a measure that becomes a target stops being a good measure. A team policed on its points quietly inflates them — velocity is only useful when the team alone uses it to forecast."
+    },
+    {
+      "q_fr": "Qu'est-ce qu'un « sprint mini-waterfall » ?",
+      "q_en": "What is a \"mini-waterfall sprint\"?",
+      "choices_fr": [
+        "Un sprint raccourci à une semaine",
+        "Spec en semaine 1, code en semaine 2, tests reportés au sprint suivant",
+        "Un sprint sans rétrospective",
+        "Un sprint où le PO change les priorités chaque jour"
+      ],
+      "choices_en": [
+        "A sprint shortened to one week",
+        "Spec in week 1, code in week 2, tests postponed to the next sprint",
+        "A sprint without a retrospective",
+        "A sprint where the PO changes priorities daily"
+      ],
+      "answer": 1,
+      "explain_fr": "Découper le waterfall en tranches de deux semaines n'est pas de l'agile : l'incrément doit être « done » — tests inclus — à la fin du sprint. Sinon la dette de test s'accumule et la démo ment.",
+      "explain_en": "Slicing waterfall into two-week chunks isn't agile: the increment must be \"done\" — tests included — by the end of the sprint. Otherwise test debt piles up and the demo lies."
+    },
+    {
+      "q_fr": "Vous êtes stagiaire, bloqué depuis 45 minutes sur un bug malgré une vraie recherche. Que faire ?",
+      "q_en": "You're an intern, stuck on a bug for 45 minutes despite real digging. What do you do?",
+      "choices_fr": [
+        "Continuer seul : demander de l'aide ferait mauvaise impression",
+        "Attendre le daily du lendemain pour le signaler",
+        "Solliciter un collègue maintenant, en montrant ce qui a déjà été essayé",
+        "Changer de tâche sans prévenir personne"
+      ],
+      "choices_en": [
+        "Keep going alone: asking for help would look bad",
+        "Wait for tomorrow's daily to mention it",
+        "Ask a colleague now, showing what you already tried",
+        "Switch tasks without telling anyone"
+      ],
+      "answer": 2,
+      "explain_fr": "La règle des 30-60 minutes : chercher sérieusement, puis demander en apportant le contexte (« j'ai essayé X et Y, voici l'erreur »). Un blocage signalé tôt coûte une heure ; tû jusqu'à la démo, il coûte le sprint.",
+      "explain_en": "The 30-60 minute rule: dig seriously, then ask while bringing context (\"I tried X and Y, here's the error\"). A blocker flagged early costs an hour; kept quiet until the demo, it costs the sprint."
+    }
+  ]
+}

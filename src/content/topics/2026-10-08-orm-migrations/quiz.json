@@ -1,0 +1,168 @@
+{
+  "flashcards": [
+    {
+      "q_fr": "Qu'apporte un ORM, en trois points ?",
+      "a_fr": "Le mapping objet-relationnel (une ligne ↔ un objet, une clé étrangère ↔ une propriété), des requêtes typées vérifiées par le compilateur/l'IDE, et un système de migrations qui versionne le schéma comme du code.",
+      "q_en": "What does an ORM bring, in three points?",
+      "a_en": "Object-relational mapping (a row ↔ an object, a foreign key ↔ a property), typed queries checked by the compiler/IDE, and a migration system that versions the schema like code."
+    },
+    {
+      "q_fr": "C'est quoi le problème N+1 ? Donne un exemple chiffré.",
+      "a_fr": "Une requête pour charger une liste, puis une requête par élément dans la boucle qui suit. Exemple : 100 auteurs et leurs articles = 1 + 100 = 101 requêtes, soit ~500 ms à 5 ms de round-trip, contre 2 requêtes (~10 ms) avec un eager loading.",
+      "q_en": "What is the N+1 problem? Give a numbered example.",
+      "a_en": "One query to load a list, then one query per element in the following loop. Example: 100 authors and their posts = 1 + 100 = 101 queries, i.e. ~500 ms at 5 ms per round-trip, versus 2 queries (~10 ms) with eager loading."
+    },
+    {
+      "q_fr": "Eager vs lazy loading : quelle différence et quel risque pour chacun ?",
+      "a_fr": "Lazy charge la relation au moment de l'accès (risque : N+1 dès qu'on itère) ; eager la charge dès la requête initiale via JOIN ou WHERE IN (risque : sur-charger des données inutiles). Règle pratique : eager explicite partout où on boucle.",
+      "q_en": "Eager vs lazy loading: what's the difference and the risk of each?",
+      "a_en": "Lazy loads the relation on access (risk: N+1 as soon as you iterate); eager loads it with the initial query via JOIN or WHERE IN (risk: over-fetching useless data). Rule of thumb: explicit eager wherever you loop."
+    },
+    {
+      "q_fr": "Comment détecter un N+1 en pratique ?",
+      "a_fr": "Compter les requêtes : activer le log SQL en dev (log: ['query'] chez Prisma, echo=True chez SQLAlchemy) et regarder ce qu'un écran déclenche. Si le nombre de requêtes croît avec le nombre d'éléments affichés, c'est un N+1. En prod : APM.",
+      "q_en": "How do you detect an N+1 in practice?",
+      "a_en": "Count the queries: enable SQL logging in dev (log: ['query'] in Prisma, echo=True in SQLAlchemy) and watch what one screen triggers. If the query count grows with the number of displayed items, it's an N+1. In production: APM."
+    },
+    {
+      "q_fr": "Pourquoi ne faut-il jamais éditer une migration déjà appliquée ?",
+      "a_fr": "Elle a déjà tourné sur d'autres bases (collègues, CI, prod) : l'éditer fait diverger l'historique, les outils le détectent (checksum chez Prisma) et refusent d'avancer. Une erreur se corrige en avant, par une nouvelle migration.",
+      "q_en": "Why should you never edit an already-applied migration?",
+      "a_en": "It has already run on other databases (colleagues, CI, production): editing it makes the history diverge, tools detect it (Prisma checksums) and refuse to proceed. Mistakes are fixed forward, with a new migration."
+    },
+    {
+      "q_fr": "Décris les trois phases d'un expand/contract.",
+      "a_fr": "Expand : ajouter le nouveau (colonne nullable, double écriture) sans toucher à l'ancien. Migrate : backfill des données existantes et bascule du code vers le nouveau. Contract : supprimer l'ancien quand plus personne ne le lit. Un déploiement par phase — jamais de rename direct.",
+      "q_en": "Describe the three phases of expand/contract.",
+      "a_en": "Expand: add the new (nullable column, dual writes) without touching the old. Migrate: backfill existing data and switch the code to the new. Contract: remove the old once nobody reads it. One deployment per phase — never a direct rename."
+    },
+    {
+      "q_fr": "Quand est-il légitime d'écrire du SQL brut plutôt que passer par l'ORM ?",
+      "a_fr": "Rapports et agrégations complexes, window functions, bulk updates, et les hot paths où le SQL généré est inefficace. Tous les ORM ont une trappe de sortie ($queryRaw, text(), native queries) prévue pour ça — l'ORM garde le CRUD répétitif.",
+      "q_en": "When is it legitimate to write raw SQL instead of going through the ORM?",
+      "a_en": "Complex reports and aggregations, window functions, bulk updates, and hot paths where the generated SQL is inefficient. Every ORM has an escape hatch ($queryRaw, text(), native queries) designed for this — the ORM keeps the repetitive CRUD."
+    },
+    {
+      "q_fr": "À quoi servent les seeds et pourquoi varient-ils par environnement ?",
+      "a_fr": "Ce sont les données initiales scriptées et versionnées (comptes de test, référentiels). Le dev veut des données réalistes pour travailler, le CI un jeu minimal et déterministe pour des tests reproductibles, la prod presque rien — jamais les comptes de test.",
+      "q_en": "What are seeds for and why do they vary per environment?",
+      "a_en": "They are the scripted, versioned initial data (test accounts, reference tables). Dev wants realistic data to work with, CI a minimal deterministic set for reproducible tests, production almost nothing — never the test accounts."
+    }
+  ],
+  "qcm": [
+    {
+      "q_fr": "Une page liste 100 auteurs et, dans une boucle, requête les articles de chacun. Combien de requêtes SQL partent ?",
+      "q_en": "A page lists 100 authors and, in a loop, queries each one's posts. How many SQL queries are fired?",
+      "choices_fr": [
+        "2",
+        "100",
+        "101",
+        "200"
+      ],
+      "choices_en": [
+        "2",
+        "100",
+        "101",
+        "200"
+      ],
+      "answer": 2,
+      "explain_fr": "1 requête pour la liste + 1 par auteur = 101. C'est la définition du N+1 : le coût est dominé par les round-trips réseau, pas par le volume de données.",
+      "explain_en": "1 query for the list + 1 per author = 101. That's the definition of N+1: the cost is dominated by network round-trips, not data volume."
+    },
+    {
+      "q_fr": "Comment corriger un N+1 avec Prisma ?",
+      "q_en": "How do you fix an N+1 with Prisma?",
+      "choices_fr": [
+        "Ajouter include: { posts: true } à la requête initiale",
+        "Mettre la boucle dans une transaction",
+        "Ajouter un index sur la clé primaire",
+        "Passer la base en mode asynchrone"
+      ],
+      "choices_en": [
+        "Add include: { posts: true } to the initial query",
+        "Wrap the loop in a transaction",
+        "Add an index on the primary key",
+        "Switch the database to async mode"
+      ],
+      "answer": 0,
+      "explain_fr": "include (ou select) déclenche un eager loading : l'ORM ramène la relation en 1-2 requêtes (JOIN ou WHERE IN). Transaction et index ne réduisent pas le nombre de round-trips.",
+      "explain_en": "include (or select) triggers eager loading: the ORM fetches the relation in 1-2 queries (JOIN or WHERE IN). Transactions and indexes don't reduce the number of round-trips."
+    },
+    {
+      "q_fr": "Tu découvres un bug dans une migration déjà appliquée en prod. Que fais-tu ?",
+      "q_en": "You find a bug in a migration already applied in production. What do you do?",
+      "choices_fr": [
+        "Éditer le fichier de migration et redéployer",
+        "Supprimer la migration et la recréer",
+        "Restaurer le backup de la veille",
+        "Écrire une nouvelle migration qui corrige"
+      ],
+      "choices_en": [
+        "Edit the migration file and redeploy",
+        "Delete the migration and recreate it",
+        "Restore last night's backup",
+        "Write a new migration that fixes it"
+      ],
+      "answer": 3,
+      "explain_fr": "Une migration appliquée a déjà tourné sur d'autres bases : l'éditer fait diverger l'historique (checksum invalide). On corrige toujours en avant, avec une nouvelle migration.",
+      "explain_en": "An applied migration has already run on other databases: editing it makes the history diverge (invalid checksum). You always fix forward, with a new migration."
+    },
+    {
+      "q_fr": "Dans quel ordre se déroule un expand/contract pour renommer une colonne ?",
+      "q_en": "In what order does an expand/contract run to rename a column?",
+      "choices_fr": [
+        "Supprimer l'ancienne, ajouter la nouvelle, migrer les données",
+        "Ajouter la nouvelle, migrer données et code, supprimer l'ancienne",
+        "Renommer directement avec ALTER TABLE, puis déployer le code",
+        "Dupliquer la table, basculer le trafic, supprimer l'originale"
+      ],
+      "choices_en": [
+        "Drop the old one, add the new one, migrate the data",
+        "Add the new one, migrate data and code, drop the old one",
+        "Rename directly with ALTER TABLE, then deploy the code",
+        "Duplicate the table, switch traffic, drop the original"
+      ],
+      "answer": 1,
+      "explain_fr": "Expand (ajouter), migrate (backfill + bascule du code), contract (supprimer) : à chaque étape, l'ancien code et le nouveau restent compatibles avec le schéma. Un rename direct casse le code encore déployé.",
+      "explain_en": "Expand (add), migrate (backfill + code switch), contract (drop): at every step, old and new code stay compatible with the schema. A direct rename breaks the code still deployed."
+    },
+    {
+      "q_fr": "Pourquoi un N+1 passe-t-il souvent inaperçu en développement ?",
+      "q_en": "Why does an N+1 often go unnoticed in development?",
+      "choices_fr": [
+        "Les ORM le corrigent automatiquement en mode debug",
+        "Les logs SQL sont désactivés par défaut",
+        "Base locale (latence quasi nulle) et peu de données de seed",
+        "Le navigateur met les requêtes en cache"
+      ],
+      "choices_en": [
+        "ORMs fix it automatically in debug mode",
+        "SQL logs are disabled by default",
+        "Local database (near-zero latency) and few seeded rows",
+        "The browser caches the queries"
+      ],
+      "answer": 2,
+      "explain_fr": "En local, 11 requêtes à 0,1 ms ne se voient pas. En prod, 10 001 requêtes à 5 ms de latence réseau, si. D'où le réflexe : compter les requêtes en dev, pas mesurer le temps.",
+      "explain_en": "Locally, 11 queries at 0.1 ms are invisible. In production, 10,001 queries at 5 ms of network latency are not. Hence the reflex: count queries in dev, don't just measure time."
+    },
+    {
+      "q_fr": "Que restaure le down d'une migration DROP COLUMN ?",
+      "q_en": "What does the down of a DROP COLUMN migration restore?",
+      "choices_fr": [
+        "La colonne et toutes ses données, depuis le WAL",
+        "La colonne, mais vide — les données sont perdues",
+        "Rien : un down ne peut pas recréer une colonne",
+        "Les données, mais seulement si un index existait"
+      ],
+      "choices_en": [
+        "The column and all its data, from the WAL",
+        "The column, but empty — the data is gone",
+        "Nothing: a down cannot recreate a column",
+        "The data, but only if an index existed"
+      ],
+      "answer": 1,
+      "explain_fr": "Le down recrée la structure, pas les données détruites par le DROP. Le vrai filet de sécurité d'une migration destructive : backup vérifié + phase contract (plus aucun lecteur), jamais un vendredi soir.",
+      "explain_en": "The down recreates the structure, not the data destroyed by the DROP. The real safety net of a destructive migration: verified backup + contract phase (no readers left), never on a Friday evening."
+    }
+  ]
+}

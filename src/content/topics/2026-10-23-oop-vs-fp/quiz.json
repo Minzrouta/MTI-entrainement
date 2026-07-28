@@ -1,0 +1,168 @@
+{
+  "flashcards": [
+    {
+      "q_fr": "Qu'est-ce qu'une fonction pure ?",
+      "a_fr": "Une fonction dont la sortie ne dépend que de ses arguments (même entrée → même sortie) et qui ne produit aucun effet de bord : pas d'I/O, pas de mutation externe, pas de Date.now() ni Math.random() cachés. Conséquences : testable sans mock, mémoïsable, parallélisable.",
+      "q_en": "What is a pure function?",
+      "a_en": "A function whose output depends only on its arguments (same input → same output) and that produces no side effect: no I/O, no external mutation, no hidden Date.now() or Math.random(). Consequences: testable without mocks, memoizable, parallelizable."
+    },
+    {
+      "q_fr": "Pourquoi préférer la composition à l'héritage ?",
+      "a_fr": "L'héritage couple fortement la classe fille à l'implémentation de la mère : un changement se propage silencieusement et les hiérarchies profondes finissent par mentir. La composition assemble des capacités (un objet POSSÈDE plutôt qu'il n'HÉRITE) : couplage faible, testable pièce par pièce, recombinable.",
+      "q_en": "Why prefer composition over inheritance?",
+      "a_en": "Inheritance tightly couples the child class to the parent's implementation: a change propagates silently and deep hierarchies end up lying. Composition assembles capabilities (an object HAS rather than IS-A): loose coupling, testable piece by piece, recombinable."
+    },
+    {
+      "q_fr": "Pourquoi l'état mutable partagé est-il considéré comme la vraie racine des bugs ?",
+      "a_fr": "Quand deux morceaux de code peuvent modifier la même structure, chacun casse les hypothèses de l'autre : bugs d'action à distance, difficiles à reproduire, aggravés en concurrence (race conditions). L'OOP le contrôle (encapsulation), la FP le supprime (immutabilité).",
+      "q_en": "Why is shared mutable state considered the real root of bugs?",
+      "a_en": "When two pieces of code can modify the same structure, each breaks the other's assumptions: action-at-a-distance bugs, hard to reproduce, worse under concurrency (race conditions). OOP controls it (encapsulation), FP removes it (immutability)."
+    },
+    {
+      "q_fr": "Que font map, filter et reduce ?",
+      "a_fr": "map transforme chaque élément (n éléments → n éléments), filter garde ceux qui passent un prédicat (n → ≤n), reduce replie la liste en une seule valeur via un accumulateur et une valeur initiale. Ensemble : un pipeline déclaratif qui remplace la boucle à accumulateur.",
+      "q_en": "What do map, filter and reduce do?",
+      "a_en": "map transforms each element (n elements → n elements), filter keeps those passing a predicate (n → ≤n), reduce folds the list into a single value via an accumulator and a seed. Together: a declarative pipeline replacing the accumulator loop."
+    },
+    {
+      "q_fr": "Qu'est-ce que le pattern « functional core, imperative shell » ?",
+      "a_fr": "Un cœur de logique métier écrit en fonctions pures (calculs, validation, décisions), entouré d'une coquille fine impérative qui gère les effets de bord (DB, HTTP, fichiers, horloge). On teste le cœur sans mock et la coquille en tests d'intégration.",
+      "q_en": "What is the \"functional core, imperative shell\" pattern?",
+      "a_en": "A core of business logic written as pure functions (computation, validation, decisions), surrounded by a thin imperative shell handling side effects (DB, HTTP, files, clock). You test the core without mocks and the shell with integration tests."
+    },
+    {
+      "q_fr": "Qu'est-ce que l'encapsulation apporte réellement en OOP ?",
+      "a_fr": "Elle rend les états invalides impossibles : l'état privé ne se modifie que par des méthodes qui garantissent les invariants (ex. un BankAccount dont le solde ne change que via deposit/withdraw qui vérifient les règles). Une classe anémique (getters/setters sans logique) n'encapsule rien.",
+      "q_en": "What does encapsulation actually bring in OOP?",
+      "a_en": "It makes invalid states impossible: private state only changes through methods that guarantee invariants (e.g. a BankAccount whose balance only changes via deposit/withdraw enforcing the rules). An anemic class (getters/setters with no logic) encapsulates nothing."
+    },
+    {
+      "q_fr": "Qu'est-ce qu'une fonction d'ordre supérieur ? Donnez des exemples au-delà de map/filter.",
+      "a_fr": "Une fonction qui prend une fonction en argument ou en retourne une. Exemples courants : les middlewares Express (reçoivent next), les hooks React (useEffect prend un callback), les décorateurs, debounce/throttle, ou un comparateur passé à sort().",
+      "q_en": "What is a higher-order function? Give examples beyond map/filter.",
+      "a_en": "A function that takes a function as argument or returns one. Common examples: Express middlewares (receive next), React hooks (useEffect takes a callback), decorators, debounce/throttle, or a comparator passed to sort()."
+    },
+    {
+      "q_fr": "Qu'est-ce qu'une union discriminée en TypeScript et quel lien avec la FP ?",
+      "a_fr": "Un type somme, ex. `{ ok: true; data: User } | { ok: false; error: string }` : le champ discriminant force le switch à traiter chaque cas et le compilateur signale les cas oubliés. C'est un concept venu des langages fonctionnels (types sommes + pattern matching) adopté par le typage moderne.",
+      "q_en": "What is a discriminated union in TypeScript and how does it relate to FP?",
+      "a_en": "A sum type, e.g. `{ ok: true; data: User } | { ok: false; error: string }`: the discriminant field forces the switch to handle every case and the compiler flags forgotten ones. It's a concept from functional languages (sum types + pattern matching) adopted by modern type systems."
+    }
+  ],
+  "qcm": [
+    {
+      "q_fr": "Laquelle de ces fonctions est pure ?",
+      "q_en": "Which of these functions is pure?",
+      "choices_fr": [
+        "const f = (arr) => { arr.push(0); return arr; }",
+        "const f = (x) => x * taxRateGlobale",
+        "const f = (x, rate) => x * rate",
+        "const f = (x) => x * Math.random()"
+      ],
+      "choices_en": [
+        "const f = (arr) => { arr.push(0); return arr; }",
+        "const f = (x) => x * globalTaxRate",
+        "const f = (x, rate) => x * rate",
+        "const f = (x) => x * Math.random()"
+      ],
+      "answer": 2,
+      "explain_fr": "Seule (x, rate) => x * rate ne dépend que de ses arguments et ne modifie rien. push mute l'argument, la variable globale est une dépendance cachée, Math.random() rend la sortie non déterministe.",
+      "explain_en": "Only (x, rate) => x * rate depends solely on its arguments and modifies nothing. push mutates the argument, the global variable is a hidden dependency, Math.random() makes the output non-deterministic."
+    },
+    {
+      "q_fr": "Quel est le principal reproche fait à l'héritage profond ?",
+      "q_en": "What is the main criticism of deep inheritance?",
+      "choices_fr": [
+        "Il est plus lent à l'exécution",
+        "Il couple fortement les filles à l'implémentation de la mère : un changement casse silencieusement",
+        "Il est interdit en TypeScript",
+        "Il empêche le polymorphisme"
+      ],
+      "choices_en": [
+        "It's slower at runtime",
+        "It tightly couples children to the parent's implementation: a change silently breaks them",
+        "It's forbidden in TypeScript",
+        "It prevents polymorphism"
+      ],
+      "answer": 1,
+      "explain_fr": "Le problème est le couplage fort et fragile : modifier la classe mère se propage à toutes les filles, et les hiérarchies profondes finissent par ne plus correspondre au domaine. D'où « composition > héritage ».",
+      "explain_en": "The problem is strong, brittle coupling: changing the parent propagates to every child, and deep hierarchies eventually stop matching the domain. Hence \"composition over inheritance\"."
+    },
+    {
+      "q_fr": "Que vaut [1, 2, 3, 4].filter(n => n % 2 === 0).map(n => n * 10).reduce((s, n) => s + n, 0) ?",
+      "q_en": "What does [1, 2, 3, 4].filter(n => n % 2 === 0).map(n => n * 10).reduce((s, n) => s + n, 0) evaluate to?",
+      "choices_fr": [
+        "100",
+        "40",
+        "60",
+        "20"
+      ],
+      "choices_en": [
+        "100",
+        "40",
+        "60",
+        "20"
+      ],
+      "answer": 2,
+      "explain_fr": "filter garde [2, 4], map donne [20, 40], reduce additionne à partir de 0 : 60. Un pipeline se lit étape par étape, chaque sortie devient l'entrée suivante.",
+      "explain_en": "filter keeps [2, 4], map yields [20, 40], reduce sums from 0: 60. A pipeline reads step by step, each output becoming the next input."
+    },
+    {
+      "q_fr": "En JavaScript, que garantit exactement `const arr = [1, 2]` ?",
+      "q_en": "In JavaScript, what exactly does `const arr = [1, 2]` guarantee?",
+      "choices_fr": [
+        "Le tableau est entièrement immuable",
+        "arr.push(3) lèvera une exception",
+        "Le tableau est copié à chaque accès",
+        "Seule la référence est fixe : le contenu du tableau reste mutable"
+      ],
+      "choices_en": [
+        "The array is fully immutable",
+        "arr.push(3) will throw an exception",
+        "The array is copied on every access",
+        "Only the reference is fixed: the array's contents stay mutable"
+      ],
+      "answer": 3,
+      "explain_fr": "const interdit la réassignation (arr = autre), pas la mutation (arr.push marche). L'immutabilité de la valeur est une discipline : spread, readonly en TS, Object.freeze ou Immer.",
+      "explain_en": "const forbids reassignment (arr = other), not mutation (arr.push works). Value immutability is a discipline: spread, readonly in TS, Object.freeze or Immer."
+    },
+    {
+      "q_fr": "Où placer les effets de bord selon le pattern « functional core, imperative shell » ?",
+      "q_en": "Where do side effects go according to the \"functional core, imperative shell\" pattern?",
+      "choices_fr": [
+        "Aux frontières du programme, dans une coquille fine autour d'un cœur pur",
+        "Au centre, pour que toutes les fonctions y accèdent",
+        "Répartis uniformément dans chaque fonction",
+        "Nulle part : la FP interdit les effets de bord"
+      ],
+      "choices_en": [
+        "At the program's boundaries, in a thin shell around a pure core",
+        "At the center, so every function can reach them",
+        "Spread evenly across every function",
+        "Nowhere: FP forbids side effects"
+      ],
+      "answer": 0,
+      "explain_fr": "Un programme sans aucun effet de bord ne ferait rien d'observable. L'idée n'est pas de les interdire mais de les repousser aux bords : le cœur pur se teste sans mock, la coquille en intégration.",
+      "explain_en": "A program with zero side effects would do nothing observable. The idea is not to forbid them but to push them to the edges: the pure core tests without mocks, the shell in integration."
+    },
+    {
+      "q_fr": "Pourquoi une fonction pure est-elle si facile à tester ?",
+      "q_en": "Why is a pure function so easy to test?",
+      "choices_fr": [
+        "Parce qu'elle est toujours plus courte",
+        "Parce que le framework de test la détecte automatiquement",
+        "Parce qu'elle n'a jamais de paramètres",
+        "Parce que le test se réduit à : donner une entrée, vérifier la sortie — sans mock ni setup"
+      ],
+      "choices_en": [
+        "Because it's always shorter",
+        "Because the test framework detects it automatically",
+        "Because it never has parameters",
+        "Because the test reduces to: feed an input, check the output — no mocks, no setup"
+      ],
+      "answer": 3,
+      "explain_fr": "Rien d'extérieur n'entre en jeu (pas de DB, pas d'horloge, pas d'état global) : le test est un simple couple entrée/sortie, déterministe et indépendant de l'ordre d'exécution.",
+      "explain_en": "Nothing external is involved (no DB, no clock, no global state): the test is a simple input/output pair, deterministic and independent of execution order."
+    }
+  ]
+}

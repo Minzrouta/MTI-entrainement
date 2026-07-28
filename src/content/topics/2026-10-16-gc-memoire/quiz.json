@@ -1,0 +1,168 @@
+{
+  "flashcards": [
+    {
+      "q_fr": "Quelle est la différence entre la stack et le heap ?",
+      "a_fr": "La stack stocke les frames d'appel et les variables locales, allouées/libérées automatiquement par déplacement d'un pointeur (rapide, une stack par thread, durée de vie liée à la fonction). Le heap stocke les objets à durée de vie arbitraire, partagé entre threads, géré par un allocateur et un GC (ou manuellement en C).",
+      "q_en": "What is the difference between the stack and the heap?",
+      "a_en": "The stack holds call frames and local variables, allocated/freed automatically by moving a pointer (fast, one stack per thread, lifetime tied to the function). The heap holds objects with arbitrary lifetimes, shared between threads, managed by an allocator and a GC (or manually in C)."
+    },
+    {
+      "q_fr": "Quel problème fondamental un garbage collector résout-il ?",
+      "a_fr": "Savoir quand libérer un objet du heap : un objet ne peut être libéré que quand plus personne ne peut y accéder. Le GC détecte automatiquement les objets inaccessibles depuis les racines (stack, globals) et récupère leur mémoire, éliminant use-after-free, double free et libérations oubliées.",
+      "q_en": "What fundamental problem does a garbage collector solve?",
+      "a_en": "Knowing when to free a heap object: an object can only be freed when nobody can reach it anymore. The GC automatically detects objects unreachable from the roots (stack, globals) and reclaims their memory, eliminating use-after-free, double free and forgotten releases."
+    },
+    {
+      "q_fr": "Pourquoi le reference counting ne suffit-il pas seul ?",
+      "a_fr": "À cause des cycles : deux objets qui se référencent mutuellement gardent chacun un compteur ≥ 1, même devenus inaccessibles — ils ne sont jamais libérés. Il faut un mécanisme complémentaire : détecteur de cycles (CPython) ou weak references (Swift/ARC).",
+      "q_en": "Why is reference counting not enough on its own?",
+      "a_en": "Because of cycles: two objects referencing each other each keep a counter ≥ 1, even once unreachable — they are never freed. A complementary mechanism is needed: a cycle detector (CPython) or weak references (Swift/ARC)."
+    },
+    {
+      "q_fr": "Comment fonctionne un GC mark & sweep ?",
+      "a_fr": "Phase mark : depuis les racines (stack, globals, registres), on suit récursivement toutes les références et on marque chaque objet atteint. Phase sweep : tout objet non marqué est libéré. Les cycles inaccessibles sont collectés naturellement puisque personne ne les marque. Souvent complété par une compaction pour défragmenter.",
+      "q_en": "How does a mark & sweep GC work?",
+      "a_en": "Mark phase: from the roots (stack, globals, registers), recursively follow all references and mark every reached object. Sweep phase: every unmarked object is freed. Unreachable cycles are collected naturally since nobody marks them. Often complemented by compaction to defragment."
+    },
+    {
+      "q_fr": "Qu'est-ce que l'hypothèse générationnelle et comment les GC l'exploitent-ils ?",
+      "a_fr": "L'observation empirique que la plupart des objets meurent jeunes (temporaires, objets d'une requête). Les GC séparent donc le heap : une young generation collectée souvent et vite (minor GC — seuls les rares survivants sont copiés), et une old generation collectée rarement (major/full GC, plus coûteux). C'est le design de V8 et de la JVM.",
+      "q_en": "What is the generational hypothesis and how do GCs exploit it?",
+      "a_en": "The empirical observation that most objects die young (temporaries, per-request objects). GCs therefore split the heap: a young generation collected often and fast (minor GC — only the few survivors are copied), and an old generation collected rarely (major/full GC, more expensive). That's the design of V8 and the JVM."
+    },
+    {
+      "q_fr": "Cite quatre causes classiques de fuite mémoire dans un langage à GC.",
+      "a_fr": "1) Listeners jamais retirés (l'emitter garde une référence vers le callback et tout son scope capturé). 2) Caches sans borne (Map qui grossit indéfiniment — penser WeakMap ou éviction LRU). 3) Closures qui capturent de gros objets. 4) Variables globales qui accumulent. Dans tous les cas : l'objet reste accessible, donc incollectable.",
+      "q_en": "Name four classic causes of memory leaks in a GC'd language.",
+      "a_en": "1) Listeners never removed (the emitter keeps a reference to the callback and its whole captured scope). 2) Unbounded caches (a Map growing forever — think WeakMap or LRU eviction). 3) Closures capturing large objects. 4) Global variables that accumulate. In every case: the object stays reachable, hence uncollectable."
+    },
+    {
+      "q_fr": "Comment diagnostiquer une fuite mémoire dans une app JavaScript ?",
+      "a_fr": "Symptôme : mémoire en marches d'escalier qui ne redescend pas après GC. Méthode : heap snapshots (DevTools → Memory) avant/après le scénario suspect, comparer, trier par retained size, puis remonter la chaîne des retainers jusqu'à la référence coupable (souvent un listener ou un cache). Sur Node : --inspect + Chrome DevTools.",
+      "q_en": "How do you diagnose a memory leak in a JavaScript app?",
+      "a_en": "Symptom: staircase-shaped memory that never comes down after GC. Method: heap snapshots (DevTools → Memory) before/after the suspect scenario, compare, sort by retained size, then walk the retainers chain up to the guilty reference (often a listener or a cache). On Node: --inspect + Chrome DevTools."
+    },
+    {
+      "q_fr": "Comment Rust garantit-il la sécurité mémoire sans garbage collector ?",
+      "a_fr": "Par l'ownership : chaque valeur a un propriétaire unique et sa libération est insérée à la compilation quand le propriétaire sort du scope. Le borrow checker vérifie statiquement qu'aucune référence ne survit à la valeur qu'elle pointe. Résultat : ni GC ni pauses, sécurité mémoire prouvée à la compilation.",
+      "q_en": "How does Rust guarantee memory safety without a garbage collector?",
+      "a_en": "Through ownership: every value has a single owner and its release is inserted at compile time when the owner goes out of scope. The borrow checker statically verifies that no reference outlives the value it points to. Result: no GC, no pauses, memory safety proven at compile time."
+    }
+  ],
+  "qcm": [
+    {
+      "q_fr": "Quel type d'objet un garbage collector peut-il libérer ?",
+      "q_en": "Which objects can a garbage collector free?",
+      "choices_fr": [
+        "Les objets inutilisés depuis plus de 30 secondes",
+        "Les objets inaccessibles depuis les racines (stack, globals)",
+        "Les objets marqués obsolètes par le développeur",
+        "Les objets dont la taille dépasse un seuil"
+      ],
+      "choices_en": [
+        "Objects unused for more than 30 seconds",
+        "Objects unreachable from the roots (stack, globals)",
+        "Objects the developer marked as obsolete",
+        "Objects larger than a threshold"
+      ],
+      "answer": 1,
+      "explain_fr": "Le seul critère est l'accessibilité : aucun chemin de références depuis une racine. Un objet inutilisé mais encore référencé reste incollectable — c'est exactement ce qui rend les fuites possibles malgré le GC.",
+      "explain_en": "The only criterion is reachability: no reference path from any root. An unused but still-referenced object stays uncollectable — exactly what makes leaks possible despite the GC."
+    },
+    {
+      "q_fr": "Pourquoi deux objets qui se référencent mutuellement posent-ils problème au reference counting ?",
+      "q_en": "Why do two objects referencing each other break reference counting?",
+      "choices_fr": [
+        "Leurs compteurs débordent et provoquent un crash",
+        "Le GC les copie en double dans la old generation",
+        "Leur compteur ne tombe jamais à zéro : jamais libérés",
+        "Ils sont libérés deux fois (double free)"
+      ],
+      "choices_en": [
+        "Their counters overflow and cause a crash",
+        "The GC copies them twice into the old generation",
+        "Their counter never drops to zero: never freed",
+        "They are freed twice (double free)"
+      ],
+      "answer": 2,
+      "explain_fr": "Chacun maintient le compteur de l'autre à ≥ 1, même quand le cycle devient inaccessible de l'extérieur. Un GC traçant, lui, les collecte : personne ne les marque depuis les racines.",
+      "explain_en": "Each keeps the other's counter at ≥ 1, even when the cycle becomes unreachable from outside. A tracing GC does collect them: nothing marks them from the roots."
+    },
+    {
+      "q_fr": "Qu'est-ce qu'une pause « stop-the-world » ?",
+      "q_en": "What is a \"stop-the-world\" pause?",
+      "choices_fr": [
+        "La suspension du programme pendant que le GC travaille sur le graphe d'objets",
+        "Le blocage du réseau pendant une collection",
+        "Un deadlock entre deux threads du GC",
+        "Le temps de démarrage de la JVM"
+      ],
+      "choices_en": [
+        "The program being suspended while the GC works on the object graph",
+        "Network traffic being blocked during a collection",
+        "A deadlock between two GC threads",
+        "The JVM's startup time"
+      ],
+      "answer": 0,
+      "explain_fr": "Pour marquer un graphe cohérent, le GC doit figer le programme. Les GC modernes (ZGC, GC incrémental de V8) rendent l'essentiel du travail concurrent pour réduire ces pauses à quelques ms, sans les éliminer totalement.",
+      "explain_en": "To mark a consistent graph, the GC must freeze the program. Modern GCs (ZGC, V8's incremental GC) make most of the work concurrent to shrink these pauses to a few ms, without fully eliminating them."
+    },
+    {
+      "q_fr": "Pourquoi un minor GC sur la young generation est-il si rapide ?",
+      "q_en": "Why is a minor GC on the young generation so fast?",
+      "choices_fr": [
+        "Parce que la young generation est stockée dans la stack",
+        "Parce qu'il tourne sur un thread GPU dédié",
+        "Parce que les jeunes objets sont plus petits en mémoire",
+        "Parce que la plupart des objets y sont déjà morts : on ne traite que les rares survivants"
+      ],
+      "choices_en": [
+        "Because the young generation is stored on the stack",
+        "Because it runs on a dedicated GPU thread",
+        "Because young objects are smaller in memory",
+        "Because most objects there are already dead: only the few survivors are processed"
+      ],
+      "answer": 3,
+      "explain_fr": "C'est l'hypothèse générationnelle : la plupart des objets meurent jeunes. Le coût d'un GC copiant dépend des survivants, pas des morts — une young gen presque vide de vivants se collecte en un éclair.",
+      "explain_en": "That's the generational hypothesis: most objects die young. A copying GC's cost depends on survivors, not corpses — a young gen with few live objects collects in a flash."
+    },
+    {
+      "q_fr": "Une SPA fuit : la mémoire monte à chaque navigation. Quel est le premier réflexe ?",
+      "q_en": "A SPA leaks: memory grows on every navigation. What's the first move?",
+      "choices_fr": [
+        "Augmenter la limite mémoire de Node",
+        "Comparer deux heap snapshots et trier par retained size",
+        "Appeler global.gc() à chaque navigation",
+        "Passer les objets en WeakMap partout"
+      ],
+      "choices_en": [
+        "Raise Node's memory limit",
+        "Compare two heap snapshots and sort by retained size",
+        "Call global.gc() on every navigation",
+        "Switch every object to a WeakMap"
+      ],
+      "answer": 1,
+      "explain_fr": "Mesurer avant de corriger : snapshot avant/après le scénario, comparaison, retained size, puis remonter les retainers jusqu'à la référence coupable (souvent un listener jamais retiré). Forcer le GC ou augmenter la limite ne fait que masquer.",
+      "explain_en": "Measure before fixing: snapshot before/after the scenario, compare, retained size, then walk the retainers to the guilty reference (often a never-removed listener). Forcing GC or raising limits only hides it."
+    },
+    {
+      "q_fr": "Que garantit l'ownership de Rust par rapport à un langage à GC ?",
+      "q_en": "What does Rust's ownership guarantee compared to a GC'd language?",
+      "choices_fr": [
+        "Une libération automatique à l'exécution par un runtime léger",
+        "L'absence totale de fuites mémoire, même logiques",
+        "La sécurité mémoire à la compilation, sans GC ni pauses",
+        "Un heap partagé sans aucune synchronisation"
+      ],
+      "choices_en": [
+        "Automatic release at runtime by a lightweight runtime",
+        "The total absence of memory leaks, even logical ones",
+        "Memory safety at compile time, with no GC and no pauses",
+        "A shared heap with no synchronization at all"
+      ],
+      "answer": 2,
+      "explain_fr": "La libération est décidée à la compilation (sortie de scope du propriétaire unique), vérifiée par le borrow checker : pas de runtime GC, pas de pause. Mais on peut toujours fuir logiquement (Rc cyclique, Vec qui grossit sans fin).",
+      "explain_en": "Release is decided at compile time (the single owner going out of scope), verified by the borrow checker: no GC runtime, no pauses. But you can still leak logically (cyclic Rc, an endlessly growing Vec)."
+    }
+  ]
+}

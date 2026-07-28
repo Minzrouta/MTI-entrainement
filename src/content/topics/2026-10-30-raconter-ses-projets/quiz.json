@@ -1,0 +1,168 @@
+{
+  "flashcards": [
+    {
+      "q_fr": "Quelle est la structure STAR adaptée au tech pour raconter un projet ?",
+      "a_fr": "Contexte (quoi, pour qui, quelle équipe, quel délai) → Problème (la difficulté concrète) → Décisions (les choix, leurs alternatives, qui a fait quoi) → Résultat (ce qui a marché, avec des chiffres) → Leçons (ce qu'on referait autrement). Le tout en 90 secondes, puis l'intervieweur creuse.",
+      "q_en": "What is the tech-adapted STAR structure for telling a project?",
+      "a_en": "Context (what, for whom, what team, what deadline) → Problem (the concrete difficulty) → Decisions (the choices, their alternatives, who did what) → Result (what worked, with numbers) → Lessons (what you'd redo differently). All in 90 seconds, then the interviewer digs."
+    },
+    {
+      "q_fr": "Combien de projets préparer pour un entretien, et à quel niveau de détail ?",
+      "a_fr": "2 à 3 projets connus à fond : architecture dessinable au tableau, décisions et alternatives, un ou deux chiffres, ce qui a raté, ce qu'on referait autrement. Trois histoires maîtrisées valent mieux que huit lignes de CV survolées.",
+      "q_en": "How many projects should you prepare for an interview, and at what level of detail?",
+      "a_en": "2 to 3 projects known inside out: architecture drawable on a whiteboard, decisions and alternatives, one or two numbers, what went wrong, what you'd redo differently. Three mastered stories beat eight skimmed CV lines."
+    },
+    {
+      "q_fr": "Pourquoi quantifier ses résultats de projet, même modestement ?",
+      "a_fr": "Un chiffre transforme une affirmation en preuve : « le chargement est passé de 4 s à 800 ms » raconte une investigation, là où « une app rapide » ne dit rien. Utilisateurs, latence, volume, temps gagné — un chiffre honnête bat un superlatif.",
+      "q_en": "Why quantify your project results, even modestly?",
+      "a_en": "A number turns a claim into evidence: \"load time went from 4 s to 800 ms\" tells an investigation, where \"a fast app\" says nothing. Users, latency, volume, time saved — an honest number beats a superlative."
+    },
+    {
+      "q_fr": "« Pourquoi Postgres ? » alors que la vraie raison est « on connaissait » : que répondre ?",
+      "a_fr": "L'assumer, en le contextualisant : « c'est la base qu'on connaissait, nos données étaient relationnelles, c'était le choix sûr en trois semaines » — honnête et défendable. Bonus : nommer ce qu'on comparerait aujourd'hui. Inventer une justification savante a posteriori s'effondre à la deuxième question.",
+      "q_en": "\"Why Postgres?\" when the real reason is \"we knew it\": what do you answer?",
+      "a_en": "Own it, with context: \"it's the database we knew, our data was relational, it was the safe choice in three weeks\" — honest and defensible. Bonus: name what you'd compare today. Inventing a scholarly after-the-fact justification collapses at the second question."
+    },
+    {
+      "q_fr": "Comment répondre à « qu'est-ce qui a raté dans ce projet ? » ?",
+      "a_fr": "Jamais « rien ». Un raté précis + sa cause + ce qu'on a changé depuis : « on a perdu une semaine faute d'avoir figé le schéma ; depuis je commence par le modèle ». Le recruteur juge la lucidité et la boucle d'apprentissage, pas l'échec lui-même.",
+      "q_en": "How do you answer \"what went wrong in this project?\"",
+      "a_en": "Never \"nothing\". One precise failure + its cause + what you changed since: \"we lost a week for not freezing the schema; since then I start with the model\". The interviewer judges lucidity and the learning loop, not the failure itself."
+    },
+    {
+      "q_fr": "Quel est le piège du projet de groupe en entretien, et comment l'éviter ?",
+      "a_fr": "L'intervieweur isole votre contribution : « qu'as-tu fait, toi, précisément ? ». S'attribuer le projet entier se détecte en trois questions techniques. Réponse au « je » avec un périmètre net, en créditant les autres : « j'ai pris le serveur de jeu ; le front, c'était Marie et Tom ».",
+      "q_en": "What is the group-project trap in interviews, and how do you avoid it?",
+      "a_en": "The interviewer isolates your contribution: \"what did you, precisely, do?\". Claiming the whole project gets detected within three technical questions. Answer in the first person with a clear scope, crediting the others: \"I took the game server; the front end was Marie and Tom\"."
+    },
+    {
+      "q_fr": "Que contient un README qui « fait la moitié du travail » ?",
+      "a_fr": "Une capture d'écran (ou un GIF de démo), une ou deux phrases sur le quoi et le pourquoi, des instructions de lancement qui marchent (idéalement docker compose up), pas de node_modules commité ni de secrets dans l'historique. C'est le seul document qui parle pour vous en votre absence.",
+      "q_en": "What does a README that \"does half the work\" contain?",
+      "a_en": "A screenshot (or a demo GIF), one or two sentences on the what and the why, launch instructions that work (ideally docker compose up), no committed node_modules and no secrets in the history. It's the only document that speaks for you in your absence."
+    },
+    {
+      "q_fr": "Comment sécuriser une démo de projet le jour de l'entretien ?",
+      "a_fr": "Tester l'URL déployée le matin même, et préparer un plan B hors ligne : capture vidéo de 30 s ou GIF dans le README. La démo live échoue pour des raisons étrangères à votre travail (wifi, service gratuit endormi) ; enchaîner calmement sur la vidéo fait partie de l'évaluation.",
+      "q_en": "How do you secure a project demo on interview day?",
+      "a_en": "Test the deployed URL that same morning, and prepare an offline plan B: a 30 s video capture or a GIF in the README. Live demos fail for reasons unrelated to your work (wifi, sleeping free tier); calmly switching to the video is part of the evaluation."
+    }
+  ],
+  "qcm": [
+    {
+      "q_fr": "« Présente-moi un projet dont tu es fier. » Quelle est la meilleure ouverture ?",
+      "q_en": "\"Tell me about a project you're proud of.\" What's the best opening?",
+      "choices_fr": [
+        "La liste des technologies : « c'est du React avec Node et MongoDB »",
+        "Dix minutes d'architecture détaillée pour montrer sa maîtrise",
+        "« C'est un petit projet, pas grand-chose, mais… »",
+        "Le contexte en une phrase, puis le problème concret"
+      ],
+      "choices_en": [
+        "The list of technologies: \"it's React with Node and MongoDB\"",
+        "Ten minutes of detailed architecture to show mastery",
+        "\"It's a small project, nothing much, but…\"",
+        "The context in one sentence, then the concrete problem"
+      ],
+      "answer": 3,
+      "explain_fr": "La structure STAR commence par le contexte puis le problème : c'est ce qui donne envie d'écouter la suite. La stack arrive plus tard, dans les décisions ; le monologue épuise l'attention ; la fausse modestie sabote le projet avant de le montrer.",
+      "explain_en": "The STAR structure starts with context then problem: that's what makes people want to hear the rest. The stack comes later, in the decisions; the monologue exhausts attention; false modesty sabotages the project before showing it."
+    },
+    {
+      "q_fr": "« Qu'est-ce qui a raté dans ce projet ? » Quelle réponse marque des points ?",
+      "q_en": "\"What went wrong in this project?\" Which answer scores points?",
+      "choices_fr": [
+        "« Honnêtement, rien : tout s'est bien passé »",
+        "Un raté précis, sa cause, et ce qu'on a changé depuis",
+        "Rejeter la faute sur un coéquipier moins investi",
+        "Un échec dramatisé pour montrer son humilité"
+      ],
+      "choices_en": [
+        "\"Honestly, nothing: everything went fine\"",
+        "One precise failure, its cause, and what you changed since",
+        "Blaming a less-invested teammate",
+        "A dramatized failure to show humility"
+      ],
+      "answer": 1,
+      "explain_fr": "L'intervieweur évalue la lucidité et la boucle d'apprentissage. « Rien » n'est pas crédible, accuser un coéquipier est un red flag, et l'autoflagellation inquiète. Le trio raté → cause → changement montre exactement la maturité recherchée.",
+      "explain_en": "The interviewer evaluates lucidity and the learning loop. \"Nothing\" isn't credible, blaming a teammate is a red flag, and self-flagellation worries people. The failure → cause → change trio shows exactly the maturity they're looking for."
+    },
+    {
+      "q_fr": "Quel énoncé de résultat est le plus convaincant dans un pitch de projet ?",
+      "q_en": "Which result statement is the most convincing in a project pitch?",
+      "choices_fr": [
+        "« Le chargement est passé de 4 s à 800 ms après mise en cache »",
+        "« L'application est très rapide et très robuste »",
+        "« Tout le monde a adoré le projet »",
+        "« On a utilisé les meilleures technologies du marché »"
+      ],
+      "choices_en": [
+        "\"Load time went from 4 s to 800 ms after caching\"",
+        "\"The application is very fast and very robust\"",
+        "\"Everyone loved the project\"",
+        "\"We used the best technologies on the market\""
+      ],
+      "answer": 0,
+      "explain_fr": "Un chiffre avant/après raconte une investigation : mesure, hypothèse, correction, re-mesure. Les superlatifs (« rapide », « adoré », « meilleures ») ne sont ni vérifiables ni mémorables — un chiffre honnête, même modeste, bat tous les adjectifs.",
+      "explain_en": "A before/after number tells an investigation: measure, hypothesis, fix, re-measure. Superlatives (\"fast\", \"loved\", \"best\") are neither verifiable nor memorable — an honest number, even a modest one, beats every adjective."
+    },
+    {
+      "q_fr": "Dans un projet de groupe, quelle formulation est la bonne en entretien ?",
+      "q_en": "In a group project, which phrasing is right for an interview?",
+      "choices_fr": [
+        "« On a tout fait ensemble, difficile de dire qui a fait quoi »",
+        "« J'ai réalisé l'essentiel du projet, les autres ont aidé »",
+        "« J'ai conçu le serveur de jeu et le pub/sub ; le front, c'était Marie et Tom »",
+        "Rester vague pour ne pas être piégé sur les détails"
+      ],
+      "choices_en": [
+        "\"We did everything together, hard to say who did what\"",
+        "\"I did most of the project, the others helped\"",
+        "\"I designed the game server and the pub/sub; the front end was Marie and Tom\"",
+        "Staying vague to avoid being trapped on details"
+      ],
+      "answer": 2,
+      "explain_fr": "Un périmètre net au « je », en créditant les autres : c'est vérifiable, crédible, et ça résiste aux questions techniques qui suivront. Le flou comme l'appropriation totale se détectent en trois questions — et créditer l'équipe renforce votre crédibilité.",
+      "explain_en": "A clear first-person scope, crediting the others: verifiable, credible, and it survives the technical questions that follow. Both vagueness and total appropriation get detected within three questions — and crediting the team strengthens your credibility."
+    },
+    {
+      "q_fr": "Quel est le meilleur plan B pour une démo le jour de l'entretien ?",
+      "q_en": "What's the best plan B for a demo on interview day?",
+      "choices_fr": [
+        "Décrire l'application à l'oral, c'est suffisant",
+        "Relancer le serveur en direct jusqu'à ce que ça marche",
+        "Promettre d'envoyer un lien après l'entretien",
+        "Une capture vidéo ou un GIF préparés à l'avance"
+      ],
+      "choices_en": [
+        "Describing the application out loud, that's enough",
+        "Restarting the server live until it works",
+        "Promising to send a link after the interview",
+        "A video capture or GIF prepared in advance"
+      ],
+      "answer": 3,
+      "explain_fr": "La démo live échoue pour des raisons étrangères à votre travail : wifi, service gratuit endormi, dépendance cassée. La vidéo préparée montre le produit ET votre gestion de l'imprévu ; relancer nerveusement son terminal montre l'inverse.",
+      "explain_en": "Live demos fail for reasons unrelated to your work: wifi, sleeping free tier, broken dependency. The prepared video shows the product AND how you handle the unexpected; nervously restarting your terminal shows the opposite."
+    },
+    {
+      "q_fr": "« Pourquoi avoir choisi cette techno ? » — la vraie raison est la familiarité. Que faire ?",
+      "q_en": "\"Why did you choose this technology?\" — the real reason is familiarity. What do you do?",
+      "choices_fr": [
+        "Inventer une comparaison de benchmarks pour paraître rigoureux",
+        "L'assumer avec le contexte, et nommer ce qu'on comparerait aujourd'hui",
+        "Répondre que le choix n'avait pas d'importance",
+        "Détourner la question vers un autre sujet"
+      ],
+      "choices_en": [
+        "Inventing a benchmark comparison to look rigorous",
+        "Owning it with context, and naming what you'd compare today",
+        "Answering that the choice didn't matter",
+        "Deflecting to another subject"
+      ],
+      "answer": 1,
+      "explain_fr": "« C'est ce qu'on connaissait, et c'était le choix sûr dans notre délai » est honnête, contextualisé et défendable — surtout suivi de « aujourd'hui je comparerais avec X ». La justification inventée s'effondre à la question suivante, et l'esquive se voit.",
+      "explain_en": "\"It's what we knew, and it was the safe choice given our deadline\" is honest, contextualized and defensible — especially followed by \"today I'd compare it with X\". The invented justification collapses at the next question, and the dodge is obvious."
+    }
+  ]
+}

@@ -1,0 +1,168 @@
+{
+  "flashcards": [
+    {
+      "q_fr": "Pourquoi faut-il un timeout sur chaque appel réseau ?",
+      "a_fr": "Parce qu'un appel peut ne jamais répondre : sans timeout, le thread ou la connexion de pool qui attend est bloqué indéfiniment. Sous charge, ces attentes s'accumulent et épuisent les ressources du service appelant — la panne de la dépendance devient la vôtre. Un appel sans timeout est une fuite de ressources en puissance.",
+      "q_en": "Why does every network call need a timeout?",
+      "a_en": "Because a call may never answer: without a timeout, the waiting thread or pool connection is blocked indefinitely. Under load, these waits pile up and exhaust the caller's resources — the dependency's outage becomes yours. A call without a timeout is a resource leak waiting to happen."
+    },
+    {
+      "q_fr": "Qu'est-ce que le budget de latence en cascade ?",
+      "a_fr": "Dans une chaîne A → B → C, les timeouts doivent décroître : si A accorde 2 s à B, B doit accorder moins (ex. 1,5 s) à C, sinon B répond après que A a abandonné — travail gaspillé et erreurs incohérentes. On découpe le SLO de bout en bout en budgets par étage, chacun avec une marge.",
+      "q_en": "What is the cascading latency budget?",
+      "a_en": "In a chain A → B → C, timeouts must decrease: if A gives B 2 s, B must give C less (e.g. 1.5 s), otherwise B answers after A has given up — wasted work and inconsistent errors. The end-to-end SLO is split into per-tier budgets, each with a margin."
+    },
+    {
+      "q_fr": "Pourquoi ajouter du jitter à l'exponential backoff ?",
+      "a_fr": "Sans jitter, tous les clients tombés au même moment réessaient exactement aux mêmes instants (1 s, 2 s, 4 s…) : des vagues synchronisées frappent le service pendant qu'il tente de se relever. Le jitter (délai aléatoire, ex. full jitter : uniforme entre 0 et le plafond) étale les tentatives et casse la synchronisation.",
+      "q_en": "Why add jitter to exponential backoff?",
+      "a_en": "Without jitter, all clients that failed at the same moment retry at exactly the same instants (1 s, 2 s, 4 s…): synchronized waves hit the service while it tries to recover. Jitter (random delay, e.g. full jitter: uniform between 0 and the cap) spreads attempts out and breaks the synchronization."
+    },
+    {
+      "q_fr": "Pourquoi retry une requête non idempotente est-il dangereux ?",
+      "a_fr": "Parce qu'un échec apparent peut être un succès dont la réponse s'est perdue : rejouer un POST /payments dans ce cas crée un paiement en double. Solution : les idempotency keys — le client joint un identifiant unique, le serveur détecte le rejeu et renvoie la réponse originale au lieu de ré-exécuter.",
+      "q_en": "Why is retrying a non-idempotent request dangerous?",
+      "a_en": "Because an apparent failure may be a success whose response got lost: replaying a POST /payments in that case creates a double charge. Solution: idempotency keys — the client attaches a unique identifier, the server detects the replay and returns the original response instead of re-executing."
+    },
+    {
+      "q_fr": "Décris les trois états d'un circuit breaker.",
+      "a_fr": "Closed : les appels passent, les échecs sont comptés. Open (déclenché quand les échecs dépassent un seuil) : échec immédiat sans appeler le service, pendant un délai de repos. Half-open (après ce délai) : quelques appels de sonde passent ; s'ils réussissent → closed, s'ils échouent → open. But : laisser récupérer le service aval et échouer vite côté appelant.",
+      "q_en": "Describe the three states of a circuit breaker.",
+      "a_en": "Closed: calls pass, failures are counted. Open (triggered when failures exceed a threshold): instant failure without calling the service, for a cool-down period. Half-open (after that delay): a few probe calls pass; if they succeed → closed, if they fail → open. Goal: let the downstream service recover and fail fast on the caller side."
+    },
+    {
+      "q_fr": "Qu'est-ce que le pattern bulkhead ?",
+      "a_fr": "Cloisonner les ressources par dépendance, comme les compartiments étanches d'un navire : pools de connexions/threads séparés, quotas. Si une dépendance devient lente, elle sature son propre pool (ex. 10 connexions) sans épuiser les ressources globales du service — la panne reste contenue.",
+      "q_en": "What is the bulkhead pattern?",
+      "a_en": "Partitioning resources per dependency, like a ship's watertight compartments: separate connection/thread pools, quotas. If a dependency turns slow, it saturates its own pool (e.g. 10 connections) without exhausting the service's global resources — the failure stays contained."
+    },
+    {
+      "q_fr": "Liveness vs readiness : quelle différence et pourquoi c'est important ?",
+      "a_fr": "Liveness : « le process tourne-t-il ? » — en cas d'échec, on le redémarre. Readiness : « peut-il servir du trafic ? » — en cas d'échec, on le retire du load balancer sans le tuer. Les confondre provoque des redémarrages en boucle quand une dépendance est juste lente ; et un readiness check qui teste les dépendances peut sortir toutes les instances du LB d'un coup.",
+      "q_en": "Liveness vs readiness: what's the difference and why does it matter?",
+      "a_en": "Liveness: \"is the process running?\" — on failure, restart it. Readiness: \"can it serve traffic?\" — on failure, pull it from the load balancer without killing it. Confusing them causes restart loops when a dependency is merely slow; and a readiness check that tests dependencies can pull every instance from the LB at once."
+    },
+    {
+      "q_fr": "Qu'est-ce que le thundering herd et comment s'en protéger ?",
+      "a_fr": "Une masse de clients (ou d'entrées de cache expirant ensemble) frappe l'origine au même instant — au redémarrage d'un service ou à l'expiration d'un cache populaire. Parades : jitter sur les TTL et les reconnexions, request coalescing (une seule requête régénère le cache, les autres attendent le résultat), warm-up progressif du trafic.",
+      "q_en": "What is the thundering herd and how do you defend against it?",
+      "a_en": "A mass of clients (or cache entries expiring together) hits the origin at the same instant — on a service restart or a popular cache expiry. Countermeasures: jitter on TTLs and reconnections, request coalescing (a single request regenerates the cache, the others wait for the result), progressive traffic warm-up."
+    }
+  ],
+  "qcm": [
+    {
+      "q_fr": "Quel est le rôle principal d'un circuit breaker ?",
+      "q_en": "What is the main role of a circuit breaker?",
+      "choices_fr": [
+        "Réessayer automatiquement les appels échoués",
+        "Répartir la charge entre plusieurs instances",
+        "Arrêter d'appeler une dépendance en panne et échouer immédiatement",
+        "Chiffrer le trafic vers les services externes"
+      ],
+      "choices_en": [
+        "Automatically retrying failed calls",
+        "Balancing load across several instances",
+        "Stopping calls to a failing dependency and failing immediately",
+        "Encrypting traffic to external services"
+      ],
+      "answer": 2,
+      "explain_fr": "Le breaker ne réessaie rien — c'est l'inverse : il coupe les appels vers un service à terre pour le laisser récupérer et libérer les ressources de l'appelant. Le retry gère les blips transitoires ; le breaker, les pannes durables.",
+      "explain_en": "The breaker retries nothing — quite the opposite: it cuts calls to a downed service so it can recover and the caller's resources are freed. Retry handles transient blips; the breaker, lasting outages."
+    },
+    {
+      "q_fr": "Dans une chaîne A → B → C, A donne 2 s de timeout à B. Quel timeout B doit-il donner à C ?",
+      "q_en": "In a chain A → B → C, A gives B a 2 s timeout. What timeout should B give C?",
+      "choices_fr": [
+        "Moins de 2 s, pour garder une marge (ex. 1,5 s)",
+        "Exactement 2 s, pour rester cohérent",
+        "Plus de 2 s, pour laisser une chance à C",
+        "Aucun : C doit pouvoir prendre son temps"
+      ],
+      "choices_en": [
+        "Less than 2 s, keeping a margin (e.g. 1.5 s)",
+        "Exactly 2 s, for consistency",
+        "More than 2 s, to give C a chance",
+        "None: C should be able to take its time"
+      ],
+      "answer": 0,
+      "explain_fr": "Les timeouts décroissent en cascade : si B attend C plus longtemps que A n'attend B, B finira son travail pour un appelant déjà parti. On raisonne en budget de latence, chaque étage gardant une marge pour son propre traitement.",
+      "explain_en": "Timeouts decrease down the cascade: if B waits on C longer than A waits on B, B finishes work for a caller that's already gone. Think latency budget, each tier keeping a margin for its own processing."
+    },
+    {
+      "q_fr": "Quelle requête est une bonne candidate au retry automatique ?",
+      "q_en": "Which request is a good candidate for automatic retry?",
+      "choices_fr": [
+        "Un POST /payments sans idempotency key qui a timeout",
+        "Un GET qui a reçu un 503 Service Unavailable",
+        "Un GET qui a reçu un 404 Not Found",
+        "Un POST qui a reçu un 400 Bad Request"
+      ],
+      "choices_en": [
+        "A POST /payments without an idempotency key that timed out",
+        "A GET that received a 503 Service Unavailable",
+        "A GET that received a 404 Not Found",
+        "A POST that received a 400 Bad Request"
+      ],
+      "answer": 1,
+      "explain_fr": "On ne retry que le transitoire (503, timeout, connexion reset) ET le sûr (GET est idempotent). Un 404 ou un 400 donneront le même résultat à chaque rejeu ; un POST de paiement sans idempotency key risque le paiement en double.",
+      "explain_en": "Only retry the transient (503, timeout, connection reset) AND the safe (GET is idempotent). A 404 or 400 will yield the same result every replay; a payment POST without an idempotency key risks a double charge."
+    },
+    {
+      "q_fr": "Qu'est-ce qu'un retry storm ?",
+      "q_en": "What is a retry storm?",
+      "choices_fr": [
+        "Un pic de trafic légitime après une campagne marketing",
+        "Un bug qui fait boucler un client en local",
+        "Une attaque DDoS ciblant les endpoints de retry",
+        "Les retries qui multiplient le trafic sur un service déjà surchargé et empêchent sa récupération"
+      ],
+      "choices_en": [
+        "A legitimate traffic spike after a marketing campaign",
+        "A bug making one client loop locally",
+        "A DDoS attack targeting retry endpoints",
+        "Retries multiplying traffic on an already overloaded service, preventing its recovery"
+      ],
+      "answer": 3,
+      "explain_fr": "Service lent → timeouts → chaque client retry 3× → trafic ×3-4 au pire moment → effondrement, et chaque instance qui redémarre est saturée instantanément. Parades : retry budget, circuit breakers, backoff + jitter, load shedding.",
+      "explain_en": "Slow service → timeouts → each client retries 3× → traffic ×3-4 at the worst moment → collapse, and every restarting instance is instantly saturated. Countermeasures: retry budget, circuit breakers, backoff + jitter, load shedding."
+    },
+    {
+      "q_fr": "Le service de recommandations est mort. Quelle est la meilleure réponse côté page produit ?",
+      "q_en": "The recommendations service is dead. What's the best response on the product page?",
+      "choices_fr": [
+        "Renvoyer une erreur 500 : les données seraient incomplètes",
+        "Afficher un fallback statique (meilleures ventes) et servir le reste de la page",
+        "Attendre 30 s que le service revienne",
+        "Rediriger l'utilisateur vers la page d'accueil"
+      ],
+      "choices_en": [
+        "Return a 500: the data would be incomplete",
+        "Show a static fallback (best-sellers) and serve the rest of the page",
+        "Wait 30 s for the service to come back",
+        "Redirect the user to the home page"
+      ],
+      "answer": 1,
+      "explain_fr": "Graceful degradation : une page 90 % fonctionnelle vaut mieux qu'un 500 ou qu'une attente interminable. Le fallback (contenu statique, cache stale) se prévoit par feature, avec un timeout court sur la dépendance non critique.",
+      "explain_en": "Graceful degradation: a 90%-functional page beats a 500 or an endless wait. The fallback (static content, stale cache) is planned per feature, with a short timeout on the non-critical dependency."
+    },
+    {
+      "q_fr": "Un client HTTP retry 3×, le service appelant retry 3×, la gateway retry 3×. Combien d'appels au maximum pour une requête ?",
+      "q_en": "An HTTP client retries 3×, the calling service retries 3×, the gateway retries 3×. How many calls at most for one request?",
+      "choices_fr": [
+        "9",
+        "3",
+        "27",
+        "81"
+      ],
+      "choices_en": [
+        "9",
+        "3",
+        "27",
+        "81"
+      ],
+      "answer": 2,
+      "explain_fr": "Les retries se multiplient à chaque étage : 3 × 3 × 3 = 27 appels potentiels pour une seule requête utilisateur — un amplificateur de panne. Règle : un seul étage est propriétaire du retry, les autres échouent vite.",
+      "explain_en": "Retries multiply at every tier: 3 × 3 × 3 = 27 potential calls for a single user request — an outage amplifier. Rule: one tier owns the retry, the others fail fast."
+    }
+  ]
+}

@@ -1,0 +1,168 @@
+{
+  "flashcards": [
+    {
+      "q_fr": "Quelle est la méthode en 4 étapes face à un exercice de system design ?",
+      "a_fr": "1) Clarifier les besoins (fonctionnels + non fonctionnels : volumétrie, latence, disponibilité). 2) Estimer les ordres de grandeur (req/s, stockage). 3) Dessiner le schéma simple qui répond au besoin. 4) Itérer sur les goulots d'étranglement. Et annoncer ce plan à voix haute dès le début.",
+      "q_en": "What is the 4-step method for a system design exercise?",
+      "a_en": "1) Clarify the requirements (functional + non-functional: volume, latency, availability). 2) Estimate orders of magnitude (req/s, storage). 3) Draw the simple diagram that meets the need. 4) Iterate on the bottlenecks. And announce this plan out loud from the start."
+    },
+    {
+      "q_fr": "Quels sont les deux endpoints d'un URL shortener et leurs réponses ?",
+      "a_fr": "POST /shorten : reçoit l'URL longue, la valide, renvoie 201 avec le code court. GET /:code : renvoie une redirection 301 ou 302 vers l'URL longue, ou 404 si le code n'existe pas.",
+      "q_en": "What are a URL shortener's two endpoints and their responses?",
+      "a_en": "POST /shorten: receives the long URL, validates it, returns 201 with the short code. GET /:code: returns a 301 or 302 redirect to the long URL, or 404 if the code doesn't exist."
+    },
+    {
+      "q_fr": "Compteur + base62 vs hash tronqué : quels trade-offs pour générer le code court ?",
+      "a_fr": "Compteur + base62 : simple, zéro collision, codes courts, mais prévisibles (énumérables) — corrigible par permutation secrète. Hash tronqué : pas de compteur central, même URL → même code, mais collisions dues à la troncature (paradoxe des anniversaires) → vérifier en base et retry.",
+      "q_en": "Counter + base62 vs truncated hash: what are the trade-offs for generating the short code?",
+      "a_en": "Counter + base62: simple, zero collisions, short codes, but predictable (enumerable) — fixable with a secret permutation. Truncated hash: no central counter, same URL → same code, but collisions from truncation (birthday paradox) → check the DB and retry."
+    },
+    {
+      "q_fr": "Pourquoi le choix 301 vs 302 est-il crucial pour un URL shortener ?",
+      "a_fr": "Le 301 est mis en cache par le navigateur : les clics suivants vont directement à la cible sans repasser par le service → analytics perdues. Le 302 n'est pas mis en cache : chaque clic traverse le service et peut être compté. Si le tracking est un besoin (cas bit.ly), c'est 302.",
+      "q_en": "Why is the 301 vs 302 choice crucial for a URL shortener?",
+      "a_en": "A 301 is cached by the browser: subsequent clicks go straight to the target without passing through the service → analytics lost. A 302 isn't cached: every click traverses the service and can be counted. If tracking is a requirement (bit.ly's case), it's 302."
+    },
+    {
+      "q_fr": "Quel modèle de stockage pour un URL shortener, et pourquoi ?",
+      "a_fr": "Une table clé-valeur : code (clé primaire) → url, created_at. Aucune jointure ni transaction complexe, donc n'importe quel store convient. À ~50 Go/an et 300 lectures/s, un Postgres bien indexé suffit largement ; le NoSQL ne se justifie qu'à une échelle bien supérieure.",
+      "q_en": "What storage model for a URL shortener, and why?",
+      "a_en": "A key-value table: code (primary key) → url, created_at. No joins or complex transactions, so any store fits. At ~50 GB/year and 300 reads/s, a well-indexed Postgres is plenty; NoSQL is only justified at a much larger scale."
+    },
+    {
+      "q_fr": "Comment le cache s'intègre-t-il dans l'architecture, et pourquoi marche-t-il si bien ici ?",
+      "a_fr": "En cache-aside : on lit Redis, sur miss on lit la base et on remplit le cache avec un TTL. Ça marche très bien car la popularité suit une loi de Zipf (peu d'URLs concentrent le trafic) et les URLs sont immuables — quasiment aucun problème d'invalidation.",
+      "q_en": "How does the cache fit into the architecture, and why does it work so well here?",
+      "a_en": "Cache-aside: read Redis, on miss read the DB and fill the cache with a TTL. It works very well because popularity follows a Zipf distribution (few URLs concentrate the traffic) and URLs are immutable — almost no invalidation problem."
+    },
+    {
+      "q_fr": "Pourquoi le rate limiting est-il indispensable sur POST /shorten ?",
+      "a_fr": "Sans lui, un spammeur crée des millions de liens : phishing relayé par votre domaine, pollution de l'espace de codes, coûts de stockage. Solution : token bucket par IP ou clé API, réponse 429, plus validation stricte des URLs (schémas http/https uniquement).",
+      "q_en": "Why is rate limiting essential on POST /shorten?",
+      "a_en": "Without it, a spammer creates millions of links: phishing relayed through your domain, code-space pollution, storage costs. Solution: token bucket per IP or API key, 429 response, plus strict URL validation (http/https schemes only)."
+    },
+    {
+      "q_fr": "Qu'évalue vraiment l'interviewer dans un system design junior ?",
+      "a_fr": "Le raisonnement, pas les buzzwords : clarifier avant de dessiner, poser des ordres de grandeur, justifier chaque brique par un chiffre (« un cache parce que la lecture domine »), connaître les limites de son design, et savoir commencer simple.",
+      "q_en": "What does the interviewer really evaluate in a junior system design?",
+      "a_en": "Reasoning, not buzzwords: clarifying before drawing, putting down orders of magnitude, justifying every box with a number (\"a cache because reads dominate\"), knowing the design's limits, and knowing how to start simple."
+    }
+  ],
+  "qcm": [
+    {
+      "q_fr": "Quelle doit être votre toute première action face à « Conçois-moi un URL shortener » ?",
+      "q_en": "What should your very first move be when asked \"Design a URL shortener\"?",
+      "choices_fr": [
+        "Dessiner l'architecture cible au tableau",
+        "Choisir la base de données",
+        "Poser des questions : volumétrie, latence attendue, besoin d'analytics",
+        "Proposer un découpage en microservices"
+      ],
+      "choices_en": [
+        "Draw the target architecture on the board",
+        "Choose the database",
+        "Ask questions: volume, expected latency, analytics needs",
+        "Propose a microservices split"
+      ],
+      "answer": 2,
+      "explain_fr": "Clarifier les besoins est l'étape 1 de la méthode : les chiffres obtenus dictent tout le design. Dessiner avant de questionner est l'erreur junior numéro un.",
+      "explain_en": "Clarifying requirements is step 1 of the method: the numbers you get dictate the whole design. Drawing before questioning is the number one junior mistake."
+    },
+    {
+      "q_fr": "Un URL shortener sert 100 M d'URLs/an avec un ratio lecture/écriture de 100:1. Quel ordre de grandeur de trafic ?",
+      "q_en": "A URL shortener serves 100M URLs/year with a 100:1 read/write ratio. What order of magnitude of traffic?",
+      "choices_fr": [
+        "~3 écritures/s et ~300 lectures/s",
+        "~300 écritures/s et ~3 lectures/s",
+        "~3000 écritures/s et ~30 lectures/s",
+        "~1 écriture/s et ~1 M de lectures/s"
+      ],
+      "choices_en": [
+        "~3 writes/s and ~300 reads/s",
+        "~300 writes/s and ~3 reads/s",
+        "~3000 writes/s and ~30 reads/s",
+        "~1 write/s and ~1M reads/s"
+      ],
+      "answer": 0,
+      "explain_fr": "100 M / (~30 M de secondes par an) ≈ 3 écritures/s, × 100 = 300 lectures/s. Conclusion à énoncer : ça tient sur un seul Postgres — le calcul de coin de table évite la sur-ingénierie.",
+      "explain_en": "100M / (~30M seconds per year) ≈ 3 writes/s, × 100 = 300 reads/s. Conclusion to state: it fits on a single Postgres — the back-of-the-envelope calculation prevents over-engineering."
+    },
+    {
+      "q_fr": "Pourquoi bit.ly utilise-t-il une redirection 302 plutôt que 301 ?",
+      "q_en": "Why does bit.ly use a 302 redirect rather than a 301?",
+      "choices_fr": [
+        "Le 302 est plus rapide pour le navigateur",
+        "Le 301 est déprécié en HTTP/2",
+        "Le 302 consomme moins de bande passante",
+        "Le 301 serait mis en cache : les clics suivants échapperaient au comptage"
+      ],
+      "choices_en": [
+        "302 is faster for the browser",
+        "301 is deprecated in HTTP/2",
+        "302 uses less bandwidth",
+        "301 would be cached: subsequent clicks would escape counting"
+      ],
+      "answer": 3,
+      "explain_fr": "Le navigateur met le 301 en cache et ne repasse plus jamais par le service : impossible de compter les clics. Le 302 force chaque clic à traverser le service — le tracking est précisément le business model.",
+      "explain_en": "The browser caches a 301 and never comes back through the service: clicks can't be counted. A 302 forces every click through the service — and tracking is precisely the business model."
+    },
+    {
+      "q_fr": "Quel est le principal défaut de la génération de code par hash tronqué à 7 caractères ?",
+      "q_en": "What is the main flaw of generating codes by hashing truncated to 7 characters?",
+      "choices_fr": [
+        "Les codes sont trop longs",
+        "Les collisions deviennent probables (paradoxe des anniversaires) et exigent détection + retry",
+        "Le hash est trop lent à calculer",
+        "Deux URLs identiques donnent deux codes différents"
+      ],
+      "choices_en": [
+        "The codes are too long",
+        "Collisions become likely (birthday paradox) and require detection + retry",
+        "The hash is too slow to compute",
+        "Two identical URLs yield two different codes"
+      ],
+      "answer": 1,
+      "explain_fr": "Tronquer un hash réduit l'espace : les collisions arrivent bien avant de l'épuiser (paradoxe des anniversaires). Il faut vérifier l'existence en base et ré-essayer avec un salt. À l'inverse, un compteur + base62 ne collisionne jamais.",
+      "explain_en": "Truncating a hash shrinks the space: collisions occur long before it runs out (birthday paradox). You must check existence in the DB and retry with a salt. A counter + base62, by contrast, never collides."
+    },
+    {
+      "q_fr": "Pourquoi les serveurs applicatifs doivent-ils être stateless ?",
+      "q_en": "Why must the app servers be stateless?",
+      "choices_fr": [
+        "Pour économiser de la RAM",
+        "Parce que Redis l'exige",
+        "Pour pouvoir en ajouter derrière le load balancer sans coordination",
+        "Pour éviter les collisions de codes"
+      ],
+      "choices_en": [
+        "To save RAM",
+        "Because Redis requires it",
+        "So more can be added behind the load balancer without coordination",
+        "To avoid code collisions"
+      ],
+      "answer": 2,
+      "explain_fr": "Tout l'état vit en base et en cache : n'importe quel serveur peut traiter n'importe quelle requête. Le scaling horizontal de la lecture devient trivial — on ajoute des instances derrière le LB.",
+      "explain_en": "All state lives in the DB and cache: any server can handle any request. Horizontal read scaling becomes trivial — just add instances behind the LB."
+    },
+    {
+      "q_fr": "Quelle réponse dessert le plus un candidat junior en system design ?",
+      "q_en": "Which answer hurts a junior candidate most in system design?",
+      "choices_fr": [
+        "« Postgres suffit à cette échelle, voici pourquoi »",
+        "« Je commence par estimer le trafic »",
+        "« On met Kafka, du sharding et des microservices » sans justification chiffrée",
+        "« Mon design a une limite : voici laquelle »"
+      ],
+      "choices_en": [
+        "\"Postgres is enough at this scale, here's why\"",
+        "\"I'll start by estimating the traffic\"",
+        "\"Let's add Kafka, sharding and microservices\" with no numbers to justify it",
+        "\"My design has a limit: here it is\""
+      ],
+      "answer": 2,
+      "explain_fr": "La soupe de buzzwords sans chiffre est l'anti-signal : elle montre du plaquage de mots-clés, pas du raisonnement. Les trois autres réponses sont exactement ce que l'interviewer veut entendre d'un junior.",
+      "explain_en": "Buzzword soup without numbers is the anti-signal: it shows keyword-dropping, not reasoning. The other three answers are exactly what the interviewer wants to hear from a junior."
+    }
+  ]
+}

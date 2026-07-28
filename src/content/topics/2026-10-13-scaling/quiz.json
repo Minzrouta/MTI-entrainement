@@ -1,0 +1,168 @@
+{
+  "flashcards": [
+    {
+      "q_fr": "Scaling vertical vs horizontal : quelle différence ?",
+      "a_fr": "Vertical (scale up) : une machine plus grosse — zéro changement de code, mais plafond matériel et le SPOF reste. Horizontal (scale out) : plus de machines identiques derrière un load balancer — quasi illimité et tolérant aux pannes, mais exige une app stateless.",
+      "q_en": "Vertical vs horizontal scaling: what's the difference?",
+      "a_en": "Vertical (scale up): a bigger machine — zero code changes, but a hardware ceiling and the SPOF remains. Horizontal (scale out): more identical machines behind a load balancer — nearly unlimited and fault-tolerant, but requires a stateless app."
+    },
+    {
+      "q_fr": "Pourquoi le stateless est-il le prérequis du scaling horizontal ?",
+      "a_fr": "Le LB route chaque requête vers n'importe quelle instance : un état en mémoire locale (session, cache, fichier) devient invisible pour les autres. On externalise : sessions dans Redis ou JWT, fichiers en object storage, vérité en base. Test : tuer une instance à tout instant sans impact utilisateur.",
+      "q_en": "Why is statelessness the prerequisite of horizontal scaling?",
+      "a_en": "The LB routes each request to any instance: state in local memory (session, cache, file) becomes invisible to the others. Externalize it: sessions in Redis or JWT, files in object storage, truth in the database. Test: kill any instance at any moment with zero user impact."
+    },
+    {
+      "q_fr": "Quels services rend un reverse proxy en plus de transmettre les requêtes ?",
+      "a_fr": "TLS termination (HTTPS s'arrête au proxy, certificats gérés en un seul endroit), compression gzip/brotli, cache du statique, routing par domaine ou chemin, et en-têtes comme X-Forwarded-For pour conserver l'IP réelle du client.",
+      "q_en": "What services does a reverse proxy provide beyond forwarding requests?",
+      "a_en": "TLS termination (HTTPS stops at the proxy, certificates managed in one place), gzip/brotli compression, static caching, routing by domain or path, and headers like X-Forwarded-For to preserve the client's real IP."
+    },
+    {
+      "q_fr": "Round-robin vs least-connections : quand préférer l'un ou l'autre ?",
+      "a_fr": "Round-robin distribue équitablement en nombre de requêtes : bien quand elles se valent. Least-connections envoie vers l'instance ayant le moins de connexions actives : meilleur quand les durées varient (une grosse requête ne bloque pas la file). Health checks obligatoires dans les deux cas.",
+      "q_en": "Round-robin vs least-connections: when to prefer one or the other?",
+      "a_en": "Round-robin distributes evenly by request count: fine when requests are similar. Least-connections sends to the instance with the fewest active connections: better when durations vary (one big request doesn't block the queue). Health checks are mandatory either way."
+    },
+    {
+      "q_fr": "À quoi servent les health checks d'un load balancer ?",
+      "a_fr": "Le LB sonde régulièrement chaque instance (ex. endpoint /health) et sort du pool celles qui ne répondent plus, puis les réintègre quand elles guérissent. C'est le mécanisme qui transforme « une instance est morte » en « personne ne l'a remarqué ».",
+      "q_en": "What are a load balancer's health checks for?",
+      "a_en": "The LB regularly probes each instance (e.g. a /health endpoint) and removes from the pool those that stop responding, then reinstates them when they recover. It's the mechanism that turns 'an instance died' into 'nobody noticed'."
+    },
+    {
+      "q_fr": "C'est quoi les sticky sessions, et pourquoi les éviter ?",
+      "a_fr": "Le LB colle un client à une instance fixe (cookie) pour que son état en mémoire reste accessible. À éviter : répartition de charge dégradée, et la mort d'une instance déconnecte tous ses clients d'un coup. La vraie solution : rendre l'app stateless.",
+      "q_en": "What are sticky sessions, and why avoid them?",
+      "a_en": "The LB pins a client to a fixed instance (cookie) so its in-memory state stays reachable. Avoid them: degraded load distribution, and one instance dying disconnects all its clients at once. The real fix: make the app stateless."
+    },
+    {
+      "q_fr": "C'est quoi un SPOF et comment l'éliminer ?",
+      "a_fr": "Single point of failure : un composant unique dont la panne emporte tout. On les traque étage par étage : N instances d'app, DB primary + replica avec failover, deux LB avec IP flottante (keepalived). La haute dispo se vérifie maillon par maillon.",
+      "q_en": "What is a SPOF and how do you eliminate it?",
+      "a_en": "Single point of failure: a unique component whose failure takes everything down. Hunt them tier by tier: N app instances, primary + replica DB with failover, two LBs with a floating IP (keepalived). High availability is verified link by link."
+    },
+    {
+      "q_fr": "C'est quoi le replication lag et quel problème pose-t-il ?",
+      "a_fr": "Le délai entre une écriture sur le primary et sa propagation aux replicas. Une lecture sur replica juste après une écriture peut renvoyer l'ancien état. Pour les lectures critiques (« read your own writes »), on lit sur le primary.",
+      "q_en": "What is replication lag and what problem does it cause?",
+      "a_en": "The delay between a write on the primary and its propagation to the replicas. A read on a replica right after a write can return the old state. For critical reads ('read your own writes'), read from the primary."
+    }
+  ],
+  "qcm": [
+    {
+      "q_fr": "Que signifie « TLS termination » sur un reverse proxy ?",
+      "q_en": "What does 'TLS termination' on a reverse proxy mean?",
+      "choices_fr": [
+        "Le proxy refuse les connexions TLS trop anciennes",
+        "Le proxy renouvelle les certificats expirés",
+        "Le HTTPS s'arrête au proxy : les instances parlent HTTP en interne",
+        "Le proxy chiffre le trafic vers la base de données"
+      ],
+      "choices_en": [
+        "The proxy rejects outdated TLS connections",
+        "The proxy renews expired certificates",
+        "HTTPS stops at the proxy: instances speak plain HTTP internally",
+        "The proxy encrypts traffic to the database"
+      ],
+      "answer": 2,
+      "explain_fr": "Le proxy déchiffre le TLS et transmet en HTTP sur le réseau interne : un seul endroit où gérer les certificats, et les instances restent simples. L'app apprend qu'elle est derrière HTTPS via X-Forwarded-Proto.",
+      "explain_en": "The proxy decrypts TLS and forwards plain HTTP on the internal network: one single place to manage certificates, and instances stay simple. The app learns it's behind HTTPS via X-Forwarded-Proto."
+    },
+    {
+      "q_fr": "Quel est LE prérequis pour passer une app au scaling horizontal ?",
+      "q_en": "What is THE prerequisite for moving an app to horizontal scaling?",
+      "choices_fr": [
+        "Migrer vers des microservices",
+        "Passer sur Kubernetes",
+        "Doubler la RAM de chaque instance",
+        "Rendre l'app stateless (sessions et fichiers externalisés)"
+      ],
+      "choices_en": [
+        "Migrate to microservices",
+        "Move to Kubernetes",
+        "Double each instance's RAM",
+        "Make the app stateless (sessions and files externalized)"
+      ],
+      "answer": 3,
+      "explain_fr": "Sans stateless, le LB casse tout : une session en mémoire sur l'instance A est invisible depuis B. Sessions dans Redis ou JWT, fichiers en object storage — microservices et Kubernetes sont optionnels, pas le stateless.",
+      "explain_en": "Without statelessness, the LB breaks everything: a session in instance A's memory is invisible from B. Sessions in Redis or JWT, files in object storage — microservices and Kubernetes are optional, statelessness isn't."
+    },
+    {
+      "q_fr": "Dans nginx, que provoque `max_fails=3 fail_timeout=30s` sur un serveur d'upstream ?",
+      "q_en": "In nginx, what does `max_fails=3 fail_timeout=30s` on an upstream server cause?",
+      "choices_fr": [
+        "Le serveur est redémarré après 3 échecs",
+        "Après 3 échecs, le serveur sort du pool pendant 30 secondes",
+        "Chaque requête est retentée 3 fois avec 30 s de timeout",
+        "Le serveur est définitivement retiré après 3 échecs"
+      ],
+      "choices_en": [
+        "The server is restarted after 3 failures",
+        "After 3 failures, the server leaves the pool for 30 seconds",
+        "Each request is retried 3 times with a 30 s timeout",
+        "The server is permanently removed after 3 failures"
+      ],
+      "answer": 1,
+      "explain_fr": "C'est le health check passif de nginx : 3 échecs dans la fenêtre → l'instance est marquée indisponible pendant 30 s, puis retentée. Le trafic continue vers les instances saines — personne ne remarque la panne.",
+      "explain_en": "That's nginx's passive health check: 3 failures within the window → the instance is marked unavailable for 30 s, then retried. Traffic continues to healthy instances — nobody notices the failure."
+    },
+    {
+      "q_fr": "Pourquoi les sticky sessions sont-elles déconseillées ?",
+      "q_en": "Why are sticky sessions discouraged?",
+      "choices_fr": [
+        "Elles dégradent la répartition de charge et la panne d'une instance déconnecte tous ses clients",
+        "Elles sont incompatibles avec HTTPS",
+        "Elles doublent la consommation mémoire du load balancer",
+        "Elles sont interdites par le RGPD"
+      ],
+      "choices_en": [
+        "They degrade load distribution and one instance failing disconnects all its clients",
+        "They are incompatible with HTTPS",
+        "They double the load balancer's memory usage",
+        "They are forbidden by GDPR"
+      ],
+      "answer": 0,
+      "explain_fr": "Coller les clients à une instance recrée le problème que le LB devait résoudre : charge inégale et panne non transparente. C'est une béquille pour app stateful — la vraie solution est d'externaliser les sessions.",
+      "explain_en": "Pinning clients to an instance recreates the problem the LB was meant to solve: uneven load and non-transparent failures. It's a crutch for stateful apps — the real solution is externalizing sessions."
+    },
+    {
+      "q_fr": "Un utilisateur modifie son profil puis le recharge aussitôt et voit l'ancienne version. Cause probable dans une archi primary/replica ?",
+      "q_en": "A user edits their profile then reloads immediately and sees the old version. Likely cause in a primary/replica architecture?",
+      "choices_fr": [
+        "Le CDN a mis la page en cache",
+        "Le load balancer a perdu la session",
+        "Replication lag : la lecture a touché un replica pas encore à jour",
+        "Le failover a promu le mauvais serveur"
+      ],
+      "choices_en": [
+        "The CDN cached the page",
+        "The load balancer lost the session",
+        "Replication lag: the read hit a replica not yet up to date",
+        "The failover promoted the wrong server"
+      ],
+      "answer": 2,
+      "explain_fr": "L'écriture est allée sur le primary, la lecture sur un replica en retard de quelques millisecondes ou secondes. Pattern classique « read your own writes » : ces lectures-là doivent viser le primary.",
+      "explain_en": "The write went to the primary, the read to a replica lagging by milliseconds or seconds. Classic 'read your own writes' pattern: those reads must target the primary."
+    },
+    {
+      "q_fr": "Quel est le premier réflexe sain avant d'ajouter des instances à une app lente ?",
+      "q_en": "What is the healthy first reflex before adding instances to a slow app?",
+      "choices_fr": [
+        "Migrer vers du serverless",
+        "Mesurer pour trouver le vrai goulot (requête SQL, pool de connexions, CPU)",
+        "Activer les sticky sessions",
+        "Doubler le nombre de replicas de la base"
+      ],
+      "choices_en": [
+        "Migrate to serverless",
+        "Measure to find the real bottleneck (SQL query, connection pool, CPU)",
+        "Enable sticky sessions",
+        "Double the number of database replicas"
+      ],
+      "answer": 1,
+      "explain_fr": "Le goulot est rarement où on croit : souvent une requête sans index bien avant le CPU. Doubler les instances qui exécutent du code lent multiplie le coût, pas la performance. Mesurer (APM, load testing), puis scaler ce qui sature.",
+      "explain_en": "The bottleneck is rarely where you think: often an unindexed query long before the CPU. Doubling instances running slow code multiplies cost, not performance. Measure (APM, load testing), then scale what saturates."
+    }
+  ]
+}

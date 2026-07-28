@@ -1,0 +1,168 @@
+{
+  "flashcards": [
+    {
+      "q_fr": "Quelle est la différence entre chiffrement symétrique et asymétrique ?",
+      "a_fr": "Symétrique (AES) : une seule clé partagée, très rapide (Go/s), mais problème de l'échange de la clé. Asymétrique (RSA, courbes elliptiques) : une paire publique/privée, résout l'échange de clé, mais ~1000 fois plus lent et limité à de petits messages.",
+      "q_en": "What is the difference between symmetric and asymmetric encryption?",
+      "a_en": "Symmetric (AES): a single shared key, very fast (GB/s), but the key-exchange problem. Asymmetric (RSA, elliptic curves): a public/private pair, solves key exchange, but ~1000× slower and limited to small messages."
+    },
+    {
+      "q_fr": "Pourquoi TLS combine-t-il les deux familles de chiffrement ?",
+      "a_fr": "L'asymétrique (ECDHE + certificat) sert uniquement à établir un secret commun et à authentifier le serveur ; le trafic est ensuite chiffré en symétrique (AES-GCM), mille fois plus rapide. C'est le chiffrement hybride : la sécurité de l'un, la vitesse de l'autre.",
+      "q_en": "Why does TLS combine both encryption families?",
+      "a_en": "Asymmetric crypto (ECDHE + certificate) is only used to establish a shared secret and authenticate the server; traffic is then encrypted symmetrically (AES-GCM), a thousand times faster. That's hybrid encryption: one's security, the other's speed."
+    },
+    {
+      "q_fr": "Décris le handshake TLS 1.3 en quatre étapes.",
+      "a_fr": "1) ClientHello : versions, ciphers, part Diffie-Hellman éphémère. 2) ServerHello : sa part DH, son certificat, une signature de sa clé privée. 3) Chacun dérive la même clé de session sans qu'elle circule. 4) Trafic chiffré en symétrique (AES-GCM). Un seul aller-retour.",
+      "q_en": "Describe the TLS 1.3 handshake in four steps.",
+      "a_en": "1) ClientHello: versions, ciphers, ephemeral Diffie-Hellman share. 2) ServerHello: its DH share, its certificate, a signature from its private key. 3) Both derive the same session key without it ever traveling. 4) Traffic encrypted symmetrically (AES-GCM). One single round trip."
+    },
+    {
+      "q_fr": "À quoi sert un certificat TLS et que contient-il ?",
+      "a_fr": "Il authentifie le serveur (il ne chiffre rien) : il lie une clé publique à un domaine, avec des dates de validité, le tout signé par une CA. Le client remonte la chaîne de confiance (feuille → CA intermédiaire → CA racine préinstallée) pour le valider.",
+      "q_en": "What is a TLS certificate for, and what does it contain?",
+      "a_en": "It authenticates the server (it encrypts nothing): it binds a public key to a domain, with validity dates, all signed by a CA. The client walks the chain of trust (leaf → intermediate CA → preinstalled root CA) to validate it."
+    },
+    {
+      "q_fr": "Quelle différence entre chiffrer et signer un message ?",
+      "a_fr": "Chiffrer = clé publique du destinataire, pour la confidentialité : lui seul déchiffre. Signer = clé privée de l'émetteur sur le hash du message, pour l'authenticité et l'intégrité : tout le monde vérifie avec la clé publique. Une signature ne cache rien.",
+      "q_en": "What's the difference between encrypting and signing a message?",
+      "a_en": "Encrypt = the recipient's public key, for confidentiality: only they decrypt. Sign = the sender's private key over the message hash, for authenticity and integrity: anyone verifies with the public key. A signature hides nothing."
+    },
+    {
+      "q_fr": "Qu'est-ce que la forward secrecy ?",
+      "a_fr": "La garantie qu'une compromission future de la clé privée du serveur ne permet pas de déchiffrer le trafic passé. Obtenue avec des clés Diffie-Hellman éphémères (ECDHE) : chaque session a son propre secret, jeté ensuite. Obligatoire en TLS 1.3.",
+      "q_en": "What is forward secrecy?",
+      "a_en": "The guarantee that a future compromise of the server's private key cannot decrypt past traffic. Achieved with ephemeral Diffie-Hellman keys (ECDHE): each session has its own secret, discarded afterwards. Mandatory in TLS 1.3."
+    },
+    {
+      "q_fr": "Pourquoi un hash n'est-il pas du chiffrement ?",
+      "a_fr": "Un hash (SHA-256) est irréversible et sans clé : on ne peut pas retrouver l'entrée, seulement tester des candidats. Le chiffrement est réversible pour qui a la clé. Usages du hash : intégrité, signatures, mots de passe (avec bcrypt/argon2, lents et salés).",
+      "q_en": "Why is a hash not encryption?",
+      "a_en": "A hash (SHA-256) is irreversible and keyless: you can't recover the input, only test candidates. Encryption is reversible for whoever holds the key. Hash uses: integrity, signatures, passwords (with bcrypt/argon2, slow and salted)."
+    },
+    {
+      "q_fr": "Qu'apportent TLS 1.3 et Let's Encrypt ?",
+      "a_fr": "TLS 1.3 : handshake en un seul aller-retour, forward secrecy obligatoire, suppression des algos cassés (RC4, SHA-1, échange RSA). Let's Encrypt : certificats gratuits et automatisés via le protocole ACME (renouvelés tous les 90 jours) — le HTTPS partout est devenu la norme.",
+      "q_en": "What do TLS 1.3 and Let's Encrypt bring?",
+      "a_en": "TLS 1.3: one-round-trip handshake, mandatory forward secrecy, removal of broken algorithms (RC4, SHA-1, RSA key exchange). Let's Encrypt: free, automated certificates via the ACME protocol (renewed every 90 days) — HTTPS everywhere became the norm."
+    }
+  ],
+  "qcm": [
+    {
+      "q_fr": "Pour envoyer un message confidentiel à Alice, avec quelle clé le chiffrez-vous ?",
+      "q_en": "To send Alice a confidential message, which key do you encrypt it with?",
+      "choices_fr": [
+        "Votre clé privée",
+        "Votre clé publique",
+        "La clé publique d'Alice",
+        "La clé privée d'Alice"
+      ],
+      "choices_en": [
+        "Your private key",
+        "Your public key",
+        "Alice's public key",
+        "Alice's private key"
+      ],
+      "answer": 2,
+      "explain_fr": "On chiffre avec la clé publique du destinataire : seule sa clé privée peut déchiffrer. Votre clé privée à vous sert à signer, pas à assurer la confidentialité.",
+      "explain_en": "You encrypt with the recipient's public key: only their private key can decrypt. Your own private key is for signing, not for confidentiality."
+    },
+    {
+      "q_fr": "Quel est le problème central que résout le chiffrement asymétrique ?",
+      "q_en": "What is the core problem asymmetric encryption solves?",
+      "choices_fr": [
+        "La lenteur du chiffrement symétrique",
+        "L'échange de clé sur un canal non sûr",
+        "L'intégrité des messages",
+        "La compression des données chiffrées"
+      ],
+      "choices_en": [
+        "The slowness of symmetric encryption",
+        "Key exchange over an untrusted channel",
+        "Message integrity",
+        "Compression of encrypted data"
+      ],
+      "answer": 1,
+      "explain_fr": "Avec une paire publique/privée, plus besoin de partager un secret à l'avance : la clé publique se distribue librement. C'est justement l'asymétrique qui est lent, pas le symétrique.",
+      "explain_en": "With a public/private pair, no need to share a secret in advance: the public key is distributed freely. Asymmetric crypto is the slow one, not symmetric."
+    },
+    {
+      "q_fr": "Dans TLS 1.3, qu'est-ce qui chiffre le trafic après le handshake ?",
+      "q_en": "In TLS 1.3, what encrypts the traffic after the handshake?",
+      "choices_fr": [
+        "Une clé de session symétrique (AES-GCM ou ChaCha20)",
+        "La clé publique du certificat",
+        "La clé privée du serveur",
+        "Le hash SHA-256 de la session"
+      ],
+      "choices_en": [
+        "A symmetric session key (AES-GCM or ChaCha20)",
+        "The certificate's public key",
+        "The server's private key",
+        "The session's SHA-256 hash"
+      ],
+      "answer": 0,
+      "explain_fr": "Le handshake asymétrique ne sert qu'à dériver une clé de session ; tout le trafic passe ensuite en chiffrement symétrique authentifié, mille fois plus rapide. Le certificat, lui, n'a fait qu'authentifier le serveur.",
+      "explain_en": "The asymmetric handshake only derives a session key; all traffic then uses authenticated symmetric encryption, a thousand times faster. The certificate merely authenticated the server."
+    },
+    {
+      "q_fr": "Que garantit la forward secrecy ?",
+      "q_en": "What does forward secrecy guarantee?",
+      "choices_fr": [
+        "Que le certificat ne peut pas expirer en pleine session",
+        "Que le serveur ne peut pas lire les messages du client",
+        "Que la clé de session est plus longue que la clé RSA",
+        "Qu'un vol futur de la clé privée ne déchiffre pas le trafic passé"
+      ],
+      "choices_en": [
+        "That the certificate cannot expire mid-session",
+        "That the server cannot read the client's messages",
+        "That the session key is longer than the RSA key",
+        "That a future theft of the private key cannot decrypt past traffic"
+      ],
+      "answer": 3,
+      "explain_fr": "Les clés Diffie-Hellman sont éphémères : chaque session a son secret, jeté ensuite. Compromettre la clé privée du serveur plus tard ne rejoue pas les sessions passées. C'est pour ça que TLS 1.3 a supprimé l'échange de clé RSA.",
+      "explain_en": "Diffie-Hellman keys are ephemeral: each session has its own secret, discarded afterwards. Compromising the server's private key later cannot replay past sessions. That's why TLS 1.3 removed RSA key exchange."
+    },
+    {
+      "q_fr": "Quel est le rôle d'une Certificate Authority (CA) ?",
+      "q_en": "What is the role of a Certificate Authority (CA)?",
+      "choices_fr": [
+        "Chiffrer le trafic entre le client et le serveur",
+        "Stocker les clés privées des serveurs web",
+        "Signer des certificats pour lier une clé publique à une identité",
+        "Générer les clés de session de chaque connexion"
+      ],
+      "choices_en": [
+        "Encrypting traffic between client and server",
+        "Storing web servers' private keys",
+        "Signing certificates to bind a public key to an identity",
+        "Generating each connection's session keys"
+      ],
+      "answer": 2,
+      "explain_fr": "La CA signe le certificat : elle atteste que cette clé publique appartient bien à ce domaine. Le client remonte la chaîne jusqu'à une racine préinstallée. La CA ne voit jamais ni clé privée ni trafic.",
+      "explain_en": "The CA signs the certificate: it attests that this public key really belongs to this domain. The client walks the chain up to a preinstalled root. The CA never sees a private key or any traffic."
+    },
+    {
+      "q_fr": "Pourquoi stocke-t-on les mots de passe hashés (bcrypt) plutôt que chiffrés ?",
+      "q_en": "Why are passwords stored hashed (bcrypt) rather than encrypted?",
+      "choices_fr": [
+        "Parce que le hash prend moins de place en base",
+        "Parce qu'un hash est irréversible : personne ne peut retrouver le mot de passe, même avec la base",
+        "Parce que le chiffrement est trop lent pour un login",
+        "Parce que les hashes sont plus faciles à comparer en SQL"
+      ],
+      "choices_en": [
+        "Because a hash takes less space in the database",
+        "Because a hash is irreversible: nobody can recover the password, even with the database",
+        "Because encryption is too slow for a login",
+        "Because hashes are easier to compare in SQL"
+      ],
+      "answer": 1,
+      "explain_fr": "Chiffré = réversible pour qui a la clé, et la clé traîne sur le serveur. Un hash lent et salé ne se « déchiffre » pas : on ne peut que vérifier une tentative. La taille et la vitesse ne sont pas le sujet.",
+      "explain_en": "Encrypted = reversible for whoever has the key, and the key sits on the server. A slow, salted hash cannot be \"decrypted\": you can only verify an attempt. Size and speed are beside the point."
+    }
+  ]
+}

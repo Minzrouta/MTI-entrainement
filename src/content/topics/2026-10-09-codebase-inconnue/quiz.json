@@ -1,0 +1,168 @@
+{
+  "flashcards": [
+    {
+      "q_fr": "Quel est l'objectif réaliste quand on découvre une grosse codebase ?",
+      "a_fr": "Pas de tout comprendre : construire une carte progressive — les 5-6 modules principaux, leurs frontières, qui parle à qui. Le détail se charge à la demande, quand un ticket vous y emmène. Même les seniors fonctionnent avec une carte grossière + des techniques de recherche.",
+      "q_en": "What is the realistic goal when discovering a large codebase?",
+      "a_en": "Not to understand everything: build a progressive map — the 5-6 main modules, their boundaries, who talks to whom. Details load on demand, when a ticket takes you there. Even seniors work with a rough map + search techniques."
+    },
+    {
+      "q_fr": "Que faire le tout premier jour dans une codebase inconnue ?",
+      "a_fr": "Cloner, suivre le README à la lettre, faire tourner l'app en local et lancer les tests — en notant chaque étape manquante ou fausse (variable d'env non documentée, version implicite…). Ces notes deviennent une PR de doc. Rien d'autre le jour 1.",
+      "q_en": "What should you do on the very first day in an unknown codebase?",
+      "a_en": "Clone, follow the README to the letter, get the app running locally and run the tests — writing down every missing or wrong step (undocumented env var, implicit version…). Those notes become a docs PR. Nothing else on day 1."
+    },
+    {
+      "q_fr": "Pourquoi les tests sont-ils la meilleure documentation d'une codebase ?",
+      "a_fr": "Ils décrivent le comportement attendu avec des exemples exécutables, cas nominaux et cas limites inclus, et ils sont à jour par construction : s'ils mentaient, la CI serait rouge. Un README ou un wiki, lui, peut dériver sans que personne ne s'en aperçoive.",
+      "q_en": "Why are tests the best documentation of a codebase?",
+      "a_en": "They describe expected behavior with executable examples, nominal and edge cases included, and they're current by construction: if they lied, CI would be red. A README or wiki can drift without anyone noticing."
+    },
+    {
+      "q_fr": "Comment trouver qui peut t'aider sur un module précis ?",
+      "a_fr": "`git shortlog -sn -- chemin/` liste les auteurs par nombre de commits sur ce chemin ; `git blame` sur une ligne précise remonte au commit et à son auteur. On pose ensuite la question à la bonne personne, avec le contexte du commit.",
+      "q_en": "How do you find who can help you on a specific module?",
+      "a_en": "`git shortlog -sn -- path/` lists authors by commit count on that path; `git blame` on a specific line leads to the commit and its author. Then you ask the right person, armed with the commit's context."
+    },
+    {
+      "q_fr": "Comment poser une question intelligemment quand on est bloqué ?",
+      "a_fr": "Timeboxer la recherche (30-45 min), puis demander en montrant le chemin parcouru : ce qu'on a grep, les fichiers regardés, l'hypothèse actuelle. Cette forme prouve l'effort, cadre la réponse et transforme la question en signal positif plutôt qu'en aveu.",
+      "q_en": "How do you ask a question intelligently when stuck?",
+      "a_en": "Timebox the search (30-45 min), then ask while showing the path covered: what you grepped, the files checked, your current hypothesis. This form proves effort, frames the answer and turns the question into a positive signal instead of a confession."
+    },
+    {
+      "q_fr": "C'est quoi une bonne première PR dans une nouvelle équipe ?",
+      "a_fr": "Petite, sûre, utile : typo, étape de setup manquante dans le README, test sur un cas limite non couvert. Elle sert à traverser tout le pipeline (branche, conventions, review, CI, merge) sur un changement à risque nul — pas à briller.",
+      "q_en": "What makes a good first PR in a new team?",
+      "a_en": "Small, safe, useful: a typo, a missing setup step in the README, a test on an uncovered edge case. Its purpose is to cross the whole pipeline (branch, conventions, review, CI, merge) on a zero-risk change — not to shine."
+    },
+    {
+      "q_fr": "Pourquoi suivre une requête de bout en bout est-il si rentable ?",
+      "a_fr": "Un seul aller-retour (route → controller → service → repository → DB) révèle l'architecture réelle : les couches, les conventions de nommage, où vit la logique métier. C'est la compréhension maximale par minute investie, contrairement à la lecture linéaire.",
+      "q_en": "Why is following one request end to end so valuable?",
+      "a_en": "A single round trip (route → controller → service → repository → DB) reveals the real architecture: the layers, naming conventions, where business logic lives. It's the maximum understanding per minute invested, unlike linear reading."
+    },
+    {
+      "q_fr": "C'est quoi la barrière de Chesterton, appliquée au code ?",
+      "a_fr": "Ne jamais supprimer ou refactorer un code « bizarre » avant d'avoir compris pourquoi il existe : contrainte métier, bug historique, dépendance externe. `git log` et `git blame` donnent souvent la raison. Proposer un grand refactoring en semaine 1 est le signal junior type.",
+      "q_en": "What is Chesterton's fence, applied to code?",
+      "a_en": "Never delete or refactor 'weird' code before understanding why it exists: business constraint, historical bug, external dependency. `git log` and `git blame` often reveal the reason. Proposing a big refactoring in week 1 is the classic junior signal."
+    }
+  ],
+  "qcm": [
+    {
+      "q_fr": "Quelle est la priorité absolue du premier jour dans une codebase inconnue ?",
+      "q_en": "What is the absolute priority on day one in an unknown codebase?",
+      "choices_fr": [
+        "Lire l'intégralité du code du module principal",
+        "Faire tourner l'app en local et savoir lancer les tests",
+        "Proposer des améliorations d'architecture",
+        "Mémoriser l'organigramme de l'équipe"
+      ],
+      "choices_en": [
+        "Read the entire code of the main module",
+        "Get the app running locally and know how to run the tests",
+        "Propose architecture improvements",
+        "Memorize the team's org chart"
+      ],
+      "answer": 1,
+      "explain_fr": "Une app qui tourne est un terrain d'expérimentation : on peut poser des breakpoints, modifier, observer. Lire du code qu'on ne peut pas exécuter, c'est de la fiction. Le reste vient après.",
+      "explain_en": "A running app is a playground: you can set breakpoints, modify, observe. Reading code you can't execute is fiction. Everything else comes later."
+    },
+    {
+      "q_fr": "Le README dit X mais le code fait Y. Que faire ?",
+      "q_en": "The README says X but the code does Y. What do you do?",
+      "choices_fr": [
+        "Suivre le README : c'est la doc officielle",
+        "Modifier le code pour qu'il fasse X",
+        "Croire le code, vérifier l'historique, puis corriger le README en PR",
+        "Ignorer l'écart, ce n'est pas mon problème"
+      ],
+      "choices_en": [
+        "Follow the README: it's the official doc",
+        "Change the code so it does X",
+        "Trust the code, check the history, then fix the README in a PR",
+        "Ignore the gap, not my problem"
+      ],
+      "answer": 2,
+      "explain_fr": "Le code est ce qui tourne en prod ; le README date. Mais l'écart est une info : git log dit si Y est récent, l'équipe confirme si c'est voulu, et la correction du README fait une première PR parfaite.",
+      "explain_en": "The code is what runs in production; the README ages. But the gap is information: git log tells you if Y is recent, the team confirms whether it's intended, and fixing the README makes a perfect first PR."
+    },
+    {
+      "q_fr": "Quel est le meilleur point de départ pour localiser une feature dans une codebase inconnue ?",
+      "q_en": "What is the best starting point to locate a feature in an unknown codebase?",
+      "choices_fr": [
+        "Chercher un nom de classe qu'on imagine plausible",
+        "Ouvrir les fichiers un par un depuis la racine",
+        "Demander immédiatement à un collègue",
+        "Grep une chaîne visible : message d'erreur ou label de l'UI"
+      ],
+      "choices_en": [
+        "Search for a class name you imagine plausible",
+        "Open files one by one from the root",
+        "Immediately ask a colleague",
+        "Grep a visible string: error message or UI label"
+      ],
+      "answer": 3,
+      "explain_fr": "Une chaîne visible (erreur, label) existe forcément quelque part dans le code : c'est une ancre fiable. Un nom supposé, lui, échoue si les conventions diffèrent des vôtres.",
+      "explain_en": "A visible string (error, label) necessarily exists somewhere in the code: it's a reliable anchor. An assumed name fails whenever the conventions differ from yours."
+    },
+    {
+      "q_fr": "À quoi sert `git log --follow` sur un fichier ?",
+      "q_en": "What is `git log --follow` on a file for?",
+      "choices_fr": [
+        "Suivre l'historique du fichier y compris à travers ses renommages",
+        "Afficher les branches qui contiennent le fichier",
+        "Suivre les modifications d'un auteur donné",
+        "Lister les fichiers modifiés en même temps que lui"
+      ],
+      "choices_en": [
+        "Follow the file's history even across renames",
+        "Show the branches containing the file",
+        "Follow a given author's modifications",
+        "List the files modified at the same time as it"
+      ],
+      "answer": 0,
+      "explain_fr": "Sans `--follow`, l'historique s'arrête au dernier renommage du fichier. Avec, git remonte toute sa vie — précieux dans les vieilles codebases où les fichiers ont déménagé plusieurs fois.",
+      "explain_en": "Without `--follow`, the history stops at the file's last rename. With it, git traces its whole life — precious in old codebases where files have moved several times."
+    },
+    {
+      "q_fr": "Pourquoi éviter de proposer un gros refactoring dès la première semaine ?",
+      "q_en": "Why avoid proposing a big refactoring in your first week?",
+      "choices_fr": [
+        "Parce que les stagiaires n'ont pas les droits de merge",
+        "Parce que le code « bizarre » a souvent une raison d'être encore invisible (barrière de Chesterton)",
+        "Parce qu'un refactoring nécessite l'accord du CTO",
+        "Parce que git ne permet pas de gros diffs"
+      ],
+      "choices_en": [
+        "Because interns don't have merge rights",
+        "Because 'weird' code often has a reason still invisible to you (Chesterton's fence)",
+        "Because a refactoring requires the CTO's approval",
+        "Because git doesn't allow large diffs"
+      ],
+      "answer": 1,
+      "explain_fr": "Contrainte métier, bug historique, dépendance externe : la raison existe souvent, et git log la retrouve. On ne retire une barrière qu'après avoir compris pourquoi elle est là.",
+      "explain_en": "Business constraint, historical bug, external dependency: the reason often exists, and git log can find it. You only remove a fence after understanding why it's there."
+    },
+    {
+      "q_fr": "Quelle est la bonne manière de demander de l'aide quand on est bloqué ?",
+      "q_en": "What is the right way to ask for help when stuck?",
+      "choices_fr": [
+        "Demander immédiatement pour ne pas perdre de temps",
+        "Ne jamais demander : ça fait mauvaise impression",
+        "Chercher 30-45 min, puis demander en montrant ce qu'on a déjà exploré",
+        "Envoyer la question sur le canal général sans contexte"
+      ],
+      "choices_en": [
+        "Ask immediately to avoid wasting time",
+        "Never ask: it makes a bad impression",
+        "Search 30-45 min, then ask while showing what you already explored",
+        "Post the question on the general channel without context"
+      ],
+      "answer": 2,
+      "explain_fr": "Le timebox évite les deux extrêmes : demander sans chercher (crédit grillé) et rester bloqué des heures (temps perdu pour l'équipe). Montrer le chemin parcouru prouve l'effort et cadre la réponse.",
+      "explain_en": "The timebox avoids both extremes: asking without searching (burned credit) and staying stuck for hours (wasted team time). Showing the path covered proves effort and frames the answer."
+    }
+  ]
+}

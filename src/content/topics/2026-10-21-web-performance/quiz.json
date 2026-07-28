@@ -1,0 +1,168 @@
+{
+  "flashcards": [
+    {
+      "q_fr": "Que mesurent les trois Core Web Vitals ?",
+      "a_fr": "LCP (Largest Contentful Paint, < 2,5 s) : le temps d'affichage du plus gros élément visible — le chargement perçu. INP (Interaction to Next Paint, < 200 ms) : la réactivité aux interactions. CLS (Cumulative Layout Shift, < 0,1) : la stabilité visuelle (les éléments qui se décalent). Elles comptent aussi pour le SEO.",
+      "q_en": "What do the three Core Web Vitals measure?",
+      "a_en": "LCP (Largest Contentful Paint, < 2.5 s): render time of the largest visible element — perceived loading. INP (Interaction to Next Paint, < 200 ms): responsiveness to interactions. CLS (Cumulative Layout Shift, < 0.1): visual stability (elements shifting around). They also count for SEO."
+    },
+    {
+      "q_fr": "Quelle est la différence entre Cache-Control: no-cache et no-store ?",
+      "a_fr": "no-cache autorise le stockage mais impose une revalidation à chaque utilisation (requête conditionnelle ETag → 304 si inchangé). no-store interdit tout stockage — pour les données sensibles. Le piège d'entretien classique : no-cache ne veut PAS dire « ne pas cacher ».",
+      "q_en": "What is the difference between Cache-Control: no-cache and no-store?",
+      "a_en": "no-cache allows storage but forces revalidation on every use (conditional ETag request → 304 if unchanged). no-store forbids any storage — for sensitive data. The classic interview trap: no-cache does NOT mean \"don't cache\"."
+    },
+    {
+      "q_fr": "Comment fonctionne la revalidation avec ETag et 304 ?",
+      "a_fr": "Le serveur envoie un ETag (empreinte du contenu) avec la ressource. Quand elle est périmée ou en no-cache, le navigateur renvoie If-None-Match: <etag>. Si le contenu n'a pas changé, le serveur répond 304 Not Modified sans corps : le navigateur garde sa copie. On paie un aller-retour, pas le transfert.",
+      "q_en": "How does revalidation with ETag and 304 work?",
+      "a_en": "The server sends an ETag (a fingerprint of the content) with the resource. When it's stale or under no-cache, the browser sends If-None-Match: <etag>. If the content hasn't changed, the server answers 304 Not Modified with no body: the browser keeps its copy. You pay a round trip, not the transfer."
+    },
+    {
+      "q_fr": "Décris la stratégie de cache « deux vitesses » d'une SPA moderne.",
+      "a_fr": "HTML en no-cache (+ ETag) : revalidé à chaque visite, jamais périmé. Assets buildés avec un hash du contenu dans le nom (app.9f3ab2.js) en public, max-age=31536000, immutable : cachés un an sans revalidation. Un déploiement change le hash → nouvelle URL référencée par le HTML frais. On n'invalide jamais : on change d'URL.",
+      "q_en": "Describe the \"two-speed\" cache strategy of a modern SPA.",
+      "a_en": "HTML on no-cache (+ ETag): revalidated on every visit, never stale. Built assets with a content hash in the name (app.9f3ab2.js) on public, max-age=31536000, immutable: cached one year with no revalidation. A deploy changes the hash → new URL referenced by the fresh HTML. You never invalidate: you change the URL."
+    },
+    {
+      "q_fr": "Quels leviers pour alléger les images d'une page ?",
+      "a_fr": "Formats modernes (WebP/AVIF : 30-50 % plus légers que JPEG), loading=\"lazy\" natif sous la ligne de flottaison (jamais sur l'image LCP), srcset/sizes pour servir la bonne résolution par écran, et width/height ou aspect-ratio systématiques pour réserver l'espace et éviter le CLS.",
+      "q_en": "What levers shrink a page's images?",
+      "a_en": "Modern formats (WebP/AVIF: 30-50% lighter than JPEG), native loading=\"lazy\" below the fold (never on the LCP image), srcset/sizes to serve the right resolution per screen, and systematic width/height or aspect-ratio to reserve space and avoid CLS."
+    },
+    {
+      "q_fr": "Code splitting, tree shaking, defer : à quoi sert chacun ?",
+      "a_fr": "Code splitting : découper le bundle (par route, imports dynamiques) pour ne charger que le nécessaire. Tree shaking : éliminer au build le code jamais importé. defer : télécharger le script en parallèle mais l'exécuter après le parsing du HTML, sans bloquer le rendu. Les trois réduisent le coût du JS — téléchargement ET exécution sur le main thread.",
+      "q_en": "Code splitting, tree shaking, defer: what does each do?",
+      "a_en": "Code splitting: cutting the bundle (per route, dynamic imports) to load only what's needed. Tree shaking: removing never-imported code at build time. defer: downloading the script in parallel but executing it after HTML parsing, without blocking rendering. All three reduce JS cost — download AND main-thread execution."
+    },
+    {
+      "q_fr": "Comment optimiser le chargement des webfonts ?",
+      "a_fr": "font-display: swap pour afficher le texte immédiatement en police système (petit swap visuel plutôt que texte invisible), <link rel=\"preload\"> pour charger tôt la font critique, self-host pour éviter DNS + connexion vers un domaine tiers, et limiter les variantes (chaque graisse est un fichier à télécharger).",
+      "q_en": "How do you optimize webfont loading?",
+      "a_en": "font-display: swap to show text immediately in a system font (a small visual swap rather than invisible text), <link rel=\"preload\"> to load the critical font early, self-hosting to avoid DNS + a third-party connection, and limiting variants (every weight is a file to download)."
+    },
+    {
+      "q_fr": "Quel est le rôle d'un CDN et de s-maxage ?",
+      "a_fr": "Le CDN place des serveurs edge près des utilisateurs : ils cachent les réponses de l'origin et coupent la latence géographique (plus absorption des pics et protection de l'origin). s-maxage est le max-age spécifique aux caches partagés : il permet un cache CDN différent du cache navigateur (ex. s-maxage=600 au CDN, no-cache au navigateur).",
+      "q_en": "What is the role of a CDN and of s-maxage?",
+      "a_en": "A CDN places edge servers near users: they cache origin responses and cut geographic latency (plus spike absorption and origin shielding). s-maxage is the max-age specific to shared caches: it allows a CDN cache different from the browser cache (e.g. s-maxage=600 at the CDN, no-cache in the browser)."
+    }
+  ],
+  "qcm": [
+    {
+      "q_fr": "Que signifie Cache-Control: no-cache ?",
+      "q_en": "What does Cache-Control: no-cache mean?",
+      "choices_fr": [
+        "La ressource ne doit jamais être stockée",
+        "La ressource peut être stockée mais doit être revalidée à chaque utilisation",
+        "La ressource est cachée uniquement par le CDN",
+        "La ressource expire au bout d'une session"
+      ],
+      "choices_en": [
+        "The resource must never be stored",
+        "The resource may be stored but must be revalidated on every use",
+        "The resource is cached only by the CDN",
+        "The resource expires after one session"
+      ],
+      "answer": 1,
+      "explain_fr": "no-cache = « stocke, mais revérifie » : requête conditionnelle avec ETag, réponse 304 si inchangé. C'est no-store qui interdit le stockage. Question piège d'entretien par excellence.",
+      "explain_en": "no-cache = \"store, but re-check\": a conditional request with the ETag, a 304 answer if unchanged. It's no-store that forbids storage. The quintessential interview trick question."
+    },
+    {
+      "q_fr": "Que contient une réponse 304 Not Modified ?",
+      "q_en": "What does a 304 Not Modified response contain?",
+      "choices_fr": [
+        "Le corps complet de la ressource, recompressé",
+        "Un diff entre l'ancienne et la nouvelle version",
+        "Des headers mais pas de corps : le navigateur réutilise sa copie",
+        "Une redirection vers la version en cache du CDN"
+      ],
+      "choices_en": [
+        "The full resource body, recompressed",
+        "A diff between the old and new versions",
+        "Headers but no body: the browser reuses its copy",
+        "A redirect to the CDN's cached version"
+      ],
+      "answer": 2,
+      "explain_fr": "Le 304 répond à une requête conditionnelle (If-None-Match) : « ta copie est encore bonne ». Pas de corps transféré — on paie l'aller-retour réseau, pas le poids de la ressource.",
+      "explain_en": "The 304 answers a conditional request (If-None-Match): \"your copy is still good\". No body transferred — you pay the network round trip, not the resource's weight."
+    },
+    {
+      "q_fr": "Pourquoi peut-on mettre max-age=31536000, immutable sur app.9f3ab2.js sans risque ?",
+      "q_en": "Why is max-age=31536000, immutable safe on app.9f3ab2.js?",
+      "choices_fr": [
+        "Parce que le hash dans le nom change à chaque changement de contenu : l'URL périmée n'est plus référencée",
+        "Parce que le CDN revalide quand même toutes les heures",
+        "Parce que immutable force une revalidation en arrière-plan",
+        "Parce que les fichiers JS ne changent jamais après le build"
+      ],
+      "choices_en": [
+        "Because the hash in the name changes whenever the content changes: the stale URL is no longer referenced",
+        "Because the CDN still revalidates every hour",
+        "Because immutable forces a background revalidation",
+        "Because JS files never change after the build"
+      ],
+      "answer": 0,
+      "explain_fr": "L'URL EST le contenu : un nouveau build produit un nouveau hash, donc une nouvelle URL, référencée par un HTML toujours revalidé (no-cache). L'ancienne version peut rester cachée un an, plus personne ne la demande.",
+      "explain_en": "The URL IS the content: a new build produces a new hash, hence a new URL, referenced by an always-revalidated HTML (no-cache). The old version can stay cached for a year — nobody asks for it anymore."
+    },
+    {
+      "q_fr": "Quelle erreur dégrade directement le LCP ?",
+      "q_en": "Which mistake directly degrades LCP?",
+      "choices_fr": [
+        "Oublier width/height sur les images sous la ligne de flottaison",
+        "Utiliser font-display: swap",
+        "Mettre defer sur les scripts",
+        "Mettre loading=\"lazy\" sur l'image principale (hero)"
+      ],
+      "choices_en": [
+        "Forgetting width/height on below-the-fold images",
+        "Using font-display: swap",
+        "Putting defer on scripts",
+        "Putting loading=\"lazy\" on the hero image"
+      ],
+      "answer": 3,
+      "explain_fr": "Lazy-loader l'image LCP retarde exactement l'élément mesuré : le navigateur attend au lieu de la charger en priorité. Sur l'image hero : pas de lazy, et plutôt fetchpriority=\"high\". Le lazy loading, c'est pour sous la ligne de flottaison.",
+      "explain_en": "Lazy-loading the LCP image delays exactly the measured element: the browser waits instead of loading it with priority. On the hero image: no lazy, rather fetchpriority=\"high\". Lazy loading is for below the fold."
+    },
+    {
+      "q_fr": "Quelle métrique se dégrade quand le main thread est saturé de JavaScript ?",
+      "q_en": "Which metric degrades when the main thread is saturated with JavaScript?",
+      "choices_fr": [
+        "CLS",
+        "INP",
+        "TTFB",
+        "Le taux de cache hit"
+      ],
+      "choices_en": [
+        "CLS",
+        "INP",
+        "TTFB",
+        "The cache hit ratio"
+      ],
+      "answer": 1,
+      "explain_fr": "INP mesure le délai entre une interaction et le prochain rendu : si le main thread exécute du JS, le clic attend. Remèdes : code splitting, tree shaking, defer, déplacer le lourd hors du main thread (workers).",
+      "explain_en": "INP measures the delay between an interaction and the next paint: if the main thread is running JS, the click waits. Remedies: code splitting, tree shaking, defer, moving heavy work off the main thread (workers)."
+    },
+    {
+      "q_fr": "« Le site est lent. » Quelle est la première action correcte ?",
+      "q_en": "\"The site is slow.\" What is the correct first move?",
+      "choices_fr": [
+        "Minifier le CSS et le JavaScript",
+        "Ajouter un CDN devant le site",
+        "Mesurer avec Lighthouse et le waterfall Network pour trouver le goulot",
+        "Convertir toutes les images en AVIF"
+      ],
+      "choices_en": [
+        "Minify the CSS and JavaScript",
+        "Put a CDN in front of the site",
+        "Measure with Lighthouse and the Network waterfall to find the bottleneck",
+        "Convert every image to AVIF"
+      ],
+      "answer": 2,
+      "explain_fr": "Mesurer avant d'optimiser : identifier le goulot dominant (image LCP ? bundle JS ? absence de cache ?), le traiter, re-mesurer. Optimiser à l'aveugle, c'est minifier 10 Ko de CSS pendant qu'une image de 4 Mo plombe le LCP.",
+      "explain_en": "Measure before optimizing: identify the dominant bottleneck (LCP image? JS bundle? no caching?), fix it, re-measure. Optimizing blind is minifying 10 KB of CSS while a 4 MB image sinks the LCP."
+    }
+  ]
+}

@@ -1,0 +1,168 @@
+{
+  "flashcards": [
+    {
+      "q_fr": "Donne la définition exacte d'une closure.",
+      "a_fr": "Une fonction qui capture les variables de son scope lexical de définition et les garde vivantes après la fin de la fonction englobante. « Lexical » = déterminé par la position du code, pas par l'appel. La closure référence les variables elles-mêmes, pas une copie de leurs valeurs.",
+      "q_en": "Give the exact definition of a closure.",
+      "a_en": "A function that captures the variables of its lexical definition scope and keeps them alive after the enclosing function returns. \"Lexical\" = determined by the code's position, not by the call. The closure references the variables themselves, not a copy of their values."
+    },
+    {
+      "q_fr": "Pourquoi `for (var i = 0; i < 3; i++) setTimeout(() => console.log(i))` affiche 3, 3, 3 ?",
+      "a_fr": "var n'a pas de scope de bloc : les trois callbacks capturent la même variable i. Ils s'exécutent après la fin de la boucle, quand i vaut 3. Avec let, chaque itération crée une nouvelle liaison → 0, 1, 2. La closure capture la variable, pas sa valeur au moment de la création.",
+      "q_en": "Why does `for (var i = 0; i < 3; i++) setTimeout(() => console.log(i))` print 3, 3, 3?",
+      "a_en": "var has no block scope: all three callbacks capture the same variable i. They run after the loop ends, when i equals 3. With let, each iteration creates a new binding → 0, 1, 2. A closure captures the variable, not its value at creation time."
+    },
+    {
+      "q_fr": "Cite trois usages réels des closures.",
+      "a_fr": "1) État privé : un compteur dont la variable est invisible de l'extérieur (pattern module). 2) Callbacks qui se souviennent de leur contexte (handlers, debounce/throttle, memoization). 3) Les hooks React, entièrement construits sur les closures (d'où le bug de la « stale closure » dans useEffect).",
+      "q_en": "Name three real uses of closures.",
+      "a_en": "1) Private state: a counter whose variable is invisible from outside (module pattern). 2) Callbacks that remember their context (handlers, debounce/throttle, memoization). 3) React hooks, built entirely on closures (hence the \"stale closure\" bug in useEffect)."
+    },
+    {
+      "q_fr": "Comment fonctionne la lecture d'une propriété sur un objet JavaScript ?",
+      "a_fr": "Le moteur cherche la propriété sur l'objet lui-même ; s'il ne la trouve pas, il remonte le lien [[Prototype]] d'objet en objet jusqu'à Object.prototype puis null. C'est la chaîne de prototypes : l'héritage JS est une délégation, pas une copie.",
+      "q_en": "How does property lookup work on a JavaScript object?",
+      "a_en": "The engine looks for the property on the object itself; if not found, it follows the [[Prototype]] link from object to object up to Object.prototype and then null. That's the prototype chain: JS inheritance is delegation, not copying."
+    },
+    {
+      "q_fr": "Que fait vraiment le mot-clé class en JavaScript ?",
+      "a_fr": "Du sucre syntaxique sur les prototypes : les méthodes sont posées sur Class.prototype (partagées par toutes les instances, pas copiées), extends câble Class.prototype.[[Prototype]] vers le parent. typeof Class renvoie « function ». Le modèle objet reste prototypal.",
+      "q_en": "What does the class keyword really do in JavaScript?",
+      "a_en": "Syntactic sugar over prototypes: methods are placed on Class.prototype (shared by all instances, not copied), extends wires Class.prototype.[[Prototype]] to the parent. typeof Class returns \"function\". The object model remains prototypal."
+    },
+    {
+      "q_fr": "Quelles sont les quatre règles de binding de this, par ordre de priorité ?",
+      "a_fr": "1) new f() → l'objet fraîchement créé. 2) f.call/apply/bind(ctx) → le ctx explicite. 3) obj.f() → l'objet avant le point. 4) f() appel simple → undefined en strict mode (globalThis sinon). À évaluer au site d'appel, jamais au lieu de définition.",
+      "q_en": "What are the four this-binding rules, in priority order?",
+      "a_en": "1) new f() → the freshly created object. 2) f.call/apply/bind(ctx) → the explicit ctx. 3) obj.f() → the object before the dot. 4) plain f() → undefined in strict mode (globalThis otherwise). Evaluated at the call site, never at the definition site."
+    },
+    {
+      "q_fr": "En quoi les arrow functions sont-elles spéciales vis-à-vis de this ?",
+      "a_fr": "Elles n'ont pas de this propre : elles utilisent celui du scope lexical englobant, figé à l'écriture. Parfaites pour les callbacks dans une classe (setTimeout(() => this.tick())), mauvaises comme méthodes d'objet. Elles n'ont pas non plus d'arguments et ne sont pas constructibles.",
+      "q_en": "What makes arrow functions special with respect to this?",
+      "a_en": "They have no this of their own: they use the enclosing lexical scope's this, fixed at write time. Perfect for callbacks inside a class (setTimeout(() => this.tick())), bad as object methods. They also lack arguments and are not constructible."
+    },
+    {
+      "q_fr": "Hoisting et TDZ : quelle différence entre var et let/const ?",
+      "a_fr": "var est hissée ET initialisée à undefined : lisible avant sa ligne, sans erreur (bugs silencieux). let/const sont hissées mais non initialisées : y accéder avant la déclaration jette une ReferenceError — c'est la temporal dead zone, qui transforme un bug silencieux en erreur franche.",
+      "q_en": "Hoisting and TDZ: what's the difference between var and let/const?",
+      "a_en": "var is hoisted AND initialized to undefined: readable before its line, without error (silent bugs). let/const are hoisted but uninitialized: accessing them before the declaration throws a ReferenceError — the temporal dead zone, which turns a silent bug into a loud error."
+    }
+  ],
+  "qcm": [
+    {
+      "q_fr": "Qu'est-ce qu'une closure capture exactement ?",
+      "q_en": "What exactly does a closure capture?",
+      "choices_fr": [
+        "Une copie des valeurs au moment de sa création",
+        "Les variables elles-mêmes, par référence vivante",
+        "Uniquement les paramètres de la fonction englobante",
+        "Le this de la fonction englobante"
+      ],
+      "choices_en": [
+        "A copy of the values at creation time",
+        "The variables themselves, as live references",
+        "Only the enclosing function's parameters",
+        "The enclosing function's this"
+      ],
+      "answer": 1,
+      "explain_fr": "La closure référence les variables, pas leurs valeurs : si la variable change ensuite, la closure voit la nouvelle valeur. C'est tout le piège de la boucle var → 3, 3, 3. (Le this lexical, lui, est le propre des arrow functions.)",
+      "explain_en": "A closure references variables, not their values: if the variable later changes, the closure sees the new value. That's the whole var-loop trap → 3, 3, 3. (Lexical this is an arrow-function thing.)"
+    },
+    {
+      "q_fr": "Que corrige le remplacement de var par let dans la boucle avec setTimeout ?",
+      "q_en": "What does replacing var with let fix in the setTimeout loop?",
+      "choices_fr": [
+        "let rend setTimeout synchrone",
+        "let copie la valeur de i dans chaque callback",
+        "let crée une nouvelle liaison de la variable à chaque itération",
+        "let empêche la boucle de se terminer avant les callbacks"
+      ],
+      "choices_en": [
+        "let makes setTimeout synchronous",
+        "let copies the value of i into each callback",
+        "let creates a new binding of the variable on each iteration",
+        "let prevents the loop from finishing before the callbacks"
+      ],
+      "answer": 2,
+      "explain_fr": "Avec let, chaque tour de boucle a SA variable : chaque closure capture une liaison différente → 0, 1, 2. Ce n'est pas une copie de valeur : c'est bien une variable neuve par itération, toujours capturée par référence.",
+      "explain_en": "With let, each loop turn has ITS OWN variable: each closure captures a different binding → 0, 1, 2. It's not a value copy: it's a fresh variable per iteration, still captured by reference."
+    },
+    {
+      "q_fr": "Où vivent les méthodes définies dans une class JavaScript ?",
+      "q_en": "Where do methods defined in a JavaScript class live?",
+      "choices_fr": [
+        "Copiées dans chaque instance à la construction",
+        "Dans une table interne du moteur, inaccessibles",
+        "Dans le constructeur, recréées à chaque new",
+        "Sur Class.prototype, partagées par toutes les instances"
+      ],
+      "choices_en": [
+        "Copied into each instance at construction",
+        "In an internal engine table, inaccessible",
+        "In the constructor, recreated on every new",
+        "On Class.prototype, shared by all instances"
+      ],
+      "answer": 3,
+      "explain_fr": "class n'est que du sucre sur les prototypes : les méthodes sont posées une seule fois sur Class.prototype, et chaque instance les trouve en remontant son [[Prototype]]. Mille instances, une seule fonction.",
+      "explain_en": "class is just sugar over prototypes: methods are placed once on Class.prototype, and each instance finds them by walking its [[Prototype]]. A thousand instances, a single function."
+    },
+    {
+      "q_fr": "En strict mode, que vaut this dans `const f = user.greet; f();` ?",
+      "q_en": "In strict mode, what is this in `const f = user.greet; f();`?",
+      "choices_fr": [
+        "undefined : appel simple, la méthode détachée a perdu son objet",
+        "user : this est fixé à la définition de greet",
+        "globalThis : this retombe toujours sur l'objet global",
+        "f : la fonction elle-même"
+      ],
+      "choices_en": [
+        "undefined: plain call, the detached method lost its object",
+        "user: this was fixed when greet was defined",
+        "globalThis: this always falls back to the global object",
+        "f: the function itself"
+      ],
+      "answer": 0,
+      "explain_fr": "this se détermine au site d'appel : f() est un appel simple (règle 4), donc undefined en strict mode. Remèdes : user.greet.bind(user), un wrapper arrow, ou un champ de classe en arrow function.",
+      "explain_en": "this is determined at the call site: f() is a plain call (rule 4), hence undefined in strict mode. Fixes: user.greet.bind(user), an arrow wrapper, or an arrow class field."
+    },
+    {
+      "q_fr": "Pourquoi une arrow function est-elle un mauvais choix comme méthode d'objet ?",
+      "q_en": "Why is an arrow function a bad choice as an object method?",
+      "choices_fr": [
+        "Elle est plus lente qu'une fonction classique",
+        "Elle n'a pas de this propre : il ne vaudra jamais l'objet, mais celui du scope englobant",
+        "Elle ne peut pas retourner de valeur",
+        "Elle ne peut pas être appelée avec des arguments"
+      ],
+      "choices_en": [
+        "It is slower than a regular function",
+        "It has no this of its own: it will never be the object, but the enclosing scope's",
+        "It cannot return a value",
+        "It cannot be called with arguments"
+      ],
+      "answer": 1,
+      "explain_fr": "L'arrow capture le this lexical de l'endroit où elle est écrite — pour un littéral d'objet, ce n'est jamais l'objet lui-même. La règle « objet avant le point » ne s'applique pas aux arrows. Elles restent idéales pour les callbacks dans une classe.",
+      "explain_en": "An arrow captures the lexical this of where it's written — for an object literal, that's never the object itself. The \"object before the dot\" rule doesn't apply to arrows. They remain ideal for callbacks inside a class."
+    },
+    {
+      "q_fr": "Quelle est la différence entre Dog.prototype et rex.__proto__ (rex étant une instance de Dog) ?",
+      "q_en": "What's the difference between Dog.prototype and rex.__proto__ (rex being a Dog instance)?",
+      "choices_fr": [
+        "Aucune : ce sont deux noms de la même propriété sur tout objet",
+        "Dog.prototype est une copie de rex.__proto__",
+        "Dog.prototype est la propriété du constructeur ; rex.__proto__ est le lien interne de l'instance — et ils pointent vers le même objet",
+        "rex.__proto__ contient les méthodes, Dog.prototype le constructeur"
+      ],
+      "choices_en": [
+        "None: they are two names for the same property on every object",
+        "Dog.prototype is a copy of rex.__proto__",
+        "Dog.prototype is the constructor's property; rex.__proto__ is the instance's internal link — and they point to the same object",
+        "rex.__proto__ holds the methods, Dog.prototype the constructor"
+      ],
+      "answer": 2,
+      "explain_fr": "prototype n'existe que sur les fonctions constructrices : c'est le futur [[Prototype]] de leurs instances. __proto__ (déprécié, préférer Object.getPrototypeOf) expose le lien interne. Pour rex créé par new Dog(), les deux désignent le même objet — mais par des chemins différents.",
+      "explain_en": "prototype only exists on constructor functions: it's the future [[Prototype]] of their instances. __proto__ (deprecated, prefer Object.getPrototypeOf) exposes the internal link. For rex created by new Dog(), both designate the same object — via different paths."
+    }
+  ]
+}

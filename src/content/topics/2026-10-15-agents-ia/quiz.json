@@ -1,0 +1,168 @@
+{
+  "flashcards": [
+    {
+      "q_fr": "Qu'est-ce que le function calling ?",
+      "a_fr": "Un mécanisme où l'on décrit des outils au modèle (nom, description, JSON schema) ; le modèle peut alors répondre par un appel structuré (nom + paramètres JSON) au lieu de prose. Le code applicatif valide, exécute la vraie fonction et renvoie le résultat au modèle — le modèle n'exécute jamais rien lui-même.",
+      "q_en": "What is function calling?",
+      "a_en": "A mechanism where tools are described to the model (name, description, JSON schema); the model can then reply with a structured call (name + JSON parameters) instead of prose. The application code validates, executes the real function and returns the result to the model — the model never executes anything itself."
+    },
+    {
+      "q_fr": "Décris la boucle agentique.",
+      "a_fr": "Objectif → le LLM raisonne et choisit un outil → le code exécute l'appel → le résultat (observation) est réinjecté dans le contexte → le modèle raisonne à nouveau, jusqu'à la réponse finale ou une limite (itérations, budget). Tout l'historique est renvoyé à chaque tour.",
+      "q_en": "Describe the agentic loop.",
+      "a_en": "Goal → the LLM reasons and picks a tool → the code executes the call → the result (observation) is fed back into the context → the model reasons again, until a final answer or a limit (iterations, budget). The whole history is resent every turn."
+    },
+    {
+      "q_fr": "Pourquoi dit-on que la description d'un outil est du prompt engineering ?",
+      "a_fr": "C'est la description que le modèle lit pour décider quand et comment utiliser l'outil. Une bonne description précise quand l'utiliser, quand ne pas l'utiliser, ce que l'outil retourne et ses limites. La plupart des mauvais choix d'outil viennent d'une description floue, pas du modèle.",
+      "q_en": "Why do we say a tool's description is prompt engineering?",
+      "a_en": "The description is what the model reads to decide when and how to use the tool. A good one states when to use it, when not to, what it returns and its limits. Most wrong tool choices come from a fuzzy description, not from the model."
+    },
+    {
+      "q_fr": "Quels sont les quatre leviers d'un prompt sérieux ?",
+      "a_fr": "Un rôle clair (« tu es un agent support de X »), des contraintes explicites (format, longueur, interdits), des exemples few-shot (2-3 paires entrée/sortie), et une sortie structurée (JSON conforme à un schéma) exploitable par un programme. Pas d'« astuces magiques » : elles ne survivent pas au changement de modèle.",
+      "q_en": "What are the four levers of a serious prompt?",
+      "a_en": "A clear role (\"you are a support agent for X\"), explicit constraints (format, length, prohibitions), few-shot examples (2-3 input/output pairs), and structured output (JSON conforming to a schema) usable by a program. No \"magic tricks\": they don't survive a model change."
+    },
+    {
+      "q_fr": "Quel problème MCP résout-il pour les agents ?",
+      "a_fr": "L'intégration N outils × M applications : sans standard, chaque app re-code chaque connexion. MCP (Model Context Protocol) standardise l'exposition d'outils et de ressources via un protocole client/serveur : un serveur MCP écrit une fois est utilisable par tout client compatible.",
+      "q_en": "What problem does MCP solve for agents?",
+      "a_en": "The N tools × M applications integration problem: without a standard, every app re-codes every connection. MCP (Model Context Protocol) standardizes exposing tools and resources through a client/server protocol: an MCP server written once is usable by any compatible client."
+    },
+    {
+      "q_fr": "Cite trois modes d'échec classiques d'un agent.",
+      "a_fr": "1) La boucle infinie : l'agent réessaie sans fin un appel qui échoue. 2) L'hallucination d'outil : appel d'un outil inexistant ou paramètres inventés. 3) L'explosion des coûts : l'historique complet repart à chaque tour, donc un agent qui boucle consomme le contexte à répétition.",
+      "q_en": "Name three classic agent failure modes.",
+      "a_en": "1) The infinite loop: the agent endlessly retries a failing call. 2) Tool hallucination: calling a nonexistent tool or inventing parameters. 3) Cost explosion: the full history is resent every turn, so a looping agent consumes the context repeatedly."
+    },
+    {
+      "q_fr": "Qu'est-ce que la prompt injection et pourquoi est-ce grave pour un agent ?",
+      "a_fr": "Du contenu externe lu par l'agent (page web, email, ticket) qui contient des instructions détournant le modèle (« ignore tes consignes et… »). Grave car l'agent a des outils : l'injection peut déclencher des actions réelles (exfiltration, suppression). Pas de correctif définitif — mitigations : moindre privilège, validation humaine, séparer données et instructions.",
+      "q_en": "What is prompt injection and why is it serious for an agent?",
+      "a_en": "External content read by the agent (web page, email, ticket) containing instructions that hijack the model (\"ignore your instructions and…\"). Serious because the agent has tools: the injection can trigger real actions (exfiltration, deletion). No definitive fix — mitigations: least privilege, human approval, separating data from instructions."
+    },
+    {
+      "q_fr": "Quels garde-fous mettre sur un agent en production ?",
+      "a_fr": "Limite dure d'itérations et budget de tokens, timeouts sur les outils, validation stricte des paramètres contre le schéma, permissions graduées par outil (lecture libre, écriture sur validation), humain dans la boucle pour les actions irréversibles, et logs de chaque appel d'outil pour l'observabilité.",
+      "q_en": "What guardrails should a production agent have?",
+      "a_en": "A hard iteration limit and token budget, timeouts on tools, strict parameter validation against the schema, graduated per-tool permissions (free reads, writes behind approval), a human in the loop for irreversible actions, and logs of every tool call for observability."
+    }
+  ],
+  "qcm": [
+    {
+      "q_fr": "Quand un modèle « appelle » une fonction via le function calling, que se passe-t-il réellement ?",
+      "q_en": "When a model \"calls\" a function via function calling, what actually happens?",
+      "choices_fr": [
+        "Le modèle exécute la fonction dans son environnement sandboxé",
+        "Le fournisseur d'API exécute la fonction sur ses serveurs",
+        "Le modèle émet un JSON structuré ; c'est le code applicatif qui exécute",
+        "La fonction est compilée puis injectée dans les poids du modèle"
+      ],
+      "choices_en": [
+        "The model runs the function in its sandboxed environment",
+        "The API provider runs the function on its servers",
+        "The model emits structured JSON; the application code executes it",
+        "The function is compiled and injected into the model's weights"
+      ],
+      "answer": 2,
+      "explain_fr": "Le modèle ne fait qu'émettre une intention structurée (nom + paramètres). L'exécution, la validation et les permissions restent entièrement côté application.",
+      "explain_en": "The model only emits a structured intent (name + parameters). Execution, validation and permissions stay entirely on the application side."
+    },
+    {
+      "q_fr": "Qu'est-ce qui transforme un simple appel LLM en agent ?",
+      "q_en": "What turns a plain LLM call into an agent?",
+      "choices_fr": [
+        "La boucle : outil → observation → nouveau raisonnement, jusqu'à l'objectif",
+        "Un modèle plus gros avec plus de paramètres",
+        "L'accès à Internet",
+        "Un prompt système plus long"
+      ],
+      "choices_en": [
+        "The loop: tool → observation → new reasoning, until the goal",
+        "A bigger model with more parameters",
+        "Internet access",
+        "A longer system prompt"
+      ],
+      "answer": 0,
+      "explain_fr": "Un agent, c'est un LLM dans une boucle avec des outils : il choisit dynamiquement les étapes en fonction des observations, là où un pipeline classique fixe le chemin à l'avance.",
+      "explain_en": "An agent is an LLM in a loop with tools: it dynamically picks its steps based on observations, whereas a classic pipeline fixes the path in advance."
+    },
+    {
+      "q_fr": "Un agent choisit systématiquement le mauvais outil. Quelle est la cause la plus probable ?",
+      "q_en": "An agent consistently picks the wrong tool. What is the most likely cause?",
+      "choices_fr": [
+        "Le modèle est trop petit pour comprendre les outils",
+        "Des descriptions d'outils floues ou qui se chevauchent",
+        "La température est réglée trop bas",
+        "Le JSON schema utilise trop de champs required"
+      ],
+      "choices_en": [
+        "The model is too small to understand tools",
+        "Fuzzy or overlapping tool descriptions",
+        "The temperature is set too low",
+        "The JSON schema uses too many required fields"
+      ],
+      "answer": 1,
+      "explain_fr": "La description est ce que le modèle lit pour choisir : si deux outils se ressemblent ou qu'une description ne dit pas quand ne PAS l'utiliser, le choix se dégrade. C'est un problème de prompt engineering, pas de modèle.",
+      "explain_en": "The description is what the model reads to choose: if two tools look alike or a description doesn't say when NOT to use it, the choice degrades. It's a prompt engineering problem, not a model problem."
+    },
+    {
+      "q_fr": "Pourquoi un agent qui boucle 50 fois coûte-t-il si cher ?",
+      "q_en": "Why does an agent looping 50 times cost so much?",
+      "choices_fr": [
+        "Chaque appel d'outil est facturé par le fournisseur du modèle",
+        "Le modèle passe en mode raisonnement, plus coûteux",
+        "Les tokens de sortie sont doublés en mode agent",
+        "L'historique complet est renvoyé au modèle à chaque tour"
+      ],
+      "choices_en": [
+        "Each tool call is billed by the model provider",
+        "The model switches to a more expensive reasoning mode",
+        "Output tokens are doubled in agent mode",
+        "The full history is resent to the model every turn"
+      ],
+      "answer": 3,
+      "explain_fr": "À chaque tour, tout le contexte (objectif + appels + observations) repart en entrée. 50 tours = 50 fois un contexte qui grossit. D'où les limites d'itérations et le prompt caching.",
+      "explain_en": "Every turn, the whole context (goal + calls + observations) is sent again as input. 50 turns = 50 times a growing context. Hence iteration limits and prompt caching."
+    },
+    {
+      "q_fr": "Quelle combinaison rend une attaque par prompt injection vraiment dangereuse ?",
+      "q_en": "Which combination makes a prompt injection attack truly dangerous?",
+      "choices_fr": [
+        "Un long contexte et une température élevée",
+        "Accès à des données privées + contenu non fiable + canal de sortie",
+        "Un modèle open-weight et un prompt système public",
+        "Des outils en lecture seule et des logs activés"
+      ],
+      "choices_en": [
+        "A long context and a high temperature",
+        "Private data access + untrusted content + an output channel",
+        "An open-weight model and a public system prompt",
+        "Read-only tools and enabled logging"
+      ],
+      "answer": 1,
+      "explain_fr": "C'est la « triple létale » : si l'agent lit du contenu attaquable, touche des données sensibles ET peut envoyer quelque chose vers l'extérieur, une injection peut exfiltrer. Retirer un des trois casse l'attaque.",
+      "explain_en": "That's the \"lethal trifecta\": if the agent reads attackable content, touches sensitive data AND can send something out, an injection can exfiltrate. Removing any of the three breaks the attack."
+    },
+    {
+      "q_fr": "Quel levier de prompt engineering est le plus efficace pour obtenir un format de sortie précis ?",
+      "q_en": "Which prompt engineering lever works best for getting a precise output format?",
+      "choices_fr": [
+        "Des exemples few-shot + un schéma de sortie structuré",
+        "Promettre une récompense au modèle",
+        "Écrire le prompt en majuscules",
+        "Répéter la consigne trois fois"
+      ],
+      "choices_en": [
+        "Few-shot examples + a structured output schema",
+        "Promising the model a reward",
+        "Writing the prompt in capital letters",
+        "Repeating the instruction three times"
+      ],
+      "answer": 0,
+      "explain_fr": "Montrer 2-3 exemples entrée → sortie et imposer un schéma (JSON schema, balises) est reproductible d'un modèle à l'autre. Les « astuces magiques », elles, vieillissent mal.",
+      "explain_en": "Showing 2-3 input → output examples and enforcing a schema (JSON schema, tags) is reproducible across models. \"Magic tricks\" age badly."
+    }
+  ]
+}

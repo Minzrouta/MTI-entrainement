@@ -1,0 +1,168 @@
+{
+  "flashcards": [
+    {
+      "q_fr": "Quelle différence entre un octet, un code point et un graphème ?",
+      "a_fr": "L'octet est l'unité de stockage (UTF-8 : 1 à 4 octets par code point). Le code point est le numéro Unicode d'un caractère (é = U+00E9). Le graphème est ce que l'utilisateur voit à l'écran — il peut regrouper plusieurs code points (e + accent combinant, emoji famille avec ZWJ).",
+      "q_en": "What's the difference between a byte, a code point and a grapheme?",
+      "a_en": "The byte is the storage unit (UTF-8: 1 to 4 bytes per code point). The code point is a character's Unicode number (é = U+00E9). The grapheme is what the user sees on screen — it can group several code points (e + combining accent, family emoji with ZWJs)."
+    },
+    {
+      "q_fr": "Pourquoi 'é'.length peut-il valoir 2 en JavaScript ?",
+      "a_fr": "Deux raisons : en forme NFD, é est décomposé en deux code points (e + accent combinant U+0301) ; et length compte des unités UTF-16, pas des graphèmes ('👍'.length === 2 à cause de la paire de substitution). Fix : normalize('NFC') et Intl.Segmenter pour compter les graphèmes.",
+      "q_en": "Why can 'é'.length equal 2 in JavaScript?",
+      "a_en": "Two reasons: in NFD form, é is decomposed into two code points (e + combining accent U+0301); and length counts UTF-16 units, not graphemes ('👍'.length === 2 because of the surrogate pair). Fix: normalize('NFC') and Intl.Segmenter to count graphemes."
+    },
+    {
+      "q_fr": "Qu'est-ce que la normalisation NFC/NFD et quand l'appliquer ?",
+      "a_fr": "NFC = forme précomposée (é en un code point), NFD = forme décomposée (e + accent). Deux chaînes visuellement identiques peuvent différer binairement — la comparaison et la recherche échouent alors. Normaliser en NFC aux frontières du système : formulaires, imports, noms de fichiers (macOS produit du NFD).",
+      "q_en": "What is NFC/NFD normalization and when do you apply it?",
+      "a_en": "NFC = precomposed form (é as one code point), NFD = decomposed form (e + accent). Two visually identical strings can differ at the binary level — comparison and search then fail. Normalize to NFC at system boundaries: forms, imports, filenames (macOS produces NFD)."
+    },
+    {
+      "q_fr": "Qu'est-ce que le mojibake et d'où vient-il ?",
+      "a_fr": "Du texte corrompu du type Ã©tÃ© au lieu de été : des octets UTF-8 décodés avec le mauvais charset (Latin-1 par exemple). é en UTF-8 = deux octets C3 A9, que Latin-1 relit comme deux caractères Ã©. Fix : UTF-8 déclaré explicitement partout — fichiers, en-têtes HTTP, connexion DB.",
+      "q_en": "What is mojibake and where does it come from?",
+      "a_en": "Corrupted text like Ã©tÃ© instead of été: UTF-8 bytes decoded with the wrong charset (Latin-1 for instance). é in UTF-8 is two bytes C3 A9, which Latin-1 re-reads as the two characters Ã©. Fix: UTF-8 explicitly declared everywhere — files, HTTP headers, DB connection."
+    },
+    {
+      "q_fr": "Quelle est la règle d'or pour stocker les dates, et son exception ?",
+      "a_fr": "Stocker en UTC au format ISO 8601, convertir dans le fuseau de l'utilisateur uniquement à l'affichage. Exception : un événement futur lié à un lieu (réunion à 9 h à Paris) se stocke en heure locale + identifiant IANA (Europe/Paris), car les règles de fuseau peuvent changer avant l'événement.",
+      "q_en": "What is the golden rule for storing dates, and its exception?",
+      "a_en": "Store in UTC in ISO 8601 format, convert to the user's timezone only at display time. Exception: a future event tied to a place (9am meeting in Paris) is stored as local time + IANA identifier (Europe/Paris), because timezone rules may change before the event."
+    },
+    {
+      "q_fr": "Qu'est-ce que le bug du « minuit local » ?",
+      "a_fr": "Stocker une date-seule (anniversaire, deadline) comme timestamp à minuit dans le fuseau local : affichée depuis un fuseau plus à l'ouest, elle recule d'un jour. Fix : un type date sans heure (DATE en SQL, Temporal.PlainDate en JS), jamais un timestamp.",
+      "q_en": "What is the \"local midnight\" bug?",
+      "a_en": "Storing a date-only value (birthday, deadline) as a timestamp at midnight in the local timezone: displayed from a timezone further west, it moves back a day. Fix: a time-less date type (DATE in SQL, Temporal.PlainDate in JS), never a timestamp."
+    },
+    {
+      "q_fr": "Greedy vs lazy en regex : quelle différence, et quelle troisième option ?",
+      "a_fr": "Un quantificateur glouton (.+) avale le maximum puis rétrocède (backtracking) ; lazy (.+?) prend le minimum puis étend. Sur '<b>x</b>', <.+> capture tout, <.+?> capture '<b>'. Troisième option, souvent la meilleure : la classe négée <[^>]+> — même résultat, sans backtracking.",
+      "q_en": "Greedy vs lazy in regex: what's the difference, and what's the third option?",
+      "a_en": "A greedy quantifier (.+) swallows the maximum then backs off (backtracking); lazy (.+?) takes the minimum then extends. On '<b>x</b>', <.+> captures everything, <.+?> captures '<b>'. Third option, often the best: the negated class <[^>]+> — same result, no backtracking."
+    },
+    {
+      "q_fr": "Qu'est-ce que le ReDoS et comment s'en protéger ?",
+      "a_fr": "Le Regular expression Denial of Service : une regex à quantificateurs imbriqués comme (a+)+$ part en backtracking exponentiel sur une entrée hostile, et gèle un thread avec une seule requête (pannes Stack Overflow 2016, Cloudflare 2019). Parades : éviter les quantificateurs imbriqués, timeout d'exécution, moteur linéaire (RE2, regex Rust).",
+      "q_en": "What is ReDoS and how do you protect against it?",
+      "a_en": "Regular expression Denial of Service: a regex with nested quantifiers like (a+)+$ goes into exponential backtracking on hostile input, freezing a thread with a single request (Stack Overflow 2016 and Cloudflare 2019 outages). Countermeasures: avoid nested quantifiers, execution timeout, linear engine (RE2, Rust regex)."
+    }
+  ],
+  "qcm": [
+    {
+      "q_fr": "Combien d'octets occupe le caractère '€' (U+20AC) en UTF-8 ?",
+      "q_en": "How many bytes does the character '€' (U+20AC) take in UTF-8?",
+      "choices_fr": [
+        "1 octet",
+        "2 octets",
+        "3 octets",
+        "4 octets"
+      ],
+      "choices_en": [
+        "1 byte",
+        "2 bytes",
+        "3 bytes",
+        "4 bytes"
+      ],
+      "answer": 2,
+      "explain_fr": "UTF-8 est à longueur variable : 1 octet pour l'ASCII, 2 pour é, 3 pour € (E2 82 AC) et la plupart des idéogrammes, 4 pour les emojis. Le préfixe du premier octet (1110xxxx ici) annonce la longueur.",
+      "explain_en": "UTF-8 is variable-length: 1 byte for ASCII, 2 for é, 3 for € (E2 82 AC) and most ideograms, 4 for emojis. The first byte's prefix (1110xxxx here) announces the length."
+    },
+    {
+      "q_fr": "En JavaScript, comment est interprété new Date('2026-10-29') ?",
+      "q_en": "In JavaScript, how is new Date('2026-10-29') interpreted?",
+      "choices_fr": [
+        "Minuit UTC le 29 octobre 2026",
+        "Minuit dans le fuseau local",
+        "Midi UTC, pour éviter les décalages",
+        "C'est une erreur de parsing (Invalid Date)"
+      ],
+      "choices_en": [
+        "Midnight UTC on October 29, 2026",
+        "Midnight in the local timezone",
+        "Noon UTC, to avoid shifts",
+        "It's a parsing error (Invalid Date)"
+      ],
+      "answer": 0,
+      "explain_fr": "Une chaîne ISO date-seule est parsée comme minuit UTC, mais '2026-10-29T00:00' (avec heure) comme minuit LOCAL. Cette incohérence historique de Date décale des dates d'un jour selon le fuseau — d'où Temporal et les bibliothèques modernes.",
+      "explain_en": "A date-only ISO string is parsed as midnight UTC, but '2026-10-29T00:00' (with a time) as LOCAL midnight. This historical Date inconsistency shifts dates by a day depending on the timezone — hence Temporal and modern libraries."
+    },
+    {
+      "q_fr": "Quelle regex extrait '<b>' de '<b>gras</b>' sans backtracking ?",
+      "q_en": "Which regex extracts '<b>' from '<b>bold</b>' without backtracking?",
+      "choices_fr": [
+        "<.+>",
+        "<.*>",
+        "<.+?>",
+        "<[^>]+>"
+      ],
+      "choices_en": [
+        "<.+>",
+        "<.*>",
+        "<.+?>",
+        "<[^>]+>"
+      ],
+      "answer": 3,
+      "explain_fr": "<.+> et <.*> sont gloutons et capturent jusqu'au dernier '>'. <.+?> (lazy) donne le bon résultat mais procède par extensions successives. La classe négée <[^>]+> exprime l'intention — « tout sauf > » — et matche en un passage.",
+      "explain_en": "<.+> and <.*> are greedy and capture up to the last '>'. <.+?> (lazy) gives the right result but works by successive extensions. The negated class <[^>]+> states the intent — \"anything but >\" — and matches in one pass."
+    },
+    {
+      "q_fr": "Deux chaînes « café » s'affichent à l'identique mais ne sont pas égales à la comparaison. Cause la plus probable ?",
+      "q_en": "Two \"café\" strings display identically but compare as unequal. Most likely cause?",
+      "choices_fr": [
+        "L'une est en UTF-8, l'autre en UTF-16",
+        "L'une est en NFC (é précomposé), l'autre en NFD (e + accent)",
+        "Un espace insécable en fin de chaîne",
+        "La comparaison est sensible à la casse"
+      ],
+      "choices_en": [
+        "One is UTF-8, the other UTF-16",
+        "One is NFC (precomposed é), the other NFD (e + accent)",
+        "A non-breaking space at the end",
+        "The comparison is case-sensitive"
+      ],
+      "answer": 1,
+      "explain_fr": "é existe en un code point (U+00E9, NFC) ou deux (U+0065 + U+0301, NFD) : rendu identique, octets différents. Fix : normalize('NFC') des deux côtés avant de comparer. L'encodage interne du langage ne change pas l'égalité logique.",
+      "explain_en": "é exists as one code point (U+00E9, NFC) or two (U+0065 + U+0301, NFD): identical rendering, different bytes. Fix: normalize('NFC') on both sides before comparing. The language's internal encoding doesn't change logical equality."
+    },
+    {
+      "q_fr": "Comment stocker « réunion le 15 mars 2027 à 9 h, heure de Paris » ?",
+      "q_en": "How do you store \"meeting on March 15, 2027 at 9am, Paris time\"?",
+      "choices_fr": [
+        "En UTC : 2027-03-15T08:00:00Z",
+        "En heure locale sans fuseau : 2027-03-15T09:00:00",
+        "Heure locale + identifiant IANA : 2027-03-15T09:00 + Europe/Paris",
+        "En timestamp Unix, format universel"
+      ],
+      "choices_en": [
+        "In UTC: 2027-03-15T08:00:00Z",
+        "In local time without a timezone: 2027-03-15T09:00:00",
+        "Local time + IANA identifier: 2027-03-15T09:00 + Europe/Paris",
+        "As a Unix timestamp, the universal format"
+      ],
+      "answer": 2,
+      "explain_fr": "C'est l'exception à « UTC partout » : l'intention est « 9 h à Paris », et si les règles de DST changent d'ici 2027, la conversion UTC figée deviendrait fausse. On stocke l'intention (heure locale + fuseau IANA) et on convertit au moment voulu. UTC reste la règle pour les instants passés ou absolus.",
+      "explain_en": "This is the exception to \"UTC everywhere\": the intent is \"9am in Paris\", and if DST rules change before 2027, a frozen UTC conversion becomes wrong. Store the intent (local time + IANA timezone) and convert when needed. UTC remains the rule for past or absolute instants."
+    },
+    {
+      "q_fr": "Que se passe-t-il quand (a+)+$ est évaluée sur 'aaaaaaaaaaaaaaaaaaaaab' ?",
+      "q_en": "What happens when (a+)+$ is evaluated against 'aaaaaaaaaaaaaaaaaaaaab'?",
+      "choices_fr": [
+        "Backtracking catastrophique : temps exponentiel, thread gelé",
+        "Le match échoue immédiatement, le 'b' final est détecté d'abord",
+        "Une erreur de syntaxe : les quantificateurs imbriqués sont interdits",
+        "Le moteur matche 'aaaa…' et ignore le 'b'"
+      ],
+      "choices_en": [
+        "Catastrophic backtracking: exponential time, frozen thread",
+        "The match fails immediately, the trailing 'b' is detected first",
+        "A syntax error: nested quantifiers are forbidden",
+        "The engine matches 'aaaa…' and ignores the 'b'"
+      ],
+      "answer": 0,
+      "explain_fr": "Le moteur à backtracking essaie toutes les façons de découper les 'a' entre les deux quantificateurs avant de conclure à l'échec : 2^n combinaisons. C'est le ReDoS — la syntaxe est valide, et le moteur ne « voit » pas le b final à l'avance. Les moteurs linéaires (RE2) éliminent le problème.",
+      "explain_en": "The backtracking engine tries every way of splitting the 'a's between the two quantifiers before concluding failure: 2^n combinations. That's ReDoS — the syntax is valid, and the engine doesn't \"see\" the trailing b in advance. Linear engines (RE2) eliminate the problem."
+    }
+  ]
+}

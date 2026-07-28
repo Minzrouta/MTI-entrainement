@@ -1,0 +1,168 @@
+{
+  "flashcards": [
+    {
+      "q_fr": "Pourquoi `LIKE '%mot%'` ne scale-t-il pas ?",
+      "a_fr": "Le joker en tête de motif empêche l'utilisation d'un index B-tree (qui ordonne par préfixe) : la base scanne toute la table à chaque requête, O(n). Et fonctionnellement : pas de stemming, pas de score de pertinence, pas de tolérance aux fautes.",
+      "q_en": "Why doesn't `LIKE '%word%'` scale?",
+      "a_en": "The leading wildcard prevents any B-tree index use (B-trees order by prefix): the database scans the whole table on every query, O(n). And functionally: no stemming, no relevance scoring, no typo tolerance."
+    },
+    {
+      "q_fr": "Qu'est-ce qu'un index inversé ?",
+      "a_fr": "La structure qui inverse la relation document→termes en terme→documents : pour chaque terme (après analyse), la liste des documents qui le contiennent (postings, avec positions). Chercher devient une lecture directe suivie d'intersections (AND) ou d'unions (OR) de listes, triées par score.",
+      "q_en": "What is an inverted index?",
+      "a_en": "The structure that inverts the document→terms relation into term→documents: for each term (after analysis), the list of documents containing it (postings, with positions). Searching becomes a direct lookup followed by list intersections (AND) or unions (OR), sorted by score."
+    },
+    {
+      "q_fr": "Que fait un analyzer et pourquoi la requête doit-elle subir la même analyse que les documents ?",
+      "a_fr": "Il transforme le texte brut en termes : tokenization, lowercase, suppression des stop words, stemming — par langue. La requête passe par le même pipeline, sinon « Chaussure » (requête) ne matcherait jamais « chaussur » (terme stocké dans l'index).",
+      "q_en": "What does an analyzer do and why must the query go through the same analysis as the documents?",
+      "a_en": "It turns raw text into terms: tokenization, lowercasing, stop word removal, stemming — per language. The query goes through the same pipeline, otherwise \"Shoe\" (query) would never match \"shoe\" (the stemmed term stored in the index)."
+    },
+    {
+      "q_fr": "Quelle est l'intuition derrière TF-IDF et qu'ajoute BM25 ?",
+      "a_fr": "TF-IDF : un terme pèse plus s'il est fréquent dans le document (TF) et rare dans le corpus (IDF) — « running » discrimine, « de » non. BM25 ajoute la saturation du TF (les répétitions rapportent de moins en moins) et la normalisation par longueur du document (un match dans un titre court pèse plus).",
+      "q_en": "What's the intuition behind TF-IDF and what does BM25 add?",
+      "a_en": "TF-IDF: a term weighs more if it's frequent in the document (TF) and rare in the corpus (IDF) — \"running\" discriminates, \"the\" doesn't. BM25 adds TF saturation (repetitions yield less and less) and document-length normalization (a match in a short title weighs more)."
+    },
+    {
+      "q_fr": "Dans un mapping Elasticsearch, quelle différence entre un champ `text` et un champ `keyword` ?",
+      "a_fr": "`text` est analysé (tokenizé, stemmé) : fait pour la recherche full-text via `match`. `keyword` est stocké brut : fait pour les filtres exacts (`term`), les tris et les agrégations. Trier sur un champ analysé ou faire du full-text sur un keyword sont les deux erreurs classiques.",
+      "q_en": "In an Elasticsearch mapping, what's the difference between a `text` field and a `keyword` field?",
+      "a_en": "`text` is analyzed (tokenized, stemmed): made for full-text search via `match`. `keyword` is stored raw: made for exact filters (`term`), sorting and aggregations. Sorting on an analyzed field or full-text searching a keyword are the two classic mistakes."
+    },
+    {
+      "q_fr": "Dans une requête bool, quelle différence entre `must` et `filter` ?",
+      "a_fr": "`must` participe au score BM25 (pertinence) ; `filter` est binaire : il élimine sans noter, il est plus rapide et son résultat est mis en cache. Pattern type : le texte cherché en must (match), la catégorie et la fourchette de prix en filter (term, range).",
+      "q_en": "In a bool query, what's the difference between `must` and `filter`?",
+      "a_en": "`must` contributes to the BM25 score (relevance); `filter` is binary: it eliminates without scoring, runs faster and its result is cached. Typical pattern: the searched text in must (match), category and price range in filter (term, range)."
+    },
+    {
+      "q_fr": "Comment synchroniser Elasticsearch avec la base source de vérité ?",
+      "a_fr": "Double écriture applicative (simple, mais gérer l'échec d'indexation après le commit : retry, file de messages) ou CDC — Debezium lit le WAL de la base et rejoue les changements vers l'index. Dans tous les cas : cohérence à terme, et une réindexation complète pour rattraper les dérives.",
+      "q_en": "How do you keep Elasticsearch in sync with the source-of-truth database?",
+      "a_en": "Application-level double write (simple, but handle indexing failure after the commit: retry, message queue) or CDC — Debezium reads the database's WAL and replays changes to the index. Either way: eventual consistency, plus a full reindex to catch up on drift."
+    },
+    {
+      "q_fr": "Que propose Postgres pour le full-text search ?",
+      "a_fr": "`tsvector` (document analysé : tokenisation, stemming par dictionnaire de langue) + `tsquery` (requête), l'opérateur `@@` pour matcher, un index GIN pour la vitesse et `ts_rank` pour trier par pertinence. Dans la même base que les données : transactionnel et zéro synchro — souvent suffisant.",
+      "q_en": "What does Postgres offer for full-text search?",
+      "a_en": "`tsvector` (analyzed document: tokenization, stemming via language dictionaries) + `tsquery` (the query), the `@@` operator to match, a GIN index for speed and `ts_rank` to sort by relevance. In the same database as the data: transactional and zero sync — often enough."
+    }
+  ],
+  "qcm": [
+    {
+      "q_fr": "Que stocke fondamentalement un index inversé ?",
+      "q_en": "What does an inverted index fundamentally store?",
+      "choices_fr": [
+        "Pour chaque document, la liste de ses termes",
+        "Pour chaque terme, la liste des documents qui le contiennent",
+        "Une copie triée de tous les documents",
+        "Le hash de chaque document pour la déduplication"
+      ],
+      "choices_en": [
+        "For each document, the list of its terms",
+        "For each term, the list of documents containing it",
+        "A sorted copy of every document",
+        "Each document's hash for deduplication"
+      ],
+      "answer": 1,
+      "explain_fr": "C'est l'inversion qui donne son nom à la structure : terme → documents (postings). Chercher un terme devient une lecture directe au lieu d'un parcours de tous les documents.",
+      "explain_en": "The inversion gives the structure its name: term → documents (postings). Looking up a term becomes a direct read instead of walking every document."
+    },
+    {
+      "q_fr": "Pourquoi une requête `term: \"Running\"` sur un champ `text` ne renvoie-t-elle rien ?",
+      "q_en": "Why does a `term: \"Running\"` query on a `text` field return nothing?",
+      "choices_fr": [
+        "Les champs text ne sont pas interrogeables",
+        "term ne fonctionne que sur les champs numériques",
+        "term n'analyse pas la requête : « Running » ne matche pas le terme indexé « running » (lowercasé/stemmé)",
+        "Il manque le paramètre fuzziness"
+      ],
+      "choices_en": [
+        "text fields cannot be queried",
+        "term only works on numeric fields",
+        "term doesn't analyze the query: \"Running\" doesn't match the indexed term \"running\" (lowercased/stemmed)",
+        "The fuzziness parameter is missing"
+      ],
+      "answer": 2,
+      "explain_fr": "Le champ text est analysé à l'indexation (lowercase, stemming) mais term compare la valeur brute. Il faut match (qui analyse la requête) pour le full-text, et réserver term aux champs keyword.",
+      "explain_en": "The text field is analyzed at indexing time (lowercase, stemming) but term compares the raw value. Use match (which analyzes the query) for full-text, and keep term for keyword fields."
+    },
+    {
+      "q_fr": "Selon BM25, quel match pèse le plus lourd ?",
+      "q_en": "According to BM25, which match weighs the most?",
+      "choices_fr": [
+        "Un terme rare dans le corpus, présent dans un champ court",
+        "Un stop word répété 100 fois dans le document",
+        "Un terme présent dans tous les documents du corpus",
+        "Un terme répété 50 fois dans un très long document"
+      ],
+      "choices_en": [
+        "A corpus-rare term appearing in a short field",
+        "A stop word repeated 100 times in the document",
+        "A term present in every document of the corpus",
+        "A term repeated 50 times in a very long document"
+      ],
+      "answer": 0,
+      "explain_fr": "BM25 = IDF élevé (terme rare) × TF saturé × normalisation par longueur. Un terme rare dans un titre court cumule les trois ; un terme omniprésent a un IDF quasi nul, et les répétitions saturent.",
+      "explain_en": "BM25 = high IDF (rare term) × saturated TF × length normalization. A rare term in a short title checks all three; a ubiquitous term has near-zero IDF, and repetitions saturate."
+    },
+    {
+      "q_fr": "Dans le pattern « DB + index de recherche », quel est le principal problème à gérer ?",
+      "q_en": "In the \"DB + search index\" pattern, what is the main problem to handle?",
+      "choices_fr": [
+        "Le coût de licence d'Elasticsearch",
+        "La taille des documents JSON",
+        "L'incompatibilité entre SQL et JSON",
+        "La synchronisation : propager chaque écriture de la DB vers l'index sans en perdre"
+      ],
+      "choices_en": [
+        "Elasticsearch's license cost",
+        "The size of JSON documents",
+        "The incompatibility between SQL and JSON",
+        "Synchronization: propagating every DB write to the index without losing any"
+      ],
+      "answer": 3,
+      "explain_fr": "La DB reste source de vérité, l'index en est une projection : chaque écriture doit être propagée. Double écriture naïve = pertes silencieuses en cas de crash ; d'où files avec retry ou CDC (Debezium), et cohérence à terme assumée.",
+      "explain_en": "The DB stays the source of truth, the index is a projection: every write must be propagated. Naive double writes silently lose data on crashes; hence queues with retries or CDC (Debezium), and owning eventual consistency."
+    },
+    {
+      "q_fr": "Quel duo Postgres fournit la recherche full-text indexée ?",
+      "q_en": "Which Postgres duo provides indexed full-text search?",
+      "choices_fr": [
+        "LIKE + index B-tree",
+        "tsvector/tsquery + index GIN",
+        "JSONB + index BRIN",
+        "pg_dump + pg_restore"
+      ],
+      "choices_en": [
+        "LIKE + B-tree index",
+        "tsvector/tsquery + GIN index",
+        "JSONB + BRIN index",
+        "pg_dump + pg_restore"
+      ],
+      "answer": 1,
+      "explain_fr": "tsvector stocke le document analysé (stemming par langue), tsquery exprime la requête, @@ les confronte et l'index GIN rend le tout rapide. ts_rank trie par pertinence — sans système externe ni synchro.",
+      "explain_en": "tsvector stores the analyzed document (per-language stemming), tsquery expresses the query, @@ matches them and the GIN index makes it fast. ts_rank sorts by relevance — no external system, no sync."
+    },
+    {
+      "q_fr": "Pourquoi ne faut-il PAS utiliser Elasticsearch comme base de données primaire ?",
+      "q_en": "Why should you NOT use Elasticsearch as a primary database?",
+      "choices_fr": [
+        "Il ne supporte pas les documents JSON",
+        "Il est trop lent en lecture",
+        "Pas de transactions et durabilité pensée pour un index reconstructible : la source de vérité doit vivre ailleurs",
+        "Il ne peut stocker que du texte"
+      ],
+      "choices_en": [
+        "It doesn't support JSON documents",
+        "It's too slow for reads",
+        "No transactions and durability designed for a rebuildable index: the source of truth must live elsewhere",
+        "It can only store text"
+      ],
+      "answer": 2,
+      "explain_fr": "Si l'index est perdu, on le reconstruit depuis la DB. Si les données ne vivaient QUE dans Elasticsearch, elles sont perdues : pas de transactions ni de contraintes d'intégrité comparables à une base relationnelle.",
+      "explain_en": "If the index is lost, you rebuild it from the DB. If the data lived ONLY in Elasticsearch, it's gone: no transactions or integrity constraints comparable to a relational database."
+    }
+  ]
+}

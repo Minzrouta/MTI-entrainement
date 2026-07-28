@@ -1,0 +1,168 @@
+{
+  "flashcards": [
+    {
+      "q_fr": "Pourquoi un secret commité puis supprimé au commit suivant reste-t-il dangereux ?",
+      "a_fr": "Git n'oublie rien : l'ancien blob reste dans l'historique, les reflogs, les forks et les clones existants (`git log -p` le retrouve). Le secret est considéré comme compromis dès le push : la seule réponse correcte est de le révoquer et d'en générer un nouveau.",
+      "q_en": "Why is a secret that was committed then deleted in the next commit still dangerous?",
+      "a_en": "Git never forgets: the old blob stays in the history, reflogs, forks and existing clones (`git log -p` finds it). The secret is considered compromised as soon as it's pushed: the only correct response is to revoke it and generate a new one."
+    },
+    {
+      "q_fr": "Quelles sont les limites des variables d'environnement pour stocker des secrets ?",
+      "a_fr": "Elles sont visibles dans `/proc/<pid>/environ` et via `ps e` pour les processus du même utilisateur, héritées par tous les processus enfants (y compris les scripts tiers), et finissent facilement dans les logs d'erreur et crash reports. Bon transport, mauvais stockage.",
+      "q_en": "What are the limitations of environment variables for storing secrets?",
+      "a_en": "They're visible in `/proc/<pid>/environ` and via `ps e` for same-user processes, inherited by every child process (including third-party scripts), and easily end up in error logs and crash reports. Good transport, bad storage."
+    },
+    {
+      "q_fr": "À quoi sert le fichier .env.example et pourquoi est-il versionné ?",
+      "a_fr": "Il documente les NOMS des variables attendues avec des valeurs bidon : c'est le contrat de configuration. Versionné, il permet à un nouveau dev de faire `cp .env.example .env` et de remplir — sans lui, quelqu'un finira par commiter le vrai .env.",
+      "q_en": "What is the .env.example file for and why is it versioned?",
+      "a_en": "It documents the NAMES of the expected variables with dummy values: it's the configuration contract. Versioned, it lets a new dev run `cp .env.example .env` and fill it in — without it, someone eventually commits the real .env."
+    },
+    {
+      "q_fr": "Quelle est la procédure correcte quand un secret fuite, dans l'ordre ?",
+      "a_fr": "1) Révoquer/rotater le secret immédiatement (stoppe l'hémorragie), 2) vérifier les logs d'accès pour évaluer l'exploitation, 3) nettoyer l'historique git (git filter-repo) et forcer le push, 4) ajouter un garde-fou (gitleaks en pre-commit). Nettoyer sans révoquer ne sert à rien.",
+      "q_en": "What is the correct procedure when a secret leaks, in order?",
+      "a_en": "1) Revoke/rotate the secret immediately (stops the bleeding), 2) check access logs to assess exploitation, 3) clean the git history (git filter-repo) and force-push, 4) add a guardrail (gitleaks in pre-commit). Cleaning without revoking is pointless."
+    },
+    {
+      "q_fr": "Qu'est-ce que le principe du moindre privilège appliqué aux secrets ?",
+      "a_fr": "Chaque token ou clé n'a que les droits strictement nécessaires à sa fonction : la clé du service de mails ne peut pas toucher au stockage. En cas de fuite, les dégâts sont proportionnels aux droits accordés — un scope minimal limite l'incident.",
+      "q_en": "What is the principle of least privilege applied to secrets?",
+      "a_en": "Each token or key gets only the rights strictly needed for its job: the email service's key can't touch storage. If it leaks, the damage is proportional to the rights granted — a minimal scope contains the incident."
+    },
+    {
+      "q_fr": "Qu'est-ce que gitleaks et où le brancher ?",
+      "a_fr": "Un scanner de secrets qui détecte les patterns connus (clés AWS, tokens GitHub) et les chaînes à forte entropie. On le branche en hook pre-commit — le seul moment où bloquer est encore gratuit, avant que le secret n'entre dans l'historique — et en CI comme filet.",
+      "q_en": "What is gitleaks and where do you wire it?",
+      "a_en": "A secret scanner that detects known patterns (AWS keys, GitHub tokens) and high-entropy strings. You wire it as a pre-commit hook — the only moment when blocking is still free, before the secret enters the history — and in CI as a safety net."
+    },
+    {
+      "q_fr": "Comment les secrets sont-ils gérés dans une CI comme GitHub Actions ?",
+      "a_fr": "Via le store de secrets chiffrés du repo/org, référencés par `${{ secrets.MY_KEY }}`, injectés en variables d'environnement au run et masqués dans les logs (***). Jamais en clair dans le YAML. Le masquage est un filet : un base64 le contourne.",
+      "q_en": "How are secrets handled in a CI like GitHub Actions?",
+      "a_en": "Through the repo/org encrypted secrets store, referenced with `${{ secrets.MY_KEY }}`, injected as environment variables at run time and masked in the logs (***). Never in plain text in the YAML. Masking is a net: base64 bypasses it."
+    },
+    {
+      "q_fr": "Pourquoi une variable NEXT_PUBLIC_* ou VITE_* ne peut-elle jamais être un secret ?",
+      "a_fr": "Ces variables sont intégrées au bundle JavaScript envoyé au navigateur : tout ce qui part côté client est public par définition. Un appel nécessitant une vraie clé secrète doit passer par le backend, qui garde la clé côté serveur.",
+      "q_en": "Why can a NEXT_PUBLIC_* or VITE_* variable never be a secret?",
+      "a_en": "These variables are baked into the JavaScript bundle sent to the browser: anything shipped client-side is public by definition. A call requiring a real secret key must go through the backend, which keeps the key server-side."
+    }
+  ],
+  "qcm": [
+    {
+      "q_fr": "Un secret a été poussé sur GitHub il y a 5 minutes. Quelle est la PREMIÈRE action ?",
+      "q_en": "A secret was pushed to GitHub 5 minutes ago. What is the FIRST action?",
+      "choices_fr": [
+        "Réécrire l'historique avec git filter-repo",
+        "Supprimer le repo",
+        "Révoquer le secret et en générer un nouveau",
+        "Passer le repo en privé"
+      ],
+      "choices_en": [
+        "Rewrite the history with git filter-repo",
+        "Delete the repo",
+        "Revoke the secret and generate a new one",
+        "Make the repo private"
+      ],
+      "answer": 2,
+      "explain_fr": "Le secret est déjà compromis (des bots scannent les commits publics en continu) : révoquer d'abord, c'est ce qui stoppe l'exploitation. Le nettoyage d'historique vient ensuite.",
+      "explain_en": "The secret is already compromised (bots scan public commits continuously): revoke first, that's what stops exploitation. History cleanup comes after."
+    },
+    {
+      "q_fr": "Que doit contenir un fichier .env.example ?",
+      "q_en": "What should a .env.example file contain?",
+      "choices_fr": [
+        "Les noms des variables avec des valeurs factices",
+        "Les vraies valeurs de développement",
+        "Les vraies valeurs de production chiffrées",
+        "Rien : c'est un fichier vide de convention"
+      ],
+      "choices_en": [
+        "Variable names with dummy values",
+        "The real development values",
+        "The real production values, encrypted",
+        "Nothing: it's an empty convention file"
+      ],
+      "answer": 0,
+      "explain_fr": "Le .env.example est versionné : il documente le contrat de configuration (les noms) sans jamais exposer de valeur réelle. Les vraies valeurs vivent dans le .env gitignoré.",
+      "explain_en": "The .env.example is versioned: it documents the configuration contract (the names) without ever exposing a real value. Real values live in the gitignored .env."
+    },
+    {
+      "q_fr": "Pourquoi le masquage des secrets dans les logs CI n'est-il pas une protection suffisante ?",
+      "q_en": "Why is secret masking in CI logs not sufficient protection?",
+      "choices_fr": [
+        "Il ne fonctionne que sur GitLab",
+        "Il ralentit trop le pipeline",
+        "Il ne s'applique qu'aux pull requests",
+        "Il ne masque que la chaîne exacte : un encodage base64 passe à travers"
+      ],
+      "choices_en": [
+        "It only works on GitLab",
+        "It slows the pipeline down too much",
+        "It only applies to pull requests",
+        "It only masks the exact string: base64 encoding slips through"
+      ],
+      "answer": 3,
+      "explain_fr": "Le masquage remplace la chaîne exacte par *** : `echo $KEY | base64` ressort en clair. C'est un filet contre les accidents, pas une barrière contre l'exfiltration.",
+      "explain_en": "Masking replaces the exact string with ***: `echo $KEY | base64` prints in the clear. It's a net against accidents, not a barrier against exfiltration."
+    },
+    {
+      "q_fr": "Quel outil permet de versionner des fichiers de secrets CHIFFRÉS dans le repo ?",
+      "q_en": "Which tool lets you version ENCRYPTED secret files inside the repo?",
+      "choices_fr": [
+        "gitleaks",
+        "sops",
+        "dotenv",
+        "git-crypt-scanner"
+      ],
+      "choices_en": [
+        "gitleaks",
+        "sops",
+        "dotenv",
+        "git-crypt-scanner"
+      ],
+      "answer": 1,
+      "explain_fr": "sops (Mozilla) chiffre les valeurs d'un fichier YAML/JSON/env avec une clé externe (age, KMS) : le fichier chiffré peut être commité. gitleaks scanne, dotenv charge un .env en clair.",
+      "explain_en": "sops (Mozilla) encrypts the values of a YAML/JSON/env file with an external key (age, KMS): the encrypted file can be committed. gitleaks scans, dotenv loads a plaintext .env."
+    },
+    {
+      "q_fr": "Pourquoi un `COPY .env` dans un Dockerfile est-il un problème même si le fichier est supprimé dans une instruction suivante ?",
+      "q_en": "Why is a `COPY .env` in a Dockerfile a problem even if the file is deleted in a later instruction?",
+      "choices_fr": [
+        "Le .env fait échouer le build Docker",
+        "Docker refuse de copier les fichiers cachés",
+        "Chaque instruction crée une couche : le fichier reste lisible dans les couches de l'image",
+        "Le .env est automatiquement poussé sur Docker Hub"
+      ],
+      "choices_en": [
+        "The .env makes the Docker build fail",
+        "Docker refuses to copy hidden files",
+        "Each instruction creates a layer: the file stays readable in the image layers",
+        "The .env is automatically pushed to Docker Hub"
+      ],
+      "answer": 2,
+      "explain_fr": "Comme git, les couches d'image gardent l'historique : `docker history` et l'inspection des couches retrouvent le fichier. Utiliser les secrets de build (--secret) ou l'injection au runtime.",
+      "explain_en": "Like git, image layers keep history: `docker history` and layer inspection recover the file. Use build secrets (--secret) or runtime injection."
+    },
+    {
+      "q_fr": "Quel est l'intérêt principal d'un secrets manager (Vault, AWS Secrets Manager) par rapport à un fichier .env sur le serveur ?",
+      "q_en": "What is the main advantage of a secrets manager (Vault, AWS Secrets Manager) over a .env file on the server?",
+      "choices_fr": [
+        "Il rend les secrets accessibles depuis le frontend",
+        "Chiffrement au repos, accès authentifié et audité, rotation automatisable",
+        "Il est gratuit contrairement au fichier .env",
+        "Il évite d'avoir à utiliser des variables d'environnement"
+      ],
+      "choices_en": [
+        "It makes secrets accessible from the frontend",
+        "Encryption at rest, authenticated and audited access, automatable rotation",
+        "It's free unlike a .env file",
+        "It removes the need for environment variables"
+      ],
+      "answer": 1,
+      "explain_fr": "Un .env sur le serveur n'est ni chiffré, ni audité, ni rotaté. Le coffre ajoute ces trois garanties — et sait souvent injecter les secrets en env vars au démarrage de l'app.",
+      "explain_en": "A .env on the server is neither encrypted, audited, nor rotated. The vault adds those three guarantees — and often injects secrets as env vars at app startup."
+    }
+  ]
+}

@@ -1,0 +1,168 @@
+{
+  "flashcards": [
+    {
+      "q_fr": "Comment se calcule la spécificité CSS ?",
+      "a_fr": "Un triplet (id, classes/attributs/pseudo-classes, éléments/pseudo-éléments) comparé de gauche à droite : (1,0,0) bat (0,15,3) — un id bat n'importe quel nombre de classes. À égalité exacte, la dernière règle déclarée gagne. L'inline surclasse tout, `!important` court-circuite le mécanisme.",
+      "q_en": "How is CSS specificity calculated?",
+      "a_en": "A triplet (id, classes/attributes/pseudo-classes, elements/pseudo-elements) compared left to right: (1,0,0) beats (0,15,3) — one id beats any number of classes. On an exact tie, the last declared rule wins. Inline style tops everything, `!important` short-circuits the mechanism."
+    },
+    {
+      "q_fr": "Pourquoi dit-on que `!important` est un aveu ?",
+      "a_fr": "On l'utilise quand on a perdu le contrôle de sa spécificité : il masque le conflit au lieu de le résoudre et déclenche la surenchère (le prochain conflit exigera un autre `!important`). Le vrai fix : comprendre quelle règle gagne et baisser la spécificité (des classes, pas d'id).",
+      "q_en": "Why is `!important` called a confession?",
+      "a_en": "You use it when you've lost control of your specificity: it hides the conflict instead of resolving it and triggers an arms race (the next conflict will require another `!important`). The real fix: understand which rule wins and lower specificity (classes, no ids)."
+    },
+    {
+      "q_fr": "Flexbox vs Grid : comment choisir ?",
+      "a_fr": "Une dimension → flexbox (navbar, ligne de boutons : les items se répartissent le long d'un axe, pilotés par le contenu). Deux dimensions → grid (layout de page, galerie : lignes et colonnes définies par le conteneur). Ils se combinent : grid pour la structure, flexbox dans les composants.",
+      "q_en": "Flexbox vs Grid: how do you choose?",
+      "a_en": "One dimension → flexbox (navbar, row of buttons: items distribute along an axis, driven by content). Two dimensions → grid (page layout, gallery: rows and columns defined by the container). They combine: grid for structure, flexbox inside components."
+    },
+    {
+      "q_fr": "Pourquoi utiliser `rem` plutôt que `px` pour les tailles de texte ?",
+      "a_fr": "`rem` est relative à la taille racine, donc au réglage de l'utilisateur : quelqu'un qui a agrandi sa police système voit le texte grandir. `px` fige la taille et ignore ce réglage. C'est un enjeu d'accessibilité, pas seulement de style.",
+      "q_en": "Why use `rem` rather than `px` for text sizes?",
+      "a_en": "`rem` is relative to the root size, hence to the user's setting: someone who enlarged their system font sees the text grow. `px` freezes the size and ignores that setting. It's an accessibility issue, not just a style one."
+    },
+    {
+      "q_fr": "Que donne un `<button>` natif que le `<div>` cliquable n'a pas ?",
+      "a_fr": "Gratuitement : focus clavier (atteignable au Tab), rôle annoncé aux lecteurs d'écran, activation Entrée/Espace, état `:disabled`, comportement dans les formulaires. Le div exige tabindex, role et handler keydown — une réimplémentation toujours incomplète.",
+      "q_en": "What does a native `<button>` provide that a clickable `<div>` doesn't?",
+      "a_en": "For free: keyboard focus (reachable via Tab), a role announced to screen readers, Enter/Space activation, the `:disabled` state, form behavior. The div requires tabindex, role and a keydown handler — an always-incomplete reimplementation."
+    },
+    {
+      "q_fr": "Quand faut-il utiliser ARIA, et quelle est sa première règle ?",
+      "a_fr": "Quand le HTML natif ne suffit pas : états dynamiques (`aria-expanded` pour un menu, `aria-live` pour du contenu mis à jour). Première règle du W3C : ne pas utiliser ARIA quand un élément natif existe. Et un mauvais ARIA est pire que pas d'ARIA : il promet des comportements que le JS n'assure pas.",
+      "q_en": "When should you use ARIA, and what is its first rule?",
+      "a_en": "When native HTML isn't enough: dynamic states (`aria-expanded` for a menu, `aria-live` for updated content). The W3C's first rule: don't use ARIA when a native element exists. And bad ARIA is worse than no ARIA: it promises behaviors the JS doesn't deliver."
+    },
+    {
+      "q_fr": "À quoi sert `:focus-visible` ?",
+      "a_fr": "À afficher un contour de focus net pendant la navigation clavier sans l'afficher au clic souris. Ça résout proprement le conflit « l'outline est moche » : on garde le site utilisable au clavier sans polluer l'expérience souris. Supprimer l'outline sans remplacement rend le site inutilisable au clavier.",
+      "q_en": "What is `:focus-visible` for?",
+      "a_en": "Showing a clear focus outline during keyboard navigation without showing it on mouse clicks. It cleanly solves the 'the outline is ugly' conflict: the site stays keyboard-usable without polluting the mouse experience. Removing the outline with no replacement makes the site keyboard-unusable."
+    },
+    {
+      "q_fr": "Que fait `clamp(1rem, 2.5vw, 1.5rem)` ?",
+      "a_fr": "Une taille fluide bornée : la valeur préférée (2.5vw) suit la largeur du viewport, sans jamais descendre sous 1rem ni dépasser 1.5rem. C'est la typo responsive sans media query. Cousines modernes : `dvh` corrige le bug du 100vh sur mobile, les custom properties sont des variables vivantes dans la cascade.",
+      "q_en": "What does `clamp(1rem, 2.5vw, 1.5rem)` do?",
+      "a_en": "A bounded fluid size: the preferred value (2.5vw) follows the viewport width, never going below 1rem nor above 1.5rem. It's responsive typography without a media query. Modern cousins: `dvh` fixes the 100vh bug on mobile, custom properties are live variables in the cascade."
+    }
+  ],
+  "qcm": [
+    {
+      "q_fr": "Entre `#nav a` et `.nav .menu .item .link` (4 classes), quelle règle gagne ?",
+      "q_en": "Between `#nav a` and `.nav .menu .item .link` (4 classes), which rule wins?",
+      "choices_fr": [
+        "`.nav .menu .item .link` : 4 sélecteurs contre 2",
+        "`#nav a` : un id bat n'importe quel nombre de classes",
+        "La dernière déclarée dans le fichier",
+        "Celle avec le plus de caractères"
+      ],
+      "choices_en": [
+        "`.nav .menu .item .link`: 4 selectors versus 2",
+        "`#nav a`: one id beats any number of classes",
+        "The last one declared in the file",
+        "The one with the most characters"
+      ],
+      "answer": 1,
+      "explain_fr": "La spécificité se compare position par position : (1,0,1) contre (0,4,0). La colonne id se compare en premier, 1 > 0, fin du match. L'ordre de déclaration ne départage que les égalités exactes.",
+      "explain_en": "Specificity is compared position by position: (1,0,1) versus (0,4,0). The id column is compared first, 1 > 0, match over. Declaration order only settles exact ties."
+    },
+    {
+      "q_fr": "Tu construis une galerie photo alignée en lignes ET en colonnes. Quel outil ?",
+      "q_en": "You're building a photo gallery aligned in rows AND columns. Which tool?",
+      "choices_fr": [
+        "Flexbox avec flex-wrap",
+        "Des floats et des clearfix",
+        "CSS Grid",
+        "position: absolute sur chaque photo"
+      ],
+      "choices_en": [
+        "Flexbox with flex-wrap",
+        "Floats and clearfixes",
+        "CSS Grid",
+        "position: absolute on each photo"
+      ],
+      "answer": 2,
+      "explain_fr": "Deux dimensions alignées ensemble = grid : `grid-template-columns: repeat(auto-fit, minmax(200px, 1fr))` fait une galerie responsive en une ligne. Flex-wrap crée des rangées indépendantes, sans alignement vertical cohérent.",
+      "explain_en": "Two dimensions aligned together = grid: `grid-template-columns: repeat(auto-fit, minmax(200px, 1fr))` makes a responsive gallery in one line. Flex-wrap creates independent rows with no consistent vertical alignment."
+    },
+    {
+      "q_fr": "Que manque-t-il à un `<div onclick=\"...\">` pour être accessible ?",
+      "q_en": "What is a `<div onclick=\"...\">` missing to be accessible?",
+      "choices_fr": [
+        "Seulement un aria-label",
+        "Seulement un curseur pointer",
+        "Rien, le clic fonctionne",
+        "Focus clavier, rôle pour les lecteurs d'écran et activation Entrée/Espace"
+      ],
+      "choices_en": [
+        "Only an aria-label",
+        "Only a pointer cursor",
+        "Nothing, the click works",
+        "Keyboard focus, a role for screen readers and Enter/Space activation"
+      ],
+      "answer": 3,
+      "explain_fr": "Le div est invisible au Tab, muet pour les lecteurs d'écran et sourd au clavier. Le rendre accessible exige tabindex, role et handler keydown — soit réimplémenter, mal, ce qu'un `<button>` donne nativement.",
+      "explain_en": "The div is invisible to Tab, mute for screen readers and deaf to the keyboard. Making it accessible requires tabindex, role and a keydown handler — reimplementing, badly, what a `<button>` provides natively."
+    },
+    {
+      "q_fr": "Quel est le ratio de contraste minimum WCAG AA pour du texte normal ?",
+      "q_en": "What is the minimum WCAG AA contrast ratio for normal text?",
+      "choices_fr": [
+        "4.5:1",
+        "2:1",
+        "10:1",
+        "3:1"
+      ],
+      "choices_en": [
+        "4.5:1",
+        "2:1",
+        "10:1",
+        "3:1"
+      ],
+      "answer": 0,
+      "explain_fr": "WCAG AA exige 4.5:1 pour le texte normal et 3:1 pour le grand texte (18pt ou 14pt gras). Vérifiable en deux clics dans les DevTools ou le contrast checker de WebAIM.",
+      "explain_en": "WCAG AA requires 4.5:1 for normal text and 3:1 for large text (18pt, or 14pt bold). Checkable in two clicks in DevTools or WebAIM's contrast checker."
+    },
+    {
+      "q_fr": "Pourquoi mettre `alt=\"\"` (vide) sur une image purement décorative ?",
+      "q_en": "Why put `alt=\"\"` (empty) on a purely decorative image?",
+      "choices_fr": [
+        "Pour améliorer le SEO de la page",
+        "Pour que les lecteurs d'écran la sautent au lieu de lire le nom du fichier",
+        "Pour accélérer le chargement de l'image",
+        "C'est inutile, autant omettre l'attribut"
+      ],
+      "choices_en": [
+        "To improve the page's SEO",
+        "So screen readers skip it instead of reading the file name",
+        "To speed up the image's loading",
+        "It's useless, better to omit the attribute"
+      ],
+      "answer": 1,
+      "explain_fr": "`alt=\"\"` dit explicitement « décorative, à ignorer ». Sans attribut alt du tout, beaucoup de lecteurs d'écran annoncent le nom du fichier (« IMG_4523.jpg ») — bruit inutile. Vide et absent, ce n'est pas pareil.",
+      "explain_en": "`alt=\"\"` explicitly says 'decorative, ignore me'. With no alt attribute at all, many screen readers announce the file name ('IMG_4523.jpg') — useless noise. Empty and missing are not the same."
+    },
+    {
+      "q_fr": "À quoi sert `@media (prefers-reduced-motion: reduce)` ?",
+      "q_en": "What is `@media (prefers-reduced-motion: reduce)` for?",
+      "choices_fr": [
+        "Détecter les connexions lentes et réduire les vidéos",
+        "Désactiver les animations sur mobile uniquement",
+        "Respecter le réglage système des utilisateurs qui désactivent les animations",
+        "Réduire la consommation batterie des animations CSS"
+      ],
+      "choices_en": [
+        "Detecting slow connections and reducing videos",
+        "Disabling animations on mobile only",
+        "Honoring the system setting of users who disable animations",
+        "Reducing the battery consumption of CSS animations"
+      ],
+      "answer": 2,
+      "explain_fr": "Certains utilisateurs (troubles vestibulaires, sensibilité au mouvement) désactivent les animations dans leur OS. Cette media query expose ce réglage au CSS : le respecter coûte cinq lignes et évite un site physiquement pénible.",
+      "explain_en": "Some users (vestibular disorders, motion sensitivity) disable animations in their OS. This media query exposes that setting to CSS: honoring it costs five lines and avoids a physically unpleasant site."
+    }
+  ]
+}

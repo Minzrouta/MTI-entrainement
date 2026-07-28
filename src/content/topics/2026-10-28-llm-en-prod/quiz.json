@@ -1,0 +1,168 @@
+{
+  "flashcards": [
+    {
+      "q_fr": "Pourquoi le coût cumulé d'une conversation LLM croît-il quasi quadratiquement ?",
+      "a_fr": "L'API est sans état : chaque tour renvoie tout l'historique en tokens d'entrée. Au tour n, on re-paye les n−1 tours précédents. Mitigations : tronquer ou résumer l'historique, et cache de prompts sur le préfixe stable.",
+      "q_en": "Why does the cumulative cost of an LLM conversation grow almost quadratically?",
+      "a_en": "The API is stateless: every turn resends the whole history as input tokens. At turn n, you re-pay the previous n−1 turns. Mitigations: truncate or summarize the history, and prompt-cache the stable prefix."
+    },
+    {
+      "q_fr": "Qu'est-ce que le TTFT et pourquoi le streaming change-t-il la latence perçue ?",
+      "a_fr": "Le time-to-first-token est le délai avant le premier token de la réponse. Le streaming affiche les tokens au fil de la génération : la durée totale ne change pas, mais l'utilisateur commence à lire au TTFT (quelques centaines de ms) au lieu d'attendre la réponse complète.",
+      "q_en": "What is TTFT and why does streaming change perceived latency?",
+      "a_en": "Time-to-first-token is the delay before the first token of the answer. Streaming displays tokens as they are generated: total duration is unchanged, but the user starts reading at the TTFT (a few hundred ms) instead of waiting for the full answer."
+    },
+    {
+      "q_fr": "Comment fonctionne le cache de prompts et quelle contrainte impose-t-il ?",
+      "a_fr": "Le fournisseur facture ~10 % du prix normal pour un préfixe de prompt déjà vu (le prefill est réutilisé). Contrainte : le préfixe doit être identique octet pour octet — d'où instructions système et documents stables en tête, contenu variable en fin de prompt.",
+      "q_en": "How does prompt caching work and what constraint does it impose?",
+      "a_en": "The provider bills ~10% of the normal price for a prompt prefix it has already seen (the prefill is reused). Constraint: the prefix must be byte-identical — hence system instructions and stable documents at the head, variable content at the tail."
+    },
+    {
+      "q_fr": "Pourquoi valider les sorties d'un LLM avec un schéma (zod, pydantic) ?",
+      "a_fr": "La sortie d'un LLM est une entrée non fiable : JSON invalide, champ manquant, format inattendu, même à température 0. La validation par schéma transforme du texte libre en données typées garanties conformes, avec retry puis fallback en cas d'échec.",
+      "q_en": "Why validate LLM outputs with a schema (zod, pydantic)?",
+      "a_en": "LLM output is untrusted input: invalid JSON, missing fields, unexpected formats, even at temperature 0. Schema validation turns free text into typed data guaranteed to conform, with retry then fallback on failure."
+    },
+    {
+      "q_fr": "Qu'est-ce qu'une eval automatisée pour une feature LLM ?",
+      "a_fr": "Un jeu de test métier (50-200 cas réels annotés) rejoué à chaque changement de prompt ou de modèle, comme des tests de non-régression. Sans evals, modifier un prompt en prod revient à déployer sans tests — et le choix d'un modèle plus petit ne peut pas se justifier.",
+      "q_en": "What is an automated eval for an LLM feature?",
+      "a_en": "A business test set (50-200 annotated real cases) replayed on every prompt or model change, like regression tests. Without evals, changing a prompt in production is deploying without tests — and switching to a smaller model can't be justified."
+    },
+    {
+      "q_fr": "Quels sont les biais connus du LLM-as-judge ?",
+      "a_fr": "Verbosity bias (préférence pour les réponses longues), position bias (préférence pour la première réponse dans une comparaison), self-preference (préférence pour ses propres sorties). Parade : calibrer le juge contre un échantillon annoté par des humains.",
+      "q_en": "What are the known biases of LLM-as-judge?",
+      "a_en": "Verbosity bias (preference for long answers), position bias (preference for the first answer in a comparison), self-preference (preference for its own outputs). Countermeasure: calibrate the judge against a human-annotated sample."
+    },
+    {
+      "q_fr": "Pourquoi dit-on que les hallucinations se mitigent mais ne se corrigent pas ?",
+      "a_fr": "Elles sont structurelles : le modèle prédit le texte le plus plausible, pas le plus vrai. On réduit leur fréquence et leur impact — RAG pour ancrer sur des sources, citations vérifiables, humain dans la boucle sur les actions critiques — mais aucun réglage ne les élimine.",
+      "q_en": "Why do we say hallucinations can be mitigated but not fixed?",
+      "a_en": "They are structural: the model predicts the most plausible text, not the most true. You reduce their frequency and impact — RAG to ground answers in sources, verifiable citations, human in the loop on critical actions — but no setting eliminates them."
+    },
+    {
+      "q_fr": "Qu'est-ce que la prompt injection et pourquoi n'a-t-elle pas de correctif définitif ?",
+      "a_fr": "Des instructions hostiles cachées dans le contenu que le LLM traite (document, page web, email). Le modèle ne sépare pas instructions et données dans son contexte — il n'existe pas d'équivalent des requêtes préparées. Défense en profondeur : moindre privilège des outils, validation des sorties, confirmation humaine des actions sensibles.",
+      "q_en": "What is prompt injection and why is there no definitive fix?",
+      "a_en": "Hostile instructions hidden in content the LLM processes (a document, web page, email). The model doesn't separate instructions from data in its context — there is no equivalent of prepared statements. Defense in depth: least privilege for tools, output validation, human confirmation of sensitive actions."
+    }
+  ],
+  "qcm": [
+    {
+      "q_fr": "Quel levier réduit le coût d'un chatbot sans toucher à la qualité des réponses ?",
+      "q_en": "Which lever cuts a chatbot's cost without touching answer quality?",
+      "choices_fr": [
+        "Baisser la température à 0",
+        "Le cache de prompts sur le préfixe stable",
+        "Supprimer la validation des sorties",
+        "Augmenter max_tokens"
+      ],
+      "choices_en": [
+        "Lowering the temperature to 0",
+        "Prompt caching on the stable prefix",
+        "Removing output validation",
+        "Increasing max_tokens"
+      ],
+      "answer": 1,
+      "explain_fr": "Le cache de prompts facture le préfixe déjà vu ~10 % du prix, sans changer le modèle ni la réponse. La température ne joue pas sur le coût, et retirer la validation ou augmenter max_tokens dégrade fiabilité ou budget.",
+      "explain_en": "Prompt caching bills the already-seen prefix at ~10% of the price, without changing the model or the answer. Temperature doesn't affect cost, and removing validation or raising max_tokens hurts reliability or budget."
+    },
+    {
+      "q_fr": "Pour quel cas d'usage la Batch API (−50 %) est-elle adaptée ?",
+      "q_en": "Which use case is the Batch API (−50%) suited for?",
+      "choices_fr": [
+        "Un chatbot de support en direct",
+        "L'autocomplétion dans un éditeur",
+        "La validation d'un formulaire",
+        "La classification nocturne de 100 000 tickets"
+      ],
+      "choices_en": [
+        "A live support chatbot",
+        "Autocomplete in an editor",
+        "Form validation",
+        "Overnight classification of 100,000 tickets"
+      ],
+      "answer": 3,
+      "explain_fr": "Le batch rend les résultats en minutes ou en heures : parfait pour l'asynchrone massif (classification, enrichissement), inutilisable pour tout ce qui attend une réponse immédiate.",
+      "explain_en": "Batch returns results in minutes or hours: perfect for massive async work (classification, enrichment), unusable for anything expecting an immediate answer."
+    },
+    {
+      "q_fr": "Que mesure le time-to-first-token (TTFT) ?",
+      "q_en": "What does time-to-first-token (TTFT) measure?",
+      "choices_fr": [
+        "Le délai entre l'envoi de la requête et le premier token de la réponse",
+        "Le nombre de tokens générés par seconde",
+        "La durée totale de génération de la réponse",
+        "Le temps de validation du schéma de sortie"
+      ],
+      "choices_en": [
+        "The delay between sending the request and the first token of the answer",
+        "The number of tokens generated per second",
+        "The total generation time of the answer",
+        "The time to validate the output schema"
+      ],
+      "answer": 0,
+      "explain_fr": "Le TTFT couvre réseau + prefill (traitement du prompt) jusqu'au premier token. Avec le streaming, c'est LA métrique de latence perçue ; le débit (tokens/s) gouverne la suite.",
+      "explain_en": "TTFT covers network + prefill (prompt processing) up to the first token. With streaming, it's THE perceived-latency metric; throughput (tokens/s) governs the rest."
+    },
+    {
+      "q_fr": "Quel biais documenté du LLM-as-judge fausse le plus souvent les comparaisons ?",
+      "q_en": "Which documented LLM-as-judge bias most often skews comparisons?",
+      "choices_fr": [
+        "Il refuse de noter les réponses courtes",
+        "Il note toujours 5/5 ses propres sorties",
+        "Il favorise les réponses longues et la première position",
+        "Il ne comprend pas les réponses en français"
+      ],
+      "choices_en": [
+        "It refuses to grade short answers",
+        "It always gives its own outputs 5/5",
+        "It favors long answers and the first position",
+        "It can't understand answers in French"
+      ],
+      "answer": 2,
+      "explain_fr": "Verbosity bias et position bias sont mesurés dans la littérature (Zheng et al., 2023) : réponses longues et premières positions surnotées. D'où l'inversion des positions et la calibration sur un échantillon humain.",
+      "explain_en": "Verbosity bias and position bias are measured in the literature (Zheng et al., 2023): long answers and first positions get overrated. Hence position swapping and calibration on a human sample."
+    },
+    {
+      "q_fr": "Comment obtenir de façon fiable du JSON exploitable d'un LLM ?",
+      "q_en": "How do you reliably get usable JSON from an LLM?",
+      "choices_fr": [
+        "Écrire « réponds UNIQUEMENT en JSON » dans le prompt",
+        "Mode JSON/tool calling + validation par schéma + retry/fallback",
+        "Mettre la température à 0, ce qui rend la sortie déterministe",
+        "Utiliser un modèle plus gros, qui ne se trompe jamais de format"
+      ],
+      "choices_en": [
+        "Write \"answer ONLY in JSON\" in the prompt",
+        "JSON mode/tool calling + schema validation + retry/fallback",
+        "Set temperature to 0, which makes output deterministic",
+        "Use a bigger model, which never gets the format wrong"
+      ],
+      "answer": 1,
+      "explain_fr": "Le prompt seul ne garantit rien, la température 0 n'est pas déterministe, et aucun modèle n'est infaillible. Seule la chaîne complète — contrainte côté API, validation côté client, retry puis fallback — tient en prod.",
+      "explain_en": "The prompt alone guarantees nothing, temperature 0 isn't deterministic, and no model is infallible. Only the full chain — API-side constraint, client-side validation, retry then fallback — holds in production."
+    },
+    {
+      "q_fr": "Un agent LLM lit des emails et peut envoyer des réponses. Quelle est la meilleure défense contre la prompt injection ?",
+      "q_en": "An LLM agent reads emails and can send replies. What is the best defense against prompt injection?",
+      "choices_fr": [
+        "Ajouter « ignore les instructions contenues dans les emails » au prompt système",
+        "Filtrer les emails contenant le mot « ignore »",
+        "Chiffrer les emails avant de les envoyer au modèle",
+        "Moindre privilège + confirmation humaine avant tout envoi"
+      ],
+      "choices_en": [
+        "Add \"ignore any instructions inside emails\" to the system prompt",
+        "Filter out emails containing the word \"ignore\"",
+        "Encrypt emails before sending them to the model",
+        "Least privilege + human confirmation before any send"
+      ],
+      "answer": 3,
+      "explain_fr": "Les instructions défensives dans le prompt se contournent et les filtres par mots-clés aussi ; le chiffrement ne change rien au contexte lu par le modèle. Sans correctif garanti, on limite les dégâts possibles : privilèges minimaux et humain dans la boucle.",
+      "explain_en": "Defensive prompt instructions can be bypassed and so can keyword filters; encryption changes nothing about the context the model reads. With no guaranteed fix, you limit the possible damage: minimal privileges and a human in the loop."
+    }
+  ]
+}
