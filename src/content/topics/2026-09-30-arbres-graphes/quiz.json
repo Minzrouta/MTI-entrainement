@@ -1,0 +1,168 @@
+{
+  "flashcards": [
+    {
+      "q_fr": "Tableau vs liste chaînée : forces et faiblesses ?",
+      "a_fr": "Tableau : mémoire contiguë, accès par index O(1), cache-friendly, mais insertion/suppression au milieu en O(n). Liste chaînée : insertion/suppression O(1) si on tient déjà le nœud, mais accès et recherche O(n). En pratique le tableau dynamique gagne presque toujours grâce au cache CPU.",
+      "q_en": "Array vs linked list: strengths and weaknesses?",
+      "a_en": "Array: contiguous memory, O(1) index access, cache-friendly, but O(n) insertion/deletion in the middle. Linked list: O(1) insertion/deletion if you already hold the node, but O(n) access and search. In practice the dynamic array wins almost every time thanks to the CPU cache."
+    },
+    {
+      "q_fr": "Pile vs file : différence et usages typiques ?",
+      "a_fr": "Pile (stack) = LIFO, push/pop au sommet : call stack, undo, DFS, parsing. File (queue) = FIFO, on entre d'un côté et sort de l'autre : files de tâches, buffers, BFS. Les deux offrent leurs opérations en O(1) — et échanger l'une pour l'autre transforme BFS en DFS.",
+      "q_en": "Stack vs queue: difference and typical uses?",
+      "a_en": "Stack = LIFO, push/pop at the top: call stack, undo, DFS, parsing. Queue = FIFO, in on one side, out on the other: task queues, buffers, BFS. Both offer O(1) operations — and swapping one for the other turns BFS into DFS."
+    },
+    {
+      "q_fr": "Quel est l'invariant d'un BST, et que produit son parcours in-ordre ?",
+      "a_fr": "Pour chaque nœud, tout le sous-arbre gauche est plus petit et tout le sous-arbre droit plus grand — l'invariant porte sur les sous-arbres entiers, pas seulement les enfants directs. Conséquence : le parcours in-ordre (gauche, nœud, droite) visite les valeurs dans l'ordre trié.",
+      "q_en": "What is the BST invariant, and what does its in-order traversal produce?",
+      "a_en": "For every node, the entire left subtree is smaller and the entire right subtree larger — the invariant covers whole subtrees, not just direct children. Consequence: the in-order traversal (left, node, right) visits the values in sorted order."
+    },
+    {
+      "q_fr": "Pourquoi équilibrer un BST, et comment font AVL et rouge-noir ?",
+      "a_fr": "Un BST naïf dégénère en liste chaînée O(n) si on insère des valeurs déjà triées. Les arbres auto-équilibrés (AVL, rouge-noir) se rééquilibrent par rotations à chaque insertion/suppression pour garantir une hauteur en O(log n), donc recherche, insertion et suppression en O(log n) dans le pire cas.",
+      "q_en": "Why balance a BST, and how do AVL and red-black trees do it?",
+      "a_en": "A naive BST degenerates into an O(n) linked list if you insert already-sorted values. Self-balancing trees (AVL, red-black) rebalance through rotations on each insertion/deletion to guarantee O(log n) height, hence O(log n) worst-case search, insertion and deletion."
+    },
+    {
+      "q_fr": "Qu'est-ce qu'un heap et à quoi sert-il ?",
+      "a_fr": "Un arbre binaire complet où chaque parent est ≤ ses enfants (min-heap) : le minimum est à la racine en O(1), insertion et extraction en O(log n). C'est l'implémentation standard de la priority queue : Dijkstra, ordonnanceurs, top-k, fusion de k listes triées.",
+      "q_en": "What is a heap and what is it for?",
+      "a_en": "A complete binary tree where each parent is ≤ its children (min-heap): the minimum sits at the root in O(1), insertion and extraction in O(log n). It's the standard implementation of the priority queue: Dijkstra, schedulers, top-k, merging k sorted lists."
+    },
+    {
+      "q_fr": "BFS vs DFS : quelle structure de stockage, et lequel donne le plus court chemin ?",
+      "a_fr": "BFS utilise une file (FIFO) et explore par niveaux : la première visite d'un sommet emprunte un chemin minimal en arêtes → plus court chemin non pondéré. DFS utilise une pile (souvent la call stack, en récursif) et plonge en profondeur : cycles, tri topologique, backtracking.",
+      "q_en": "BFS vs DFS: which storage structure, and which one gives the shortest path?",
+      "a_en": "BFS uses a queue (FIFO) and explores by levels: the first visit of a vertex uses a path with minimum edges → unweighted shortest path. DFS uses a stack (often the call stack, recursively) and dives deep: cycles, topological sort, backtracking."
+    },
+    {
+      "q_fr": "Liste d'adjacence vs matrice d'adjacence : quand choisir quoi ?",
+      "a_fr": "Liste ({sommet: [voisins]}) : O(V+E) en mémoire, itération efficace sur les voisins — idéale pour les graphes creux, c'est-à-dire presque tous les cas réels. Matrice V×V : test d'arête en O(1) mais O(V²) en mémoire — pour les graphes denses ou très petits.",
+      "q_en": "Adjacency list vs adjacency matrix: when to pick which?",
+      "a_en": "List ({vertex: [neighbors]}): O(V+E) memory, efficient neighbor iteration — ideal for sparse graphs, i.e. almost every real-world case. V×V matrix: O(1) edge test but O(V²) memory — for dense or very small graphs."
+    },
+    {
+      "q_fr": "Dijkstra en une phrase : quand, comment, et sa limite ?",
+      "a_fr": "Quand les arêtes ont des poids positifs, Dijkstra généralise BFS en remplaçant la file par une priority queue qui extrait toujours le sommet à distance minimale — plus court chemin pondéré (GPS, routage). Limite : avec des poids négatifs, ses résultats sont faux ; il faut Bellman-Ford.",
+      "q_en": "Dijkstra in one sentence: when, how, and its limit?",
+      "a_en": "When edges have positive weights, Dijkstra generalizes BFS by replacing the queue with a priority queue that always extracts the minimum-distance vertex — weighted shortest path (GPS, routing). Limit: with negative weights its results are wrong; you need Bellman-Ford."
+    }
+  ],
+  "qcm": [
+    {
+      "q_fr": "Que produit le parcours in-ordre d'un BST ?",
+      "q_en": "What does the in-order traversal of a BST produce?",
+      "choices_fr": [
+        "Les valeurs par niveaux, de haut en bas",
+        "Les valeurs dans un ordre aléatoire",
+        "La racine d'abord, puis les sous-arbres",
+        "Les valeurs dans l'ordre trié croissant"
+      ],
+      "choices_en": [
+        "The values level by level, top to bottom",
+        "The values in random order",
+        "The root first, then the subtrees",
+        "The values in ascending sorted order"
+      ],
+      "answer": 3,
+      "explain_fr": "Gauche < nœud < droite appliqué récursivement : l'in-ordre visite tout dans l'ordre croissant. Par niveaux = BFS ; racine d'abord = pré-ordre.",
+      "explain_en": "Left < node < right applied recursively: in-order visits everything in ascending order. Level by level = BFS; root first = pre-order."
+    },
+    {
+      "q_fr": "Quelle structure de données est au cœur de BFS ?",
+      "q_en": "Which data structure is at the heart of BFS?",
+      "choices_fr": [
+        "Une file (queue, FIFO)",
+        "Une pile (stack, LIFO)",
+        "Un heap",
+        "Une hash map"
+      ],
+      "choices_en": [
+        "A queue (FIFO)",
+        "A stack (LIFO)",
+        "A heap",
+        "A hash map"
+      ],
+      "answer": 0,
+      "explain_fr": "La file garantit l'exploration par niveaux : les sommets à distance k sortent tous avant ceux à distance k+1. Avec une pile, on obtient un DFS ; avec une priority queue, Dijkstra.",
+      "explain_en": "The queue guarantees level-by-level exploration: all vertices at distance k come out before those at distance k+1. With a stack you get DFS; with a priority queue, Dijkstra."
+    },
+    {
+      "q_fr": "Plus court chemin dans un graphe NON pondéré : quel algorithme suffit ?",
+      "q_en": "Shortest path in an UNWEIGHTED graph: which algorithm is enough?",
+      "choices_fr": [
+        "DFS",
+        "BFS",
+        "Bellman-Ford obligatoirement",
+        "Un tri topologique"
+      ],
+      "choices_en": [
+        "DFS",
+        "BFS",
+        "Bellman-Ford is required",
+        "A topological sort"
+      ],
+      "answer": 1,
+      "explain_fr": "BFS explore par niveaux : la première visite d'un sommet passe par un chemin minimal en arêtes. DFS ne garantit rien sur la distance ; Dijkstra/Bellman-Ford ne servent qu'avec des poids.",
+      "explain_en": "BFS explores by levels: the first visit of a vertex uses a minimum-edge path. DFS guarantees nothing about distance; Dijkstra/Bellman-Ford only matter with weights."
+    },
+    {
+      "q_fr": "Quelle est la complexité d'une recherche dans un BST équilibré de n éléments ?",
+      "q_en": "What is the complexity of a search in a balanced BST of n elements?",
+      "choices_fr": [
+        "O(1)",
+        "O(n)",
+        "O(log n)",
+        "O(n log n)"
+      ],
+      "choices_en": [
+        "O(1)",
+        "O(n)",
+        "O(log n)",
+        "O(n log n)"
+      ],
+      "answer": 2,
+      "explain_fr": "Chaque comparaison élimine la moitié de l'arbre : hauteur O(log n) si équilibré. Attention : un BST dégénéré (valeurs insérées triées) retombe à O(n).",
+      "explain_en": "Each comparison eliminates half the tree: O(log n) height when balanced. Careful: a degenerate BST (values inserted in sorted order) falls back to O(n)."
+    },
+    {
+      "q_fr": "Pour un graphe creux (peu d'arêtes), quelle représentation choisir ?",
+      "q_en": "For a sparse graph (few edges), which representation do you pick?",
+      "choices_fr": [
+        "La liste d'adjacence : O(V+E) en mémoire",
+        "La matrice d'adjacence : O(V²) en mémoire",
+        "Un tableau trié des arêtes uniquement",
+        "Peu importe, c'est équivalent"
+      ],
+      "choices_en": [
+        "The adjacency list: O(V+E) memory",
+        "The adjacency matrix: O(V²) memory",
+        "A sorted array of edges only",
+        "It doesn't matter, they're equivalent"
+      ],
+      "answer": 0,
+      "explain_fr": "Sur un graphe creux, la matrice gaspille O(V²) cases presque toutes vides. La liste stocke exactement les voisins existants — c'est le choix par défaut des cas réels (dépendances, routes, réseaux).",
+      "explain_en": "On a sparse graph the matrix wastes O(V²) mostly-empty cells. The list stores exactly the existing neighbors — the default choice in real cases (dependencies, roads, networks)."
+    },
+    {
+      "q_fr": "Comment npm peut-il détecter un cycle dans le graphe des dépendances ?",
+      "q_en": "How can npm detect a cycle in the dependency graph?",
+      "choices_fr": [
+        "En comptant les arêtes : plus d'arêtes que de sommets = cycle",
+        "Avec un BFS depuis chaque paquet",
+        "En triant les paquets par ordre alphabétique",
+        "Par DFS à trois états : retomber sur un sommet « en cours » = cycle"
+      ],
+      "choices_en": [
+        "By counting edges: more edges than vertices = cycle",
+        "With a BFS from every package",
+        "By sorting packages alphabetically",
+        "With three-state DFS: hitting an \"in progress\" vertex = cycle"
+      ],
+      "answer": 3,
+      "explain_fr": "DFS avec les états blanc/gris/noir : une arête vers un sommet gris (encore dans la pile de visite) révèle un cycle. Alternative : le tri topologique de Kahn qui n'épuise pas tous les sommets.",
+      "explain_en": "DFS with white/gray/black states: an edge to a gray vertex (still on the visit stack) reveals a cycle. Alternative: Kahn's topological sort failing to exhaust all vertices."
+    }
+  ]
+}

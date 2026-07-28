@@ -1,0 +1,168 @@
+{
+  "flashcards": [
+    {
+      "q_fr": "JavaScript est single-threaded : comment gère-t-il des opérations longues sans bloquer ?",
+      "a_fr": "Les opérations lentes (réseau, timers, disque) sont déléguées à l'environnement (Web APIs du navigateur, libuv en Node) qui travaille en coulisses. À la fin, le callback est mis en file d'attente et l'event loop l'exécute quand la call stack est vide. Le thread JS ne fait qu'entrelacer du code court.",
+      "q_en": "JavaScript is single-threaded: how does it handle long operations without blocking?",
+      "a_en": "Slow operations (network, timers, disk) are delegated to the environment (browser Web APIs, libuv in Node) working behind the scenes. On completion, the callback is queued and the event loop runs it when the call stack is empty. The JS thread only interleaves short pieces of code."
+    },
+    {
+      "q_fr": "Quel est l'ordre exact d'un tour d'event loop ?",
+      "a_fr": "1) Exécuter le code synchrone jusqu'à vider la call stack. 2) Vider ENTIÈREMENT la file des microtasks (promises, await), y compris celles créées en route. 3) Prendre UNE macrotask (setTimeout, I/O, événement). 4) Recommencer.",
+      "q_en": "What is the exact order of one event loop turn?",
+      "a_en": "1) Run synchronous code until the call stack is empty. 2) Drain the microtask queue ENTIRELY (promises, await), including microtasks created along the way. 3) Take ONE macrotask (setTimeout, I/O, event). 4) Repeat."
+    },
+    {
+      "q_fr": "Pourquoi setTimeout(fn, 0) n'exécute-t-il pas fn immédiatement ?",
+      "a_fr": "fn devient une macrotask : elle attend la fin de tout le code synchrone en cours ET le vidage complet des microtasks. Le délai passé à setTimeout est un minimum avant mise en file, jamais une garantie d'exécution à l'heure dite.",
+      "q_en": "Why doesn't setTimeout(fn, 0) run fn immediately?",
+      "a_en": "fn becomes a macrotask: it waits for all current synchronous code to finish AND the microtask queue to fully drain. The delay passed to setTimeout is a minimum before queueing, never a guarantee of on-time execution."
+    },
+    {
+      "q_fr": "Quels sont les états d'une promise ?",
+      "a_fr": "pending (en attente), puis une seule fois fulfilled (résolue avec une valeur) ou rejected (rejetée avec une raison). Une fois settled, l'état est définitif. .then/.catch retournent une nouvelle promise, ce qui permet le chaînage.",
+      "q_en": "What are the states of a promise?",
+      "a_en": "pending, then exactly once fulfilled (resolved with a value) or rejected (with a reason). Once settled, the state is final. .then/.catch return a new promise, which enables chaining."
+    },
+    {
+      "q_fr": "Promise.all vs Promise.allSettled vs Promise.race ?",
+      "a_fr": "all : tout en parallèle, rejette dès le premier échec (fail-fast). allSettled : attend toutes les promises et retourne {status, value|reason} pour chacune, échecs compris. race : la première promise settled (résolue OU rejetée) l'emporte — utile pour implémenter un timeout.",
+      "q_en": "Promise.all vs Promise.allSettled vs Promise.race?",
+      "a_en": "all: everything in parallel, rejects on the first failure (fail-fast). allSettled: waits for all promises and returns {status, value|reason} for each, failures included. race: the first settled promise (resolved OR rejected) wins — useful to implement a timeout."
+    },
+    {
+      "q_fr": "Que fait exactement await ?",
+      "a_fr": "await suspend la fonction async (pas le thread !) jusqu'au règlement de la promise, et rend la main à l'event loop. La suite de la fonction est planifiée comme microtask. Si la promise rejette, await lève l'erreur, capturable par try/catch.",
+      "q_en": "What exactly does await do?",
+      "a_en": "await suspends the async function (not the thread!) until the promise settles, and yields to the event loop. The rest of the function is scheduled as a microtask. If the promise rejects, await throws the error, catchable with try/catch."
+    },
+    {
+      "q_fr": "Que signifie « bloquer l'event loop » en Node.js et comment traiter le CPU-bound ?",
+      "a_fr": "Une tâche synchrone longue (gros JSON.parse, boucle de calcul, crypto) monopolise l'unique thread : plus AUCUNE requête n'est servie pendant ce temps. Solutions : worker_threads pour déporter le calcul sur de vrais threads, découper le travail (setImmediate), ou déléguer à un service dédié.",
+      "q_en": "What does \"blocking the event loop\" mean in Node.js, and how do you handle CPU-bound work?",
+      "a_en": "A long synchronous task (big JSON.parse, compute loop, crypto) monopolizes the single thread: NO request is served in the meantime. Solutions: worker_threads to offload computation to real threads, splitting the work (setImmediate), or delegating to a dedicated service."
+    },
+    {
+      "q_fr": "Pourquoi try { maFonctionAsync() } catch (e) {} sans await ne capture-t-il rien ?",
+      "a_fr": "L'appel retourne immédiatement une promise pending ; le bloc try se termine avant que la promise ne rejette. L'erreur devient une unhandledRejection. Il faut await l'appel dans le try (ou chaîner un .catch sur la promise).",
+      "q_en": "Why does try { myAsyncFn() } catch (e) {} without await catch nothing?",
+      "a_en": "The call immediately returns a pending promise; the try block exits before the promise rejects. The error becomes an unhandledRejection. You must await the call inside the try (or chain a .catch on the promise)."
+    }
+  ],
+  "qcm": [
+    {
+      "q_fr": "console.log('A'); setTimeout(() => console.log('B'), 0); Promise.resolve().then(() => console.log('C')); console.log('D'); — quel ordre ?",
+      "q_en": "console.log('A'); setTimeout(() => console.log('B'), 0); Promise.resolve().then(() => console.log('C')); console.log('D'); — what order?",
+      "choices_fr": [
+        "A, B, C, D",
+        "A, D, C, B",
+        "A, C, D, B",
+        "A, D, B, C"
+      ],
+      "choices_en": [
+        "A, B, C, D",
+        "A, D, C, B",
+        "A, C, D, B",
+        "A, D, B, C"
+      ],
+      "answer": 1,
+      "explain_fr": "Synchrone d'abord (A, D), puis toutes les microtasks (C, le .then), puis la macrotask setTimeout (B). Le .then passe toujours avant un setTimeout(0) armé au même moment.",
+      "explain_en": "Synchronous first (A, D), then all microtasks (C, the .then), then the setTimeout macrotask (B). A .then always runs before a setTimeout(0) armed at the same moment."
+    },
+    {
+      "q_fr": "Combien de macrotasks l'event loop traite-t-il avant de re-vérifier la file des microtasks ?",
+      "q_en": "How many macrotasks does the event loop process before re-checking the microtask queue?",
+      "choices_fr": [
+        "Une seule",
+        "Toutes celles en attente",
+        "Dix, par batch",
+        "Ça dépend du navigateur, aucune règle"
+      ],
+      "choices_en": [
+        "Just one",
+        "All pending ones",
+        "Ten, in batches",
+        "Browser-dependent, no rule"
+      ],
+      "answer": 0,
+      "explain_fr": "Une macrotask par tour de boucle, puis vidage complet des microtasks avant la suivante. C'est l'asymétrie clé : microtasks en bloc, macrotasks une par une.",
+      "explain_en": "One macrotask per loop turn, then a full microtask drain before the next one. That's the key asymmetry: microtasks in bulk, macrotasks one at a time."
+    },
+    {
+      "q_fr": "Dans une fonction async, quand le code AVANT le premier await s'exécute-t-il ?",
+      "q_en": "In an async function, when does the code BEFORE the first await run?",
+      "choices_fr": [
+        "En microtask, après le code synchrone",
+        "En macrotask, au tour suivant",
+        "Immédiatement, de façon synchrone, à l'appel de la fonction",
+        "Jamais avant que la promise retournée soit awaited"
+      ],
+      "choices_en": [
+        "As a microtask, after synchronous code",
+        "As a macrotask, on the next turn",
+        "Immediately, synchronously, when the function is called",
+        "Never before the returned promise is awaited"
+      ],
+      "answer": 2,
+      "explain_fr": "Une fonction async démarre en synchrone comme n'importe quelle fonction ; c'est seulement au premier await qu'elle se suspend et que la suite devient une microtask. Piège classique des exercices d'ordre.",
+      "explain_en": "An async function starts synchronously like any function; only at the first await does it suspend, the rest becoming a microtask. A classic trap in ordering exercises."
+    },
+    {
+      "q_fr": "Vous devez appeler 5 APIs indépendantes le plus vite possible. Quelle approche ?",
+      "q_en": "You must call 5 independent APIs as fast as possible. Which approach?",
+      "choices_fr": [
+        "for…of avec un await à chaque itération",
+        "array.forEach(async url => await fetch(url))",
+        "5 setTimeout imbriqués",
+        "await Promise.all(urls.map(u => fetch(u)))"
+      ],
+      "choices_en": [
+        "for…of with an await on each iteration",
+        "array.forEach(async url => await fetch(url))",
+        "5 nested setTimeout calls",
+        "await Promise.all(urls.map(u => fetch(u)))"
+      ],
+      "answer": 3,
+      "explain_fr": "Promise.all lance les 5 requêtes en parallèle et attend le tout. Le for…of+await est séquentiel (5× plus lent) ; le forEach async n'attend rien du tout.",
+      "explain_en": "Promise.all fires all 5 requests in parallel and awaits them together. for…of+await is sequential (5× slower); async forEach waits for nothing at all."
+    },
+    {
+      "q_fr": "Une requête met un serveur Express à genoux : toutes les autres requêtes gèlent pendant 10 secondes. Cause la plus probable ?",
+      "q_en": "One request brings an Express server to its knees: all other requests freeze for 10 seconds. Most likely cause?",
+      "choices_fr": [
+        "Trop de connexions TCP ouvertes",
+        "Un traitement synchrone lourd (gros parse, boucle de calcul) qui bloque l'event loop",
+        "Une fuite mémoire dans un middleware",
+        "Un await oublié sur une requête SQL"
+      ],
+      "choices_en": [
+        "Too many open TCP connections",
+        "A heavy synchronous computation (big parse, compute loop) blocking the event loop",
+        "A memory leak in a middleware",
+        "A missing await on a SQL query"
+      ],
+      "answer": 1,
+      "explain_fr": "Node sert toutes les requêtes sur un seul thread : une tâche synchrone longue bloque tout le monde. Remède : worker_threads pour le CPU-bound, ou découper le travail.",
+      "explain_en": "Node serves all requests on a single thread: one long synchronous task blocks everyone. Remedy: worker_threads for CPU-bound work, or splitting the task."
+    },
+    {
+      "q_fr": "Quelle affirmation sur Promise.all est correcte ?",
+      "q_en": "Which statement about Promise.all is correct?",
+      "choices_fr": [
+        "Il exécute les promises une par une, dans l'ordre du tableau",
+        "Il attend toutes les promises même en cas d'échec",
+        "Il rejette dès qu'une des promises rejette",
+        "Il retourne la valeur de la première promise résolue"
+      ],
+      "choices_en": [
+        "It runs the promises one by one, in array order",
+        "It waits for all promises even on failure",
+        "It rejects as soon as any promise rejects",
+        "It returns the value of the first resolved promise"
+      ],
+      "answer": 2,
+      "explain_fr": "Promise.all est fail-fast : premier rejet = rejet global (les autres promises continuent mais leur résultat est ignoré). Pour un bilan complet malgré les échecs : Promise.allSettled. Pour la première réglée : race.",
+      "explain_en": "Promise.all is fail-fast: first rejection = global rejection (other promises keep running but their results are ignored). For a full report despite failures: Promise.allSettled. For the first settled: race."
+    }
+  ]
+}

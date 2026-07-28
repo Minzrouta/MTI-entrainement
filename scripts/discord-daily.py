@@ -23,6 +23,9 @@ JOURS = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'
 MOIS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet',
         'août', 'septembre', 'octobre', 'novembre', 'décembre']
 EMOJIS = {
+    'La une': '🗞️',
+    'Aussi cette semaine': '📌',
+    'Pourquoi ça vous concerne': '🎯',
     "L'essentiel": '📖',
     'Comment ça marche': '⚙️',
     'Concepts clés à maîtriser': '🧠',
@@ -104,13 +107,21 @@ def main() -> None:
         return
     webhook = WEBHOOK_FILE.read_text().strip()
 
-    today = date.today().isoformat()
     dirs = sorted(d.name for d in TOPICS.iterdir() if d.is_dir())
-    match = [d for d in dirs if d.startswith(today)]
-    if not match:
-        return
-    dirname = match[0]
-    day_no = dirs.index(dirname) + 1
+    if len(sys.argv) > 1:  # poste une fiche précise : discord-daily.py <nom-du-dossier>
+        dirname = sys.argv[1]
+        if dirname not in dirs:
+            sys.exit(f'dossier inconnu : {dirname}')
+    else:
+        today = date.today().isoformat()
+        match = [d for d in dirs if d.startswith(today)]
+        if not match:
+            return
+        # Lundi de lancement : l'actu et une fiche générale partagent la date → l'actu gagne.
+        dirname = next((d for d in match if d[11:].startswith('actu')), match[0])
+    is_actu = dirname[11:].startswith('actu')
+    generals = [d for d in dirs if not d[11:].startswith('actu')]
+    day_no = generals.index(dirname) + 1 if not is_actu else 0
     slug = dirname[11:]
 
     raw = (TOPICS / dirname / 'fr.md').read_text()
@@ -123,8 +134,12 @@ def main() -> None:
 
     d = date.fromisoformat(dirname[:10])
     date_fr = f'{JOURS[d.weekday()]} {d.day} {MOIS[d.month - 1]} {d.year}'
-    name = f"Jour {day_no} · {fm['title']}"[:100]
-    intro = f"**📅 Jour {day_no} — {date_fr}**\n🏷️ {fm['category']} · {fm['level']}\n\n_{fm['summary']}_"
+    if is_actu:
+        name = f"📰 Actu · {fm['title']}"[:100]
+        intro = f"**📅 {date_fr}**\n🏷️ {fm['category']} · {fm['level']}\n\n_{fm['summary']}_"
+    else:
+        name = f"Jour {day_no} · {fm['title']}"[:100]
+        intro = f"**📅 Jour {day_no} — {date_fr}**\n🏷️ {fm['category']} · {fm['level']}\n\n_{fm['summary']}_"
     first = post(f'{webhook}?wait=true', {'content': intro, 'thread_name': name})
     thread = first['channel_id']
     for c in chunk(body):

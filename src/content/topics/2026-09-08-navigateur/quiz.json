@@ -1,0 +1,168 @@
+{
+  "flashcards": [
+    {
+      "q_fr": "Quelles sont les étapes du rendering pipeline, du HTML aux pixels ?",
+      "a_fr": "Parsing HTML → DOM et parsing CSS → CSSOM ; fusion en render tree (nœuds visibles + styles calculés) ; layout (géométrie de chaque boîte) ; paint (rasterisation en pixels dans des layers) ; composite (le GPU assemble les layers).",
+      "q_en": "What are the rendering pipeline steps, from HTML to pixels?",
+      "a_en": "HTML parsing → DOM and CSS parsing → CSSOM; merged into the render tree (visible nodes + computed styles); layout (each box's geometry); paint (rasterization into layers); composite (the GPU assembles the layers)."
+    },
+    {
+      "q_fr": "Quelle différence entre reflow et repaint, et lequel coûte le plus cher ?",
+      "a_fr": "Le reflow recalcule la géométrie (positions, tailles) et peut se propager à une grande partie de l'arbre ; le repaint redessine les pixels sans toucher à la géométrie. Un reflow entraîne toujours un repaint, jamais l'inverse : le reflow est l'opération la plus chère.",
+      "q_en": "What's the difference between reflow and repaint, and which is more expensive?",
+      "a_en": "Reflow recomputes geometry (positions, sizes) and can propagate through much of the tree; repaint redraws pixels without touching geometry. A reflow always triggers a repaint, never the other way around: reflow is the most expensive operation."
+    },
+    {
+      "q_fr": "defer vs async sur un <script> : quelle différence ?",
+      "a_fr": "Les deux téléchargent en parallèle sans bloquer le parser. `async` exécute dès que le script est prêt, ordre non garanti (scripts indépendants). `defer` exécute après le parsing, dans l'ordre du document, juste avant DOMContentLoaded (code applicatif). `type=\"module\"` est defer par défaut.",
+      "q_en": "defer vs async on a <script>: what's the difference?",
+      "a_en": "Both download in parallel without blocking the parser. `async` executes as soon as the script is ready, order not guaranteed (independent scripts). `defer` executes after parsing, in document order, right before DOMContentLoaded (application code). `type=\"module\"` is defer by default."
+    },
+    {
+      "q_fr": "Qu'est-ce que le critical rendering path ?",
+      "a_fr": "L'ensemble minimal d'étapes et de ressources bloquantes (HTML, CSS render-blocking, scripts synchrones) que le navigateur doit franchir avant le premier rendu. L'optimiser = réduire ou différer les ressources bloquantes pour afficher plus tôt.",
+      "q_en": "What is the critical rendering path?",
+      "a_en": "The minimal set of steps and blocking resources (HTML, render-blocking CSS, synchronous scripts) the browser must get through before the first render. Optimizing it means reducing or deferring blocking resources to display sooner."
+    },
+    {
+      "q_fr": "Pourquoi le CSS est-il render-blocking, et que bloque-t-il d'autre ?",
+      "a_fr": "Sans CSSOM complet, le navigateur risquerait d'afficher un flash de contenu non stylé : il attend donc les styles avant de rendre. Le CSS bloque aussi l'exécution des scripts, qui pourraient lire des styles calculés — mais pas le parser HTML, qui continue à construire le DOM.",
+      "q_en": "Why is CSS render-blocking, and what else does it block?",
+      "a_en": "Without a complete CSSOM the browser would risk a flash of unstyled content, so it waits for styles before rendering. CSS also blocks script execution, since scripts might read computed styles — but not the HTML parser, which keeps building the DOM."
+    },
+    {
+      "q_fr": "Cookies, localStorage, sessionStorage : quelles différences clés ?",
+      "a_fr": "Cookies : ~4 Ko, envoyés au serveur à chaque requête, expiration configurable, peuvent être HttpOnly (invisibles pour JS). localStorage : ~5-10 Mo, persistant, jamais envoyé, portée = origine. sessionStorage : idem mais limité à l'onglet et vidé à sa fermeture.",
+      "q_en": "Cookies, localStorage, sessionStorage: what are the key differences?",
+      "a_en": "Cookies: ~4 KB, sent to the server with every request, configurable expiry, can be HttpOnly (invisible to JS). localStorage: ~5-10 MB, persistent, never sent, scoped to the origin. sessionStorage: same but limited to the tab and cleared when it closes."
+    },
+    {
+      "q_fr": "Qu'est-ce que la same-origin policy ?",
+      "a_fr": "Deux URLs partagent une origine si schéma + hôte + port sont identiques ; un document ne peut lire les données (DOM, storage, réponses) que de sa propre origine. CORS est le mécanisme côté serveur pour assouplir explicitement cette règle.",
+      "q_en": "What is the same-origin policy?",
+      "a_en": "Two URLs share an origin if scheme + host + port are identical; a document can only read data (DOM, storage, responses) from its own origin. CORS is the server-side mechanism to explicitly relax that rule."
+    },
+    {
+      "q_fr": "Pourquoi les navigateurs sont-ils multi-process, avec un sandbox autour du renderer ?",
+      "a_fr": "Stabilité : un onglet qui crashe n'emporte pas le navigateur. Sécurité : le renderer exécute du code non fiable sans accès direct au disque ni au réseau (tout passe par IPC vers le browser process), et la site isolation empêche deux origines de partager leur mémoire. Performance : vrai parallélisme.",
+      "q_en": "Why are browsers multi-process, with a sandbox around the renderer?",
+      "a_en": "Stability: a crashing tab doesn't take the browser down. Security: the renderer runs untrusted code with no direct disk or network access (everything goes through IPC to the browser process), and site isolation keeps two origins from sharing memory. Performance: real parallelism."
+    }
+  ],
+  "qcm": [
+    {
+      "q_fr": "Quelle étape du pipeline recalcule la position et la taille de chaque élément ?",
+      "q_en": "Which pipeline step recomputes each element's position and size?",
+      "choices_fr": [
+        "Paint",
+        "Composite",
+        "Layout",
+        "Parsing"
+      ],
+      "choices_en": [
+        "Paint",
+        "Composite",
+        "Layout",
+        "Parsing"
+      ],
+      "answer": 2,
+      "explain_fr": "Le layout (ou reflow) calcule la géométrie de chaque boîte. Paint rasterise en pixels, composite assemble les layers sur le GPU, le parsing construit DOM et CSSOM.",
+      "explain_en": "Layout (aka reflow) computes each box's geometry. Paint rasterizes into pixels, composite assembles layers on the GPU, parsing builds the DOM and CSSOM."
+    },
+    {
+      "q_fr": "Quelle propriété CSS peut être animée sans déclencher ni reflow ni repaint ?",
+      "q_en": "Which CSS property can be animated without triggering reflow or repaint?",
+      "choices_fr": [
+        "transform",
+        "width",
+        "margin-left",
+        "font-size"
+      ],
+      "choices_en": [
+        "transform",
+        "width",
+        "margin-left",
+        "font-size"
+      ],
+      "answer": 0,
+      "explain_fr": "`transform` (comme `opacity`) n'est appliqué qu'à l'étape composite, par le GPU. `width`, `margin-left` et `font-size` changent la géométrie : reflow complet à chaque frame.",
+      "explain_en": "`transform` (like `opacity`) is only applied at the composite step, by the GPU. `width`, `margin-left` and `font-size` change geometry: full reflow on every frame."
+    },
+    {
+      "q_fr": "Quand s'exécute un script chargé avec l'attribut defer ?",
+      "q_en": "When does a script loaded with the defer attribute execute?",
+      "choices_fr": [
+        "Dès la fin de son téléchargement, même en plein parsing",
+        "Après la fin du parsing, dans l'ordre du document, avant DOMContentLoaded",
+        "Immédiatement, en bloquant le parser",
+        "Après l'événement load, une fois images incluses"
+      ],
+      "choices_en": [
+        "As soon as its download finishes, even mid-parsing",
+        "After parsing ends, in document order, before DOMContentLoaded",
+        "Immediately, blocking the parser",
+        "After the load event, images included"
+      ],
+      "answer": 1,
+      "explain_fr": "`defer` attend la fin du parsing et préserve l'ordre du document. « Dès la fin du téléchargement » décrit `async` ; « immédiatement en bloquant » décrit un script classique.",
+      "explain_en": "`defer` waits for parsing to finish and preserves document order. \"As soon as the download finishes\" describes `async`; \"immediately, blocking\" describes a plain script."
+    },
+    {
+      "q_fr": "Quel mécanisme de stockage est envoyé automatiquement au serveur à chaque requête HTTP ?",
+      "q_en": "Which storage mechanism is automatically sent to the server with every HTTP request?",
+      "choices_fr": [
+        "localStorage",
+        "sessionStorage",
+        "Les cookies",
+        "IndexedDB"
+      ],
+      "choices_en": [
+        "localStorage",
+        "sessionStorage",
+        "Cookies",
+        "IndexedDB"
+      ],
+      "answer": 2,
+      "explain_fr": "Seuls les cookies voyagent avec chaque requête vers leur domaine — d'où leur usage pour les sessions, et le risque CSRF associé. localStorage, sessionStorage et IndexedDB restent côté client.",
+      "explain_en": "Only cookies travel with every request to their domain — hence their use for sessions, and the associated CSRF risk. localStorage, sessionStorage and IndexedDB stay client-side."
+    },
+    {
+      "q_fr": "Quelle est la différence de coût entre display:none et visibility:hidden ?",
+      "q_en": "What's the cost difference between display:none and visibility:hidden?",
+      "choices_fr": [
+        "Aucune : les deux déclenchent un repaint seul",
+        "display:none retire l'élément du render tree (reflow) ; visibility:hidden garde sa boîte (repaint)",
+        "visibility:hidden déclenche un reflow, display:none un repaint",
+        "Les deux déclenchent un reflow complet"
+      ],
+      "choices_en": [
+        "None: both trigger only a repaint",
+        "display:none removes the element from the render tree (reflow); visibility:hidden keeps its box (repaint)",
+        "visibility:hidden triggers a reflow, display:none a repaint",
+        "Both trigger a full reflow"
+      ],
+      "answer": 1,
+      "explain_fr": "`display: none` sort l'élément du render tree : la géométrie de la page change, donc reflow. `visibility: hidden` conserve la boîte de l'élément : seul un repaint est nécessaire.",
+      "explain_en": "`display: none` removes the element from the render tree: the page geometry changes, hence reflow. `visibility: hidden` keeps the element's box: only a repaint is needed."
+    },
+    {
+      "q_fr": "Quelle URL a la même origine que https://app.example.com/page ?",
+      "q_en": "Which URL has the same origin as https://app.example.com/page?",
+      "choices_fr": [
+        "http://app.example.com/page",
+        "https://example.com/page",
+        "https://app.example.com:8443/page",
+        "https://app.example.com/autre"
+      ],
+      "choices_en": [
+        "http://app.example.com/page",
+        "https://example.com/page",
+        "https://app.example.com:8443/page",
+        "https://app.example.com/other"
+      ],
+      "answer": 3,
+      "explain_fr": "L'origine = schéma + hôte + port ; le path n'en fait pas partie. Les trois autres diffèrent par le schéma (http), l'hôte (sous-domaine retiré) ou le port (8443).",
+      "explain_en": "Origin = scheme + host + port; the path is not part of it. The other three differ by scheme (http), host (subdomain removed) or port (8443)."
+    }
+  ]
+}

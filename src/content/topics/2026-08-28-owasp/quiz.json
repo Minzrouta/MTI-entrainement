@@ -1,0 +1,168 @@
+{
+  "flashcards": [
+    {
+      "q_fr": "Quelle est la règle de sécurité qui traverse presque tout l'OWASP Top 10 ?",
+      "a_fr": "Ne jamais faire confiance à l'entrée utilisateur : toute donnée venant du client (paramètres, body, headers, cookies) est potentiellement hostile et doit être validée côté serveur. La validation front n'est que de l'UX, contournable avec curl ou les DevTools.",
+      "q_en": "What security rule runs through almost the entire OWASP Top 10?",
+      "a_en": "Never trust user input: any data from the client (parameters, body, headers, cookies) is potentially hostile and must be validated server-side. Front-end validation is just UX, bypassable with curl or DevTools."
+    },
+    {
+      "q_fr": "Comment fonctionne une injection SQL et quelle est LA parade ?",
+      "a_fr": "L'entrée utilisateur concaténée dans la requête est interprétée comme du code SQL (ex. ' OR '1'='1' -- rend la condition toujours vraie). Parade : les requêtes préparées — la requête part figée, les valeurs sont transmises séparément et ne sont jamais interprétées. L'échappement manuel n'est pas fiable.",
+      "q_en": "How does SQL injection work and what is THE countermeasure?",
+      "a_en": "User input concatenated into the query is interpreted as SQL code (e.g. ' OR '1'='1' -- makes the condition always true). Countermeasure: prepared statements — the query is sent frozen, values travel separately and are never interpreted. Manual escaping is not reliable."
+    },
+    {
+      "q_fr": "Qu'est-ce qu'un IDOR et quel principe viole-t-il ?",
+      "a_fr": "Insecure Direct Object Reference : changer un identifiant dans l'URL (/invoices/1042 → 1043) donne accès à la ressource d'un autre utilisateur. C'est du broken access control (A01) : l'authentification est vérifiée mais pas l'autorisation. Parade : vérifier à chaque requête que la ressource appartient à l'utilisateur courant.",
+      "q_en": "What is an IDOR and which principle does it violate?",
+      "a_en": "Insecure Direct Object Reference: changing an identifier in the URL (/invoices/1042 → 1043) grants access to another user's resource. It's broken access control (A01): authentication is checked but not authorization. Defense: on every request, verify the resource belongs to the current user."
+    },
+    {
+      "q_fr": "Quelle est la différence entre authentification et autorisation ?",
+      "a_fr": "Authentification : prouver qui vous êtes (login, session, token). Autorisation : vérifier ce à quoi vous avez droit (cette facture est-elle à vous ?). L'IDOR est l'exemple type d'une autorisation oubliée alors que l'authentification est en place.",
+      "q_en": "What is the difference between authentication and authorization?",
+      "a_en": "Authentication: proving who you are (login, session, token). Authorization: checking what you're entitled to (is this invoice yours?). IDOR is the textbook example of authorization forgotten while authentication is in place."
+    },
+    {
+      "q_fr": "Qu'est-ce qu'une faille XSS et comment s'en protéger ?",
+      "a_fr": "L'injection côté client : du contenu utilisateur rendu comme HTML/JS s'exécute dans le navigateur des autres utilisateurs (vol de session, actions à leur insu). Parades : échapper à l'affichage (défaut de React/Vue — ne pas contourner avec innerHTML/dangerouslySetInnerHTML sur de la donnée utilisateur) et une Content Security Policy en défense en profondeur.",
+      "q_en": "What is an XSS flaw and how do you defend against it?",
+      "a_en": "Client-side injection: user content rendered as HTML/JS executes in other users' browsers (session theft, actions on their behalf). Defenses: escape on output (React/Vue default — don't bypass with innerHTML/dangerouslySetInnerHTML on user data) and a Content Security Policy as defense in depth."
+    },
+    {
+      "q_fr": "Qu'est-ce qu'une SSRF et pourquoi est-ce dangereux ?",
+      "a_fr": "Server-Side Request Forgery : l'attaquant fait faire au serveur une requête vers une cible que lui seul peut atteindre — services internes, localhost, métadonnées cloud (169.254.169.254, credentials AWS). Parade : allowlist de destinations et blocage des plages IP privées.",
+      "q_en": "What is SSRF and why is it dangerous?",
+      "a_en": "Server-Side Request Forgery: the attacker makes the server issue a request to a target only the server can reach — internal services, localhost, cloud metadata (169.254.169.254, AWS credentials). Defense: destination allowlist and blocking private IP ranges."
+    },
+    {
+      "q_fr": "Comment stocker correctement des mots de passe ?",
+      "a_fr": "Les hasher (jamais les chiffrer, jamais en clair) avec un algorithme lent par conception : bcrypt ou argon2, avec sel. MD5 et SHA1 sont proscrits car trop rapides (brute force facile). Un hash est irréversible : on ne « décrypte » pas un mot de passe, on compare des hashes.",
+      "q_en": "How do you store passwords correctly?",
+      "a_en": "Hash them (never encrypt, never cleartext) with an algorithm slow by design: bcrypt or argon2, with a salt. MD5 and SHA1 are banned because they're too fast (easy brute force). A hash is irreversible: you don't \"decrypt\" a password, you compare hashes."
+    },
+    {
+      "q_fr": "Donnez trois exemples de security misconfiguration (A05).",
+      "a_fr": "Credentials par défaut sur une console d'admin ; stack traces détaillées renvoyées au client en production ; ports/services de debug exposés ; bucket S3 public ; CORS trop permissif. Parade générale : durcir les défauts, fermer ce qui n'est pas utilisé, headers de sécurité.",
+      "q_en": "Give three examples of security misconfiguration (A05).",
+      "a_en": "Default credentials on an admin console; detailed stack traces returned to the client in production; exposed debug ports/services; public S3 bucket; overly permissive CORS. General defense: harden defaults, close what isn't used, security headers."
+    }
+  ],
+  "qcm": [
+    {
+      "q_fr": "Pourquoi les requêtes préparées empêchent-elles l'injection SQL ?",
+      "q_en": "Why do prepared statements prevent SQL injection?",
+      "choices_fr": [
+        "Elles chiffrent la requête avant l'envoi",
+        "Elles suppriment les caractères spéciaux de l'entrée",
+        "Elles séparent structurellement le code SQL des données : la valeur n'est jamais interprétée",
+        "Elles limitent le nombre de lignes retournées"
+      ],
+      "choices_en": [
+        "They encrypt the query before sending it",
+        "They strip special characters from the input",
+        "They structurally separate SQL code from data: the value is never interpreted",
+        "They limit the number of rows returned"
+      ],
+      "answer": 2,
+      "explain_fr": "La requête (le code) est transmise figée, les valeurs à part : quoi que contienne l'entrée, elle reste une donnée. C'est structurel, contrairement à l'échappement manuel qui est fragile.",
+      "explain_en": "The query (the code) is sent frozen, the values separately: whatever the input contains, it stays data. It's structural, unlike manual escaping which is fragile."
+    },
+    {
+      "q_fr": "Un utilisateur connecté change /api/orders/512 en /api/orders/513 et voit la commande d'un autre client. De quelle faille s'agit-il ?",
+      "q_en": "A logged-in user changes /api/orders/512 to /api/orders/513 and sees another customer's order. Which flaw is this?",
+      "choices_fr": [
+        "IDOR — broken access control (A01)",
+        "Injection SQL (A03)",
+        "SSRF (A10)",
+        "Cryptographic failure (A02)"
+      ],
+      "choices_en": [
+        "IDOR — broken access control (A01)",
+        "SQL injection (A03)",
+        "SSRF (A10)",
+        "Cryptographic failure (A02)"
+      ],
+      "answer": 0,
+      "explain_fr": "Insecure Direct Object Reference : le serveur vérifie l'authentification mais pas l'autorisation sur la ressource. Parade : vérifier la propriété de la ressource à chaque requête, côté serveur.",
+      "explain_en": "Insecure Direct Object Reference: the server checks authentication but not authorization on the resource. Defense: verify resource ownership on every request, server-side."
+    },
+    {
+      "q_fr": "Quelle affirmation sur la validation côté client (HTML5, JavaScript) est correcte ?",
+      "q_en": "Which statement about client-side validation (HTML5, JavaScript) is correct?",
+      "choices_fr": [
+        "Elle suffit si le formulaire utilise HTTPS",
+        "Elle améliore l'UX mais n'apporte aucune sécurité : le serveur doit tout revalider",
+        "Elle bloque les requêtes forgées avec curl",
+        "Elle remplace la validation serveur si elle utilise les mêmes regex"
+      ],
+      "choices_en": [
+        "It's enough if the form uses HTTPS",
+        "It improves UX but provides zero security: the server must revalidate everything",
+        "It blocks requests forged with curl",
+        "It replaces server validation if it uses the same regexes"
+      ],
+      "answer": 1,
+      "explain_fr": "Le client est sous le contrôle de l'attaquant : curl, proxy, DevTools contournent tout. HTTPS chiffre le transport, il ne valide rien. La sécurité se joue exclusivement côté serveur.",
+      "explain_en": "The client is under the attacker's control: curl, proxies and DevTools bypass everything. HTTPS encrypts transport, it validates nothing. Security happens exclusively server-side."
+    },
+    {
+      "q_fr": "Une feature « importer depuis une URL » est détournée pour requêter http://169.254.169.254/ et voler des credentials cloud. Quelle attaque ?",
+      "q_en": "An \"import from URL\" feature is abused to request http://169.254.169.254/ and steal cloud credentials. Which attack?",
+      "choices_fr": [
+        "XSS",
+        "Command injection",
+        "CSRF",
+        "SSRF"
+      ],
+      "choices_en": [
+        "XSS",
+        "Command injection",
+        "CSRF",
+        "SSRF"
+      ],
+      "answer": 3,
+      "explain_fr": "Server-Side Request Forgery : le serveur est manipulé pour requêter une cible interne que l'attaquant ne peut pas atteindre directement — ici l'endpoint de métadonnées cloud. Parade : allowlist + blocage des IP privées.",
+      "explain_en": "Server-Side Request Forgery: the server is manipulated into requesting an internal target the attacker cannot reach directly — here the cloud metadata endpoint. Defense: allowlist + blocking private IPs."
+    },
+    {
+      "q_fr": "Quel algorithme faut-il utiliser pour stocker des mots de passe ?",
+      "q_en": "Which algorithm should you use to store passwords?",
+      "choices_fr": [
+        "MD5, rapide et universellement supporté",
+        "AES-256, pour pouvoir les déchiffrer si besoin",
+        "bcrypt ou argon2 : hash salé et lent par conception",
+        "Base64, suffisant si la base est bien protégée"
+      ],
+      "choices_en": [
+        "MD5, fast and universally supported",
+        "AES-256, so they can be decrypted if needed",
+        "bcrypt or argon2: salted hash, slow by design",
+        "Base64, enough if the database is well protected"
+      ],
+      "answer": 2,
+      "explain_fr": "Un mot de passe se hashe avec un algorithme volontairement lent (anti brute force) et salé. MD5 est trop rapide, AES est réversible (on ne doit PAS pouvoir retrouver le mot de passe), Base64 n'est qu'un encodage.",
+      "explain_en": "A password is hashed with a deliberately slow (anti brute force), salted algorithm. MD5 is too fast, AES is reversible (you must NOT be able to recover the password), Base64 is just an encoding."
+    },
+    {
+      "q_fr": "Pourquoi le XSS est-il classé parmi les injections dans le Top 10 2021 ?",
+      "q_en": "Why is XSS classified under injection in the 2021 Top 10?",
+      "choices_fr": [
+        "Parce qu'il nécessite une base de données",
+        "Parce que c'est le même mécanisme : des données utilisateur interprétées comme du code, ici du HTML/JS dans le navigateur",
+        "Parce qu'il passe par les headers HTTP",
+        "Par simplicité de classement, sans lien technique"
+      ],
+      "choices_en": [
+        "Because it requires a database",
+        "Because it's the same mechanism: user data interpreted as code, here HTML/JS in the browser",
+        "Because it goes through HTTP headers",
+        "For classification simplicity, no technical link"
+      ],
+      "answer": 1,
+      "explain_fr": "SQL injection, command injection et XSS partagent le même défaut racine : l'interpréteur (SQL, shell, navigateur) ne distingue pas données et code. La parade est toujours de préserver cette frontière : requêtes préparées, échappement à l'affichage.",
+      "explain_en": "SQL injection, command injection and XSS share the same root flaw: the interpreter (SQL, shell, browser) can't tell data from code. The defense is always preserving that boundary: prepared statements, output escaping."
+    }
+  ]
+}

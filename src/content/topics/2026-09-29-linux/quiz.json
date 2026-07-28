@@ -1,0 +1,168 @@
+{
+  "flashcards": [
+    {
+      "q_fr": "SIGTERM vs SIGKILL : quelle différence ?",
+      "a_fr": "SIGTERM (15) est une demande d'arrêt propre : le processus peut l'intercepter pour fermer ses connexions, flusher ses buffers, puis sortir. SIGKILL (9) est ininterceptable : le noyau supprime le processus sans aucun cleanup. `docker stop` envoie SIGTERM, attend 10 s, puis SIGKILL — d'où l'importance de gérer SIGTERM dans une app conteneurisée.",
+      "q_en": "SIGTERM vs SIGKILL: what's the difference?",
+      "a_en": "SIGTERM (15) is a clean-shutdown request: the process can catch it to close connections, flush buffers, then exit. SIGKILL (9) is uncatchable: the kernel removes the process with zero cleanup. `docker stop` sends SIGTERM, waits 10 s, then SIGKILL — hence the importance of handling SIGTERM in a containerized app."
+    },
+    {
+      "q_fr": "Que signifie « tout est fichier » sous Linux ? Donne un exemple avec /proc.",
+      "a_fr": "Disques, sockets, état du noyau : tout s'expose via l'interface fichier (lire, écrire, rediriger). /proc est un filesystem virtuel : /proc/<pid>/ décrit chaque processus en cours, `cat /proc/cpuinfo` lit les CPU, /proc/meminfo la mémoire — aucune de ces « données » n'existe sur le disque.",
+      "q_en": "What does \"everything is a file\" mean on Linux? Give an example with /proc.",
+      "a_en": "Disks, sockets, kernel state: everything is exposed through the file interface (read, write, redirect). /proc is a virtual filesystem: /proc/<pid>/ describes each running process, `cat /proc/cpuinfo` reads the CPUs, /proc/meminfo the memory — none of this \"data\" exists on disk."
+    },
+    {
+      "q_fr": "Comment un nouveau processus est-il créé sous Linux ?",
+      "a_fr": "Par fork() : le parent se clone (même code, mémoire copiée), puis le clone appelle généralement exec() pour remplacer son image par le nouveau programme. Le shell fait fork + exec pour chaque commande tapée, puis wait() pour récupérer le code de sortie de l'enfant.",
+      "q_en": "How is a new process created on Linux?",
+      "a_en": "Through fork(): the parent clones itself (same code, copied memory), then the clone usually calls exec() to replace its image with the new program. The shell does fork + exec for every typed command, then wait() to collect the child's exit code."
+    },
+    {
+      "q_fr": "Que veut dire chmod 755 ? Et 600 ?",
+      "a_fr": "Octal : r=4, w=2, x=1, un chiffre par triplet (propriétaire, groupe, autres). 755 = rwxr-xr-x : le propriétaire fait tout, les autres lisent et exécutent — typique d'un script ou d'un répertoire. 600 = rw------- : seul le propriétaire lit et écrit — obligatoire pour une clé SSH privée.",
+      "q_en": "What does chmod 755 mean? And 600?",
+      "a_en": "Octal: r=4, w=2, x=1, one digit per triplet (owner, group, others). 755 = rwxr-xr-x: the owner does everything, others read and execute — typical for a script or directory. 600 = rw-------: only the owner reads and writes — mandatory for a private SSH key."
+    },
+    {
+      "q_fr": "Quels sont les trois flux standard d'un processus, et que fait `cmd > f 2>&1` ?",
+      "a_fr": "stdin (0), stdout (1), stderr (2). `> f` redirige stdout vers le fichier f, puis `2>&1` branche stderr sur la destination actuelle de stdout : les deux flux finissent dans f. L'ordre compte : `2>&1 > f` enverrait stderr au terminal.",
+      "q_en": "What are a process's three standard streams, and what does `cmd > f 2>&1` do?",
+      "a_en": "stdin (0), stdout (1), stderr (2). `> f` redirects stdout to file f, then `2>&1` plugs stderr into stdout's current destination: both streams end up in f. Order matters: `2>&1 > f` would send stderr to the terminal."
+    },
+    {
+      "q_fr": "En quoi consiste la philosophie Unix, et quel opérateur l'incarne ?",
+      "a_fr": "Chaque programme fait une seule chose bien, le texte est l'interface universelle, et on compose les programmes entre eux. Le pipe `|` l'incarne : il branche la sortie d'un programme sur l'entrée du suivant sans fichier intermédiaire — ex. `grep … | sort | uniq -c | sort -rn` pour analyser des logs.",
+      "q_en": "What is the Unix philosophy, and which operator embodies it?",
+      "a_en": "Each program does one thing well, text is the universal interface, and programs compose with each other. The pipe `|` embodies it: it plugs one program's output into the next one's input without an intermediate file — e.g. `grep … | sort | uniq -c | sort -rn` to analyze logs."
+    },
+    {
+      "q_fr": "À quoi sert le PATH, et pourquoi lance-t-on un script local avec ./ ?",
+      "a_fr": "Le PATH est la liste ordonnée des répertoires où le shell cherche un exécutable quand on tape une commande sans chemin — premier trouvé, premier servi. Le répertoire courant n'y figure pas (sécurité) : il faut donc `./script.sh` pour lancer un script local. `which cmd` montre quel binaire sera exécuté.",
+      "q_en": "What is PATH for, and why do you run a local script with ./?",
+      "a_en": "PATH is the ordered list of directories where the shell looks for an executable when you type a command without a path — first found, first served. The current directory isn't in it (security): hence `./script.sh` to run a local script. `which cmd` shows which binary will run."
+    },
+    {
+      "q_fr": "Pourquoi préférer les clés SSH aux mots de passe ?",
+      "a_fr": "Une paire clé publique/privée : la publique va dans ~/.ssh/authorized_keys du serveur, la privée ne quitte jamais votre machine. Rien à deviner par force brute, pas de secret transmis au serveur, révocation simple (retirer la clé publique), et automatisation possible (CI, déploiements) sans stocker de mot de passe.",
+      "q_en": "Why prefer SSH keys over passwords?",
+      "a_en": "A public/private key pair: the public key goes into the server's ~/.ssh/authorized_keys, the private one never leaves your machine. Nothing to brute-force, no secret sent to the server, easy revocation (remove the public key), and automation possible (CI, deployments) without storing a password."
+    }
+  ],
+  "qcm": [
+    {
+      "q_fr": "Que fait `docker stop` pour arrêter un conteneur ?",
+      "q_en": "What does `docker stop` do to stop a container?",
+      "choices_fr": [
+        "Il envoie directement SIGKILL au conteneur",
+        "Il envoie SIGTERM, attend ~10 s, puis SIGKILL",
+        "Il coupe le réseau du conteneur jusqu'à l'arrêt",
+        "Il envoie SIGSTOP pour geler le processus"
+      ],
+      "choices_en": [
+        "It sends SIGKILL to the container directly",
+        "It sends SIGTERM, waits ~10 s, then SIGKILL",
+        "It cuts the container's network until it stops",
+        "It sends SIGSTOP to freeze the process"
+      ],
+      "answer": 1,
+      "explain_fr": "SIGTERM d'abord pour laisser le PID 1 du conteneur s'arrêter proprement, SIGKILL après le délai de grâce. Si l'app ignore SIGTERM, elle meurt brutalement à chaque déploiement.",
+      "explain_en": "SIGTERM first so the container's PID 1 can shut down cleanly, SIGKILL after the grace period. If the app ignores SIGTERM, it dies brutally on every deployment."
+    },
+    {
+      "q_fr": "À quelles permissions correspond chmod 644 ?",
+      "q_en": "Which permissions does chmod 644 correspond to?",
+      "choices_fr": [
+        "rwxr--r--",
+        "rw-rw-rw-",
+        "rw-r--r--",
+        "r--rw-rw-"
+      ],
+      "choices_en": [
+        "rwxr--r--",
+        "rw-rw-rw-",
+        "rw-r--r--",
+        "r--rw-rw-"
+      ],
+      "answer": 2,
+      "explain_fr": "6 = 4+2 = rw- pour le propriétaire ; 4 = r-- pour le groupe et les autres. C'est le mode standard d'un fichier non exécutable partageable en lecture.",
+      "explain_en": "6 = 4+2 = rw- for the owner; 4 = r-- for group and others. It's the standard mode for a non-executable, read-shareable file."
+    },
+    {
+      "q_fr": "Quelle commande liste les ports en écoute et les processus associés ?",
+      "q_en": "Which command lists listening ports and their owning processes?",
+      "choices_fr": [
+        "ss -tlnp",
+        "ps aux",
+        "df -h",
+        "find / -type p"
+      ],
+      "choices_en": [
+        "ss -tlnp",
+        "ps aux",
+        "df -h",
+        "find / -type p"
+      ],
+      "answer": 0,
+      "explain_fr": "ss (successeur de netstat) : -t TCP, -l sockets en écoute, -n ports numériques, -p processus propriétaire. ps liste les processus, df l'espace disque.",
+      "explain_en": "ss (netstat's successor): -t TCP, -l listening sockets, -n numeric ports, -p owning process. ps lists processes, df disk space."
+    },
+    {
+      "q_fr": "Pourquoi faut-il `sort` avant `uniq -c` dans un pipeline ?",
+      "q_en": "Why do you need `sort` before `uniq -c` in a pipeline?",
+      "choices_fr": [
+        "uniq refuse de s'exécuter sur une entrée non triée",
+        "sort supprime déjà les doublons",
+        "Pour accélérer le pipeline",
+        "uniq ne fusionne que les lignes adjacentes : sans tri, les comptes sont faux"
+      ],
+      "choices_en": [
+        "uniq refuses to run on unsorted input",
+        "sort already removes duplicates",
+        "To speed up the pipeline",
+        "uniq only merges adjacent lines: without sorting, counts are wrong"
+      ],
+      "answer": 3,
+      "explain_fr": "uniq compare chaque ligne à la précédente : des doublons non adjacents sont comptés séparément. Le tri les regroupe d'abord — uniq ne plante pas, il compte juste faux.",
+      "explain_en": "uniq compares each line to the previous one: non-adjacent duplicates are counted separately. Sorting groups them first — uniq doesn't crash, it just miscounts."
+    },
+    {
+      "q_fr": "Qu'est-ce que /proc ?",
+      "q_en": "What is /proc?",
+      "choices_fr": [
+        "Le répertoire où les programmes sont installés",
+        "Un filesystem virtuel exposant l'état du noyau et des processus",
+        "Le cache disque du noyau",
+        "Un répertoire de logs système"
+      ],
+      "choices_en": [
+        "The directory where programs are installed",
+        "A virtual filesystem exposing kernel and process state",
+        "The kernel's disk cache",
+        "A system log directory"
+      ],
+      "answer": 1,
+      "explain_fr": "Rien dans /proc n'existe sur le disque : le noyau génère le contenu à la lecture. /proc/<pid>/ décrit chaque processus, /proc/cpuinfo les CPU — illustration directe du « tout est fichier ».",
+      "explain_en": "Nothing in /proc exists on disk: the kernel generates the content on read. /proc/<pid>/ describes each process, /proc/cpuinfo the CPUs — a direct illustration of \"everything is a file\"."
+    },
+    {
+      "q_fr": "Comment suivre en direct les logs d'un service systemd ?",
+      "q_en": "How do you follow a systemd service's logs live?",
+      "choices_fr": [
+        "systemctl logs nginx --live",
+        "cat /var/log/systemd/nginx.log",
+        "journalctl -u nginx -f",
+        "ps aux | grep nginx"
+      ],
+      "choices_en": [
+        "systemctl logs nginx --live",
+        "cat /var/log/systemd/nginx.log",
+        "journalctl -u nginx -f",
+        "ps aux | grep nginx"
+      ],
+      "answer": 2,
+      "explain_fr": "journalctl lit le journal de systemd : -u filtre par unité (service), -f suit en continu comme tail -f. `systemctl logs` n'existe pas, et systemd n'écrit pas un fichier par service.",
+      "explain_en": "journalctl reads systemd's journal: -u filters by unit (service), -f follows continuously like tail -f. `systemctl logs` doesn't exist, and systemd doesn't write one file per service."
+    }
+  ]
+}

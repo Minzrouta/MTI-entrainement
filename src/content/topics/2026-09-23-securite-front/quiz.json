@@ -1,0 +1,168 @@
+{
+  "flashcards": [
+    {
+      "q_fr": "Quels sont les trois types de XSS ?",
+      "a_fr": "Stocké : le payload est persisté (commentaire en DB) et servi à tous les visiteurs. Réfléchi : le payload voyage dans l'URL et est renvoyé dans la page (il faut faire cliquer la victime). DOM-based : la faille est entièrement côté client, le JS injecte une donnée non fiable dans le DOM (innerHTML).",
+      "q_en": "What are the three types of XSS?",
+      "a_en": "Stored: the payload is persisted (comment in DB) and served to every visitor. Reflected: the payload travels in the URL and is echoed back into the page (the victim must click). DOM-based: the flaw is entirely client-side, JS injects untrusted data into the DOM (innerHTML)."
+    },
+    {
+      "q_fr": "Pourquoi innerHTML est-il dangereux et comment le neutraliser ?",
+      "a_fr": "innerHTML interprète la chaîne comme du HTML : un `<img src=x onerror=...>` s'exécute. Neutralisation : textContent quand on affiche du texte (le payload s'affiche sans s'exécuter) ; si on a vraiment besoin de HTML riche, sanitizer avec DOMPurify. En React, même règle pour dangerouslySetInnerHTML.",
+      "q_en": "Why is innerHTML dangerous and how do you neutralize it?",
+      "a_en": "innerHTML interprets the string as HTML: an `<img src=x onerror=...>` executes. Neutralization: textContent when displaying text (the payload is shown, not executed); if you genuinely need rich HTML, sanitize with DOMPurify. In React, same rule for dangerouslySetInnerHTML."
+    },
+    {
+      "q_fr": "Comment fonctionne une attaque CSRF ?",
+      "a_fr": "Le navigateur joint automatiquement les cookies d'un site à toute requête vers ce site. Un site malveillant fait donc soumettre (formulaire caché auto-submit) une requête vers bank.com par le navigateur d'une victime connectée : le cookie de session part avec, le serveur voit une requête authentifiée valide. L'attaquant n'exécute aucun code sur bank.com.",
+      "q_en": "How does a CSRF attack work?",
+      "a_en": "The browser automatically attaches a site's cookies to any request headed to it. A malicious site therefore makes a logged-in victim's browser submit (hidden auto-submitted form) a request to bank.com: the session cookie goes along, and the server sees a valid authenticated request. The attacker executes no code on bank.com."
+    },
+    {
+      "q_fr": "Que valent Strict, Lax et None pour l'attribut SameSite d'un cookie ?",
+      "a_fr": "Strict : le cookie ne part jamais en contexte cross-site (même en cliquant un lien). Lax (défaut moderne) : il part uniquement sur les navigations top-level en GET. None : il part toujours, et exige Secure. Lax bloque le CSRF classique en POST — d'où la règle « jamais de mutation d'état en GET ».",
+      "q_en": "What do Strict, Lax and None mean for a cookie's SameSite attribute?",
+      "a_en": "Strict: the cookie never travels in cross-site contexts (even when clicking a link). Lax (modern default): it only travels on top-level GET navigations. None: it always travels, and requires Secure. Lax blocks classic POST CSRF — hence the rule \"never mutate state on GET\"."
+    },
+    {
+      "q_fr": "Qu'est-ce que CORS et qui l'applique ?",
+      "a_fr": "Un assouplissement contrôlé de la same-origin policy : le serveur déclare via Access-Control-Allow-Origin quelles origines web peuvent lire ses réponses. Il est appliqué par le navigateur uniquement — curl, Postman ou un autre serveur l'ignorent. CORS protège les utilisateurs, pas l'API : la sécurité serveur reste l'authentification/autorisation.",
+      "q_en": "What is CORS and who enforces it?",
+      "a_en": "A controlled relaxation of the same-origin policy: the server declares via Access-Control-Allow-Origin which web origins may read its responses. It is enforced by the browser only — curl, Postman or another server ignore it. CORS protects users, not the API: server security remains authentication/authorization."
+    },
+    {
+      "q_fr": "Qu'est-ce qu'un preflight CORS et quand a-t-il lieu ?",
+      "a_fr": "Une requête OPTIONS envoyée automatiquement par le navigateur avant une requête « non simple » (Content-Type JSON, headers custom, PUT/DELETE…). Le serveur y répond avec les méthodes, headers et origines autorisés (Access-Control-Allow-*). Si le preflight échoue, la vraie requête n'est jamais envoyée : c'est l'« erreur CORS » de la console.",
+      "q_en": "What is a CORS preflight and when does it happen?",
+      "a_en": "An OPTIONS request the browser automatically sends before a \"non-simple\" request (JSON Content-Type, custom headers, PUT/DELETE…). The server replies with the allowed methods, headers and origins (Access-Control-Allow-*). If the preflight fails, the real request is never sent: that's the console's \"CORS error\"."
+    },
+    {
+      "q_fr": "À quoi sert une CSP (Content Security Policy) ?",
+      "a_fr": "C'est une liste blanche déclarative (header HTTP) de ce que la page peut charger et exécuter : script-src, img-src, frame-ancestors… Bien configurée (sans 'unsafe-inline'), elle bloque l'exécution des scripts inline injectés : même si un payload XSS passe l'échappement, il ne s'exécute pas. Défense en profondeur, pas un remplacement de l'échappement.",
+      "q_en": "What is a CSP (Content Security Policy) for?",
+      "a_en": "A declarative allowlist (HTTP header) of what the page may load and execute: script-src, img-src, frame-ancestors… Properly configured (without 'unsafe-inline'), it blocks injected inline scripts from executing: even if an XSS payload gets past escaping, it doesn't run. Defense in depth, not a replacement for escaping."
+    },
+    {
+      "q_fr": "localStorage vs cookie httpOnly pour stocker un token : quel arbitrage ?",
+      "a_fr": "localStorage : lisible par le JS, donc n'importe quel XSS exfiltre le token. Cookie httpOnly : illisible par le JS (le XSS ne peut plus voler le token) mais envoyé automatiquement, donc exposé au CSRF — à couvrir avec SameSite + token anti-CSRF. Recommandation générale : cookie httpOnly + Secure + SameSite. Un XSS reste grave dans les deux cas.",
+      "q_en": "localStorage vs httpOnly cookie for storing a token: what's the trade-off?",
+      "a_en": "localStorage: readable by JS, so any XSS exfiltrates the token. httpOnly cookie: unreadable by JS (XSS can no longer steal the token) but sent automatically, hence exposed to CSRF — covered with SameSite + an anti-CSRF token. General recommendation: httpOnly + Secure + SameSite cookie. XSS remains serious either way."
+    }
+  ],
+  "qcm": [
+    {
+      "q_fr": "Que protège réellement CORS ?",
+      "q_en": "What does CORS actually protect?",
+      "choices_fr": [
+        "L'API contre les requêtes de serveurs malveillants",
+        "L'API contre curl et Postman",
+        "Les utilisateurs : il empêche une page tierce de lire les réponses avec leurs cookies",
+        "La base de données contre les injections"
+      ],
+      "choices_en": [
+        "The API against requests from malicious servers",
+        "The API against curl and Postman",
+        "Users: it prevents a third-party page from reading responses with their cookies",
+        "The database against injections"
+      ],
+      "answer": 2,
+      "explain_fr": "CORS est appliqué par le navigateur uniquement : tout client hors navigateur l'ignore. Il protège les utilisateurs (leurs cookies, leurs sessions), pas votre serveur — la sécurité de l'API, c'est l'authentification et l'autorisation.",
+      "explain_en": "CORS is enforced by the browser only: any non-browser client ignores it. It protects users (their cookies, their sessions), not your server — API security is authentication and authorization."
+    },
+    {
+      "q_fr": "Pourquoi une attaque CSRF fonctionne-t-elle sans exécuter de code sur le site cible ?",
+      "q_en": "Why does a CSRF attack work without executing any code on the target site?",
+      "choices_fr": [
+        "Parce que le navigateur joint automatiquement les cookies à toute requête vers le site",
+        "Parce que le serveur cible a forcément une faille XSS",
+        "Parce que HTTPS n'est pas activé",
+        "Parce que l'attaquant a volé le mot de passe"
+      ],
+      "choices_en": [
+        "Because the browser automatically attaches cookies to any request headed to the site",
+        "Because the target server necessarily has an XSS flaw",
+        "Because HTTPS is not enabled",
+        "Because the attacker stole the password"
+      ],
+      "answer": 0,
+      "explain_fr": "Tout le CSRF repose sur ce comportement : un formulaire auto-soumis depuis evil.site vers bank.com part AVEC le cookie de session de la victime. Parades : token anti-CSRF, SameSite, vérification de l'Origin.",
+      "explain_en": "All of CSRF rests on that behavior: a form auto-submitted from evil.site to bank.com goes out WITH the victim's session cookie. Defenses: anti-CSRF token, SameSite, Origin check."
+    },
+    {
+      "q_fr": "Un utilisateur poste le commentaire `<img src=x onerror=\"alert(1)\">`. Quelle ligne l'affiche sans l'exécuter ?",
+      "q_en": "A user posts the comment `<img src=x onerror=\"alert(1)\">`. Which line displays it without executing it?",
+      "choices_fr": [
+        "div.innerHTML = comment",
+        "div.textContent = comment",
+        "eval(comment)",
+        "document.write(comment)"
+      ],
+      "choices_en": [
+        "div.innerHTML = comment",
+        "div.textContent = comment",
+        "eval(comment)",
+        "document.write(comment)"
+      ],
+      "answer": 1,
+      "explain_fr": "textContent traite la chaîne comme du texte brut : le payload s'affiche à l'écran mais n'est jamais interprété comme du HTML. innerHTML et document.write interprètent le HTML (le onerror s'exécute), eval exécute directement du JS.",
+      "explain_en": "textContent treats the string as plain text: the payload is displayed on screen but never interpreted as HTML. innerHTML and document.write parse the HTML (the onerror fires), eval executes JS directly."
+    },
+    {
+      "q_fr": "Quel est le principal risque d'un JWT stocké en localStorage ?",
+      "q_en": "What is the main risk of a JWT stored in localStorage?",
+      "choices_fr": [
+        "Il expire plus vite qu'en cookie",
+        "Il est envoyé automatiquement sur les requêtes cross-site (CSRF)",
+        "Il est effacé à chaque fermeture du navigateur",
+        "Toute faille XSS peut le lire et l'exfiltrer"
+      ],
+      "choices_en": [
+        "It expires faster than in a cookie",
+        "It is sent automatically on cross-site requests (CSRF)",
+        "It is erased every time the browser closes",
+        "Any XSS flaw can read and exfiltrate it"
+      ],
+      "answer": 3,
+      "explain_fr": "localStorage est lisible par tout JS de la page : un XSS exfiltre le token en une ligne. C'est le cookie (envoyé automatiquement) qui expose au CSRF — localStorage, lui, n'est jamais envoyé automatiquement.",
+      "explain_en": "localStorage is readable by any JS on the page: an XSS exfiltrates the token in one line. It's the cookie (sent automatically) that exposes to CSRF — localStorage is never sent automatically."
+    },
+    {
+      "q_fr": "Quand le navigateur envoie-t-il un preflight OPTIONS ?",
+      "q_en": "When does the browser send an OPTIONS preflight?",
+      "choices_fr": [
+        "Avant chaque requête, sans exception",
+        "Avant une requête « non simple » : JSON, headers custom, PUT/DELETE…",
+        "Uniquement quand le serveur le demande",
+        "Uniquement en HTTP, jamais en HTTPS"
+      ],
+      "choices_en": [
+        "Before every request, no exception",
+        "Before a \"non-simple\" request: JSON, custom headers, PUT/DELETE…",
+        "Only when the server requests it",
+        "Only over HTTP, never HTTPS"
+      ],
+      "answer": 1,
+      "explain_fr": "Les requêtes « simples » (GET/POST en form-urlencoded, sans header custom) partent directement. Le reste déclenche un OPTIONS préalable : le serveur doit répondre avec les Access-Control-Allow-* adéquats, sinon la vraie requête n'est jamais envoyée.",
+      "explain_en": "\"Simple\" requests (GET/POST as form-urlencoded, no custom headers) go straight out. Everything else triggers a prior OPTIONS: the server must reply with the right Access-Control-Allow-* headers, or the real request is never sent."
+    },
+    {
+      "q_fr": "Pourquoi `'unsafe-inline'` dans script-src vide-t-il une CSP de son intérêt ?",
+      "q_en": "Why does `'unsafe-inline'` in script-src defeat a CSP's purpose?",
+      "choices_fr": [
+        "Parce que les payloads XSS injectés sont précisément des scripts inline",
+        "Parce qu'il désactive HTTPS",
+        "Parce qu'il bloque les scripts légitimes du site",
+        "Parce qu'il autorise les iframes tierces"
+      ],
+      "choices_en": [
+        "Because injected XSS payloads are precisely inline scripts",
+        "Because it disables HTTPS",
+        "Because it blocks the site's legitimate scripts",
+        "Because it allows third-party iframes"
+      ],
+      "answer": 0,
+      "explain_fr": "L'intérêt majeur d'une CSP anti-XSS est de bloquer les scripts inline injectés ; 'unsafe-inline' les réautorise tous. Pour les scripts inline légitimes, on utilise des nonces ou des hashes, pas 'unsafe-inline'.",
+      "explain_en": "The main anti-XSS value of a CSP is blocking injected inline scripts; 'unsafe-inline' re-allows them all. For legitimate inline scripts, use nonces or hashes, not 'unsafe-inline'."
+    }
+  ]
+}

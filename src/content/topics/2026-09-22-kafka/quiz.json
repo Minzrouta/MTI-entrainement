@@ -1,0 +1,168 @@
+{
+  "flashcards": [
+    {
+      "q_fr": "Quelle est la différence fondamentale entre Kafka et une file de messages comme RabbitMQ ?",
+      "a_fr": "Kafka est un log distribué append-only : lire ne détruit rien, chaque consommateur avance son propre offset dans un journal immuable conservé selon une rétention (replay possible). RabbitMQ est une file : un message consommé et acquitté est supprimé, et le routage (exchanges, bindings) y est beaucoup plus riche.",
+      "q_en": "What is the fundamental difference between Kafka and a message queue like RabbitMQ?",
+      "a_en": "Kafka is a distributed append-only log: reading destroys nothing, each consumer advances its own offset through an immutable journal kept per a retention policy (replay possible). RabbitMQ is a queue: a consumed and acked message is deleted, and routing (exchanges, bindings) is much richer."
+    },
+    {
+      "q_fr": "Topic, partition, offset : définitions ?",
+      "a_fr": "Un topic est un flux nommé d'événements, découpé en partitions. Chaque partition est un journal ordonné et immuable ; chaque message y reçoit un offset croissant. La partition est l'unité d'ordre et de parallélisme ; l'offset est le curseur de lecture de chaque groupe de consommateurs.",
+      "q_en": "Topic, partition, offset: definitions?",
+      "a_en": "A topic is a named stream of events, split into partitions. Each partition is an ordered, immutable log; each message in it gets an increasing offset. The partition is the unit of ordering and parallelism; the offset is each consumer group's read cursor."
+    },
+    {
+      "q_fr": "Quelle est la règle d'assignation des partitions dans un consumer group ?",
+      "a_fr": "Au sein d'un groupe, chaque partition est assignée à exactement un consumer (un consumer peut avoir plusieurs partitions). Conséquence : le parallélisme maximal d'un groupe = le nombre de partitions ; les consumers excédentaires restent idle. Ajouter/retirer un consumer déclenche un rebalance.",
+      "q_en": "What is the partition assignment rule in a consumer group?",
+      "a_en": "Within a group, each partition is assigned to exactly one consumer (a consumer can hold several partitions). Consequence: a group's maximum parallelism = the partition count; extra consumers sit idle. Adding/removing a consumer triggers a rebalance."
+    },
+    {
+      "q_fr": "Quel rôle joue la clé de partitionnement ?",
+      "a_fr": "Le producteur hash la clé pour choisir la partition : tous les événements d'une même clé vont dans la même partition et y restent ordonnés. Kafka ne garantit l'ordre QUE par partition — les événements devant rester ordonnés entre eux doivent donc partager la même clé (ex. order-id). Sans clé : round-robin, aucun ordre.",
+      "q_en": "What role does the partition key play?",
+      "a_en": "The producer hashes the key to pick the partition: all events with the same key go to the same partition and stay ordered there. Kafka guarantees order ONLY per partition — events that must stay ordered relative to each other must share the same key (e.g. order-id). Without a key: round-robin, no ordering."
+    },
+    {
+      "q_fr": "Qu'est-ce que le replay et pourquoi est-ce un avantage majeur de Kafka ?",
+      "a_fr": "Les messages restent dans le log jusqu'à expiration de la rétention (temps/taille), lus ou non. On peut donc remettre les offsets d'un groupe en arrière et retraiter tout l'historique : reconstruire un cache, alimenter un nouveau service, rejouer après un bug. Une queue classique supprime à la consommation : replay impossible.",
+      "q_en": "What is replay and why is it a major Kafka advantage?",
+      "a_en": "Messages stay in the log until retention expires (time/size), read or not. You can therefore rewind a group's offsets and reprocess the whole history: rebuild a cache, feed a new service, replay after a bug. A classic queue deletes on consumption: no replay possible."
+    },
+    {
+      "q_fr": "At-least-once, at-most-once, exactly-once : que garantit Kafka par défaut ?",
+      "a_fr": "Par défaut : at-least-once — si le consumer crash entre le traitement et le commit d'offset, le message est relivré (doublons possibles). Committer avant de traiter = at-most-once (perte possible). L'exactly-once (producteur idempotent + transactions) vaut surtout en périmètre Kafka→Kafka ; bout en bout, on vise at-least-once + consumer idempotent.",
+      "q_en": "At-least-once, at-most-once, exactly-once: what does Kafka guarantee by default?",
+      "a_en": "By default: at-least-once — if the consumer crashes between processing and committing the offset, the message is redelivered (duplicates possible). Committing before processing = at-most-once (possible loss). Exactly-once (idempotent producer + transactions) mostly holds within Kafka→Kafka; end to end, aim for at-least-once + an idempotent consumer."
+    },
+    {
+      "q_fr": "Event sourcing et CQRS en une phrase chacun ?",
+      "a_fr": "Event sourcing : stocker la séquence d'événements comme source de vérité et reconstruire l'état en les rejouant (audit complet, replay, mais complexité réelle : versionnage, projections). CQRS : séparer le modèle d'écriture (commandes → événements) du modèle de lecture (projections optimisées). On peut être event-driven sans faire d'event sourcing complet.",
+      "q_en": "Event sourcing and CQRS in one sentence each?",
+      "a_en": "Event sourcing: store the sequence of events as the source of truth and rebuild state by replaying them (full audit, replay, but real complexity: versioning, projections). CQRS: separate the write model (commands → events) from the read model (optimized projections). You can be event-driven without doing full event sourcing."
+    },
+    {
+      "q_fr": "Quand Kafka est-il overkill ?",
+      "a_fr": "Faible volume, un seul consommateur, pas de besoin de replay : une table jobs en Postgres, RabbitMQ ou Redis Streams suffisent pour une fraction du coût opérationnel (cluster de brokers, monitoring, rebalances). Kafka se justifie par : gros volumes, plusieurs lecteurs indépendants, replay/rétention, streaming temps réel.",
+      "q_en": "When is Kafka overkill?",
+      "a_en": "Low volume, a single consumer, no replay needs: a jobs table in Postgres, RabbitMQ or Redis Streams suffice at a fraction of the operational cost (broker cluster, monitoring, rebalances). Kafka is justified by: large volumes, several independent readers, replay/retention, real-time streaming."
+    }
+  ],
+  "qcm": [
+    {
+      "q_fr": "Un topic a 3 partitions et un consumer group compte 5 consumers. Combien consomment réellement ?",
+      "q_en": "A topic has 3 partitions and a consumer group has 5 consumers. How many actually consume?",
+      "choices_fr": [
+        "5, les partitions sont partagées entre tous",
+        "1 seul, les autres sont en secours",
+        "3 au maximum, les 2 autres restent idle",
+        "5, mais avec des doublons"
+      ],
+      "choices_en": [
+        "5, partitions are shared among all",
+        "Only 1, the others are on standby",
+        "At most 3, the other 2 sit idle",
+        "5, but with duplicates"
+      ],
+      "answer": 2,
+      "explain_fr": "Dans un groupe, une partition est assignée à exactement un consumer : le parallélisme maximal = le nombre de partitions. Les consumers excédentaires sont idle (utiles seulement comme standby en cas de panne).",
+      "explain_en": "Within a group, a partition is assigned to exactly one consumer: maximum parallelism = the partition count. Extra consumers are idle (useful only as standby in case of failure)."
+    },
+    {
+      "q_fr": "Que garantit Kafka concernant l'ordre des messages ?",
+      "q_en": "What does Kafka guarantee about message ordering?",
+      "choices_fr": [
+        "L'ordre à l'intérieur de chaque partition uniquement",
+        "L'ordre global sur tout le topic",
+        "L'ordre global si on n'a qu'un producteur",
+        "Aucun ordre, jamais"
+      ],
+      "choices_en": [
+        "Ordering within each partition only",
+        "Global ordering across the whole topic",
+        "Global ordering if there is a single producer",
+        "No ordering, ever"
+      ],
+      "answer": 0,
+      "explain_fr": "L'ordre n'existe que par partition. Pour ordonner les événements d'une même entité, on leur donne la même clé (même partition). L'ordre global sur un topic multi-partitions n'existe pas, quel que soit le nombre de producteurs.",
+      "explain_en": "Ordering only exists per partition. To order one entity's events, give them the same key (same partition). Global ordering on a multi-partition topic does not exist, regardless of producer count."
+    },
+    {
+      "q_fr": "Un consumer crash après avoir traité un message mais avant de committer l'offset. Que se passe-t-il ?",
+      "q_en": "A consumer crashes after processing a message but before committing the offset. What happens?",
+      "choices_fr": [
+        "Le message est perdu définitivement",
+        "Le message sera relivré : doublon possible, d'où l'idempotence",
+        "Kafka détecte le traitement et avance l'offset tout seul",
+        "Le topic est verrouillé jusqu'au redémarrage"
+      ],
+      "choices_en": [
+        "The message is lost for good",
+        "The message will be redelivered: possible duplicate, hence idempotence",
+        "Kafka detects the processing and advances the offset itself",
+        "The topic is locked until restart"
+      ],
+      "answer": 1,
+      "explain_fr": "C'est la définition de l'at-least-once : au redémarrage (ou après rebalance), la lecture reprend au dernier offset committé, donc le message est retraité. Le traitement doit être idempotent (clé unique, upsert, dédoublonnage).",
+      "explain_en": "That's the definition of at-least-once: on restart (or after a rebalance), reading resumes from the last committed offset, so the message is reprocessed. Processing must be idempotent (unique key, upsert, deduplication)."
+    },
+    {
+      "q_fr": "Où vont deux messages produits avec la même clé « user-42 » ?",
+      "q_en": "Where do two messages produced with the same key \"user-42\" go?",
+      "choices_fr": [
+        "Sur deux partitions différentes pour équilibrer la charge",
+        "Sur la partition la moins chargée",
+        "Sur une partition aléatoire à chaque envoi",
+        "Sur la même partition, déterminée par le hash de la clé"
+      ],
+      "choices_en": [
+        "To two different partitions to balance load",
+        "To the least loaded partition",
+        "To a random partition on each send",
+        "To the same partition, determined by the key's hash"
+      ],
+      "answer": 3,
+      "explain_fr": "hash(clé) mod nombre de partitions : même clé → même partition → ordre préservé pour cette clé. Attention : changer le nombre de partitions change ce mapping pour les nouveaux messages.",
+      "explain_en": "hash(key) mod partition count: same key → same partition → order preserved for that key. Careful: changing the partition count changes this mapping for new messages."
+    },
+    {
+      "q_fr": "Que devient un message Kafka une fois lu par tous les consumer groups ?",
+      "q_en": "What happens to a Kafka message once every consumer group has read it?",
+      "choices_fr": [
+        "Il reste dans le log jusqu'à expiration de la rétention",
+        "Il est supprimé immédiatement",
+        "Il est archivé sur un topic spécial",
+        "Il est marqué « lu » et devient invisible"
+      ],
+      "choices_en": [
+        "It stays in the log until retention expires",
+        "It is deleted immediately",
+        "It is archived to a special topic",
+        "It is marked \"read\" and becomes invisible"
+      ],
+      "answer": 0,
+      "explain_fr": "La lecture est non destructive : le log ne dépend pas des consommateurs, seul le temps (ou la taille) configuré en rétention supprime les messages. C'est ce qui rend le replay possible.",
+      "explain_en": "Reading is non-destructive: the log doesn't depend on consumers; only the configured retention time (or size) deletes messages. That's what makes replay possible."
+    },
+    {
+      "q_fr": "Quel cas d'usage justifie RabbitMQ plutôt que Kafka ?",
+      "q_en": "Which use case favors RabbitMQ over Kafka?",
+      "choices_fr": [
+        "Rejouer 30 jours d'événements pour un nouveau service",
+        "Distribuer des jobs asynchrones à des workers, avec routage fin",
+        "Un flux lu indépendamment par facturation, analytics et audit",
+        "Ingérer des millions d'événements de clickstream par minute"
+      ],
+      "choices_en": [
+        "Replaying 30 days of events for a new service",
+        "Distributing async jobs to workers, with fine-grained routing",
+        "A stream read independently by billing, analytics and audit",
+        "Ingesting millions of clickstream events per minute"
+      ],
+      "answer": 1,
+      "explain_fr": "Des tâches à exécuter une fois par un pool de workers = le modèle file : RabbitMQ excelle (ack, retry, routage riche). Replay, lecteurs multiples indépendants et très gros débit sont les points forts du log Kafka.",
+      "explain_en": "Tasks to be executed once by a worker pool = the queue model: RabbitMQ excels (ack, retry, rich routing). Replay, multiple independent readers and very high throughput are the strengths of Kafka's log."
+    }
+  ]
+}

@@ -1,0 +1,168 @@
+{
+  "flashcards": [
+    {
+      "q_fr": "Quelle question unique résume CSR, SSR, SSG et ISR ?",
+      "a_fr": "« Où et quand le HTML est-il produit ? » CSR : dans le navigateur à l'exécution. SSR : sur le serveur à chaque requête. SSG : au build, une fois. ISR : au build, puis régénéré page par page en arrière-plan après expiration.",
+      "q_en": "Which single question sums up CSR, SSR, SSG and ISR?",
+      "a_en": "\"Where and when is the HTML produced?\" CSR: in the browser at runtime. SSR: on the server per request. SSG: at build time, once. ISR: at build time, then regenerated page by page in the background after expiry."
+    },
+    {
+      "q_fr": "Qu'est-ce que l'hydration et pourquoi est-elle nécessaire ?",
+      "a_fr": "Le HTML rendu côté serveur n'a aucun event listener : il est visible mais inerte. L'hydration ré-exécute les composants dans le navigateur et rattache état et événements au DOM existant. Nécessaire car l'interactivité vit dans le JS ; coûteuse car on paie le rendu deux fois.",
+      "q_en": "What is hydration and why is it necessary?",
+      "a_en": "Server-rendered HTML has no event listeners: it's visible but inert. Hydration re-executes the components in the browser and reattaches state and events to the existing DOM. Necessary because interactivity lives in JS; costly because you pay for rendering twice."
+    },
+    {
+      "q_fr": "Pourquoi une SPA en CSR pur a-t-elle un SEO fragile ?",
+      "a_fr": "Le HTML initial est une coquille vide ; le contenu n'apparaît qu'après exécution du JS. Google l'exécute mais avec délai et budget de crawl, et les aperçus de liens (Slack, réseaux sociaux) ne l'exécutent jamais. Contenu à indexer = contenu dans le HTML initial (SSR/SSG).",
+      "q_en": "Why does a pure-CSR SPA have fragile SEO?",
+      "a_en": "The initial HTML is an empty shell; content only appears after JS executes. Google runs it but with delay and a crawl budget, and link previews (Slack, social networks) never run it. Content to index = content in the initial HTML (SSR/SSG)."
+    },
+    {
+      "q_fr": "Quel problème l'ISR résout-il par rapport au SSG pur ?",
+      "a_fr": "Le SSG fige le contenu jusqu'au prochain build complet — intenable avec 50 000 pages à reconstruire pour un prix corrigé. L'ISR régénère chaque page individuellement en arrière-plan après un délai (revalidate) ou sur webhook : TTFB du statique, fraîcheur contrôlée, sans rebuild global.",
+      "q_en": "Which problem does ISR solve compared to pure SSG?",
+      "a_en": "SSG freezes content until the next full build — untenable with 50,000 pages to rebuild for one corrected price. ISR regenerates each page individually in the background after a delay (revalidate) or on webhook: static TTFB, controlled freshness, no global rebuild."
+    },
+    {
+      "q_fr": "Qu'est-ce que l'islands architecture (Astro) ?",
+      "a_fr": "La page est du HTML statique par défaut, sans JS ; seuls des îlots explicitement marqués interactifs (client:load, client:visible) reçoivent leur bundle et s'hydratent. On n'envoie du JS que là où il y a une interaction réelle — le contraire d'une SPA qui hydrate tout.",
+      "q_en": "What is the islands architecture (Astro)?",
+      "a_en": "The page is static HTML by default, with no JS; only islands explicitly marked interactive (client:load, client:visible) receive their bundle and hydrate. JS is shipped only where an actual interaction exists — the opposite of a SPA hydrating everything."
+    },
+    {
+      "q_fr": "Qu'est-ce qu'un hydration mismatch et comment l'éviter ?",
+      "a_fr": "Quand le rendu client ne correspond pas au HTML serveur (new Date(), Math.random(), window.innerWidth au premier rendu) : le framework avertit et re-rend, causant flash et perte de perf. Solution : premier rendu déterministe, valeurs client-only déplacées dans un useEffect.",
+      "q_en": "What is a hydration mismatch and how do you avoid it?",
+      "a_en": "When the client render doesn't match the server HTML (new Date(), Math.random(), window.innerWidth in the first render): the framework warns and re-renders, causing a flash and lost perf. Fix: deterministic first render, client-only values moved into a useEffect."
+    },
+    {
+      "q_fr": "Quand le CSR pur est-il le bon choix ?",
+      "a_fr": "App derrière une authentification (dashboard, back-office, SaaS) : aucun enjeu SEO, utilisateurs récurrents avec bundle en cache, interactivité riche. Le SSR ajouterait un coût et une complexité serveur pour un premier affichage que personne n'indexe.",
+      "q_en": "When is pure CSR the right choice?",
+      "a_en": "An app behind authentication (dashboard, back-office, SaaS): no SEO stakes, recurring users with a cached bundle, rich interactivity. SSR would add server cost and complexity for a first paint nobody indexes."
+    },
+    {
+      "q_fr": "Que sont les React Server Components, en une phrase ?",
+      "a_fr": "Des composants qui s'exécutent uniquement côté serveur et ne s'hydratent jamais : leur code ne quitte pas le serveur, seul le résultat rendu voyage vers le client — moins de JS envoyé, l'hydration étant réservée aux composants client interactifs.",
+      "q_en": "What are React Server Components, in one sentence?",
+      "a_en": "Components that run only on the server and never hydrate: their code never leaves the server, only the rendered result travels to the client — less JS shipped, with hydration reserved for interactive client components."
+    }
+  ],
+  "qcm": [
+    {
+      "q_fr": "Entre le premier affichage d'une page SSR et la fin de l'hydration, que se passe-t-il si l'utilisateur clique sur un bouton ?",
+      "q_en": "Between a SSR page's first paint and the end of hydration, what happens if the user clicks a button?",
+      "choices_fr": [
+        "Le clic est mis en file et rejoué après hydration",
+        "Rien : le HTML est visible mais aucun event listener n'est attaché",
+        "Le navigateur exécute le onClick inline du HTML",
+        "La page se recharge automatiquement"
+      ],
+      "choices_en": [
+        "The click is queued and replayed after hydration",
+        "Nothing: the HTML is visible but no event listener is attached",
+        "The browser runs the HTML's inline onClick",
+        "The page reloads automatically"
+      ],
+      "answer": 1,
+      "explain_fr": "C'est l'« uncanny valley » du SSR : la page est visible (bon FCP) mais sourde jusqu'à la fin de l'hydration (TTI). Les handlers React ne sont pas des attributs inline : ils n'existent que dans le JS pas encore attaché.",
+      "explain_en": "That's SSR's \"uncanny valley\": the page is visible (good FCP) but deaf until hydration completes (TTI). React handlers aren't inline attributes: they only exist in the not-yet-attached JS."
+    },
+    {
+      "q_fr": "Un blog dont les articles changent une fois par semaine, même contenu pour tous. Quelle stratégie ?",
+      "q_en": "A blog whose posts change once a week, same content for everyone. Which strategy?",
+      "choices_fr": [
+        "SSR, pour garantir la fraîcheur",
+        "CSR, pour l'interactivité",
+        "SSG : rendu payé une fois au build, HTML servi par CDN",
+        "WebSocket + rendu temps réel"
+      ],
+      "choices_en": [
+        "SSR, to guarantee freshness",
+        "CSR, for interactivity",
+        "SSG: rendering paid once at build, HTML served by CDN",
+        "WebSocket + real-time rendering"
+      ],
+      "answer": 2,
+      "explain_fr": "Contenu identique pour tous et rarement modifié = le cas d'école du SSG : TTFB minimal, SEO parfait, coût quasi nul. Le SSR recalculerait à chaque requête un résultat identique ; le CSR sacrifierait le SEO pour rien.",
+      "explain_en": "Identical content for everyone, rarely modified = the textbook SSG case: minimal TTFB, perfect SEO, near-zero cost. SSR would recompute an identical result per request; CSR would sacrifice SEO for nothing."
+    },
+    {
+      "q_fr": "Que fait `revalidate: 3600` dans getStaticProps (Next.js) ?",
+      "q_en": "What does `revalidate: 3600` do in getStaticProps (Next.js)?",
+      "choices_fr": [
+        "La page expire et renvoie une 404 après une heure",
+        "Le navigateur re-fetch les props toutes les heures",
+        "La page passe en SSR au bout d'une heure",
+        "ISR : la page statique est régénérée en arrière-plan au plus une fois par heure"
+      ],
+      "choices_en": [
+        "The page expires and returns a 404 after one hour",
+        "The browser re-fetches the props every hour",
+        "The page switches to SSR after one hour",
+        "ISR: the static page is regenerated in the background at most once an hour"
+      ],
+      "answer": 3,
+      "explain_fr": "C'est l'Incremental Static Regeneration, en mode stale-while-revalidate : après expiration, le visiteur suivant reçoit encore l'ancienne version pendant que la nouvelle se génère derrière. On garde le TTFB statique avec une fraîcheur périodique.",
+      "explain_en": "That's Incremental Static Regeneration, stale-while-revalidate style: after expiry, the next visitor still gets the old version while the new one generates behind the scenes. Static TTFB is kept with periodic freshness."
+    },
+    {
+      "q_fr": "Quel avantage principal l'islands architecture apporte-t-elle par rapport au SSR classique d'une SPA ?",
+      "q_en": "What main advantage does the islands architecture bring over a SPA's classic SSR?",
+      "choices_fr": [
+        "Seuls les composants interactifs reçoivent du JS et s'hydratent : le reste est du HTML pur",
+        "Elle supprime le besoin d'un build",
+        "Elle rend le SEO possible, impossible en SSR",
+        "Elle permet d'utiliser plusieurs frameworks CSS"
+      ],
+      "choices_en": [
+        "Only interactive components receive JS and hydrate: the rest is pure HTML",
+        "It removes the need for a build step",
+        "It makes SEO possible, which SSR cannot",
+        "It allows using several CSS frameworks"
+      ],
+      "answer": 0,
+      "explain_fr": "Une SPA SSR hydrate toute la page, même les parties purement statiques. Avec les islands (Astro), le texte reste du HTML sans JS et seuls les îlots marqués client:* paient le coût de l'hydration — bundle minuscule, TTI immédiat.",
+      "explain_en": "A SSR SPA hydrates the whole page, even the purely static parts. With islands (Astro), text stays JS-free HTML and only the client:*-marked islands pay the hydration cost — tiny bundle, immediate TTI."
+    },
+    {
+      "q_fr": "`curl -s https://monsite.com` renvoie `<div id=\"root\"></div>` et un tag script. Qu'en déduire ?",
+      "q_en": "`curl -s https://mysite.com` returns `<div id=\"root\"></div>` and a script tag. What do you conclude?",
+      "choices_fr": [
+        "Le site est en SSG",
+        "Le site est en CSR : le HTML se construit dans le navigateur via JS",
+        "Le site est en SSR avec streaming",
+        "Le serveur est mal configuré"
+      ],
+      "choices_en": [
+        "The site is SSG",
+        "The site is CSR: the HTML is built in the browser via JS",
+        "The site is SSR with streaming",
+        "The server is misconfigured"
+      ],
+      "answer": 1,
+      "explain_fr": "curl n'exécute pas le JS : si la réponse ne contient pas le contenu, c'est qu'il est construit côté client (CSR). En SSR/SSG, le contenu serait présent dans le HTML de la réponse. Test simple à montrer en entretien.",
+      "explain_en": "curl doesn't run JS: if the response lacks the content, it's built client-side (CSR). With SSR/SSG, the content would be present in the response HTML. A simple test worth showing in an interview."
+    },
+    {
+      "q_fr": "Quel code provoque un hydration mismatch en React SSR ?",
+      "q_en": "Which code causes a hydration mismatch in React SSR?",
+      "choices_fr": [
+        "Un useState initialisé à 0",
+        "Un composant qui rend props.title",
+        "Rendre `new Date().toLocaleTimeString()` directement dans le JSX",
+        "Un useEffect qui lit window.innerWidth"
+      ],
+      "choices_en": [
+        "A useState initialized to 0",
+        "A component rendering props.title",
+        "Rendering `new Date().toLocaleTimeString()` directly in the JSX",
+        "A useEffect reading window.innerWidth"
+      ],
+      "answer": 2,
+      "explain_fr": "L'heure calculée au rendu serveur diffère de celle du rendu client : le DOM ne correspond plus, React avertit et re-rend. Le useEffect, lui, est justement la bonne solution : il ne s'exécute qu'après hydration, côté client uniquement.",
+      "explain_en": "The time computed during the server render differs from the client render: the DOM no longer matches, React warns and re-renders. The useEffect option is precisely the right fix: it only runs after hydration, client-side only."
+    }
+  ]
+}

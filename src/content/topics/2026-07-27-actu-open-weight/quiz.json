@@ -1,0 +1,57 @@
+{
+  "flashcards": [
+    {
+      "q_fr": "Quelle est la différence entre un modèle open-weight et un modèle open source ?",
+      "a_fr": "Open-weight : les poids sont publiés — on peut télécharger, exécuter et fine-tuner le modèle. Open source au sens strict exigerait aussi le code et les données d'entraînement, souvent gardés fermés, et une licence sans restriction d'usage.",
+      "q_en": "What's the difference between an open-weight model and an open-source model?",
+      "a_en": "Open-weight: the weights are published — you can download, run and fine-tune the model. Strict open source would also require the training code and data, which usually stay closed, and an unrestricted license."
+    },
+    {
+      "q_fr": "Qu'est-ce qui a rendu la semaine du 20-27 juillet 2026 historique côté modèles ?",
+      "a_fr": "La plus grosse concentration de sorties open-weight jamais vue : Kimi K3 de Moonshot AI (2 800 milliards de paramètres, promis en poids ouverts, nº1 d'un leaderboard de code) et la version stable de DeepSeek V4 le 24 juillet.",
+      "q_en": "What made the week of July 20-27, 2026 historic on the model front?",
+      "a_en": "The largest concentration of open-weight releases ever seen: Moonshot AI's Kimi K3 (2.8 trillion parameters, open weights promised, #1 on a coding leaderboard) and DeepSeek V4's stable release on July 24."
+    },
+    {
+      "q_fr": "Quand choisir un modèle open-weight plutôt qu'une API fermée en production ?",
+      "a_fr": "Quand le volume rend l'API coûteuse, quand les données ne doivent pas sortir de l'infra (confidentialité, souveraineté), ou quand on veut fine-tuner. L'API fermée reste le choix rapide pour démarrer avec l'état de l'art sans infra.",
+      "q_en": "When should you pick an open-weight model over a closed API in production?",
+      "a_en": "When volume makes the API expensive, when data must not leave your infra (confidentiality, sovereignty), or when you want to fine-tune. The closed API remains the fast path to state-of-the-art with zero infra."
+    },
+    {
+      "q_fr": "Qu'est-ce que l'Open Secure AI Alliance annoncée cette semaine ?",
+      "a_fr": "Une coalition de 37 acteurs menée par Nvidia (avec CrowdStrike, Hugging Face, Dell…) pour développer et partager des outils de sécurité des systèmes IA, avec le framework open source NOOA. Signe que la sécurité IA devient un enjeu d'industrie.",
+      "q_en": "What is the Open Secure AI Alliance announced this week?",
+      "a_en": "A 37-member coalition led by Nvidia (with CrowdStrike, Hugging Face, Dell…) to build and share AI security tooling, alongside the open-source NOOA framework. A sign AI security is becoming an industry-wide concern."
+    }
+  ],
+  "qcm": [
+    {
+      "q_fr": "Kimi K3, le modèle qui a pris la tête d'un leaderboard de code cette semaine, est développé par…",
+      "q_en": "Kimi K3, the model that topped a coding leaderboard this week, is built by…",
+      "choices_fr": ["DeepSeek", "Moonshot AI", "Anthropic", "Nvidia"],
+      "choices_en": ["DeepSeek", "Moonshot AI", "Anthropic", "Nvidia"],
+      "answer": 1,
+      "explain_fr": "Kimi K3 (2 800 milliards de paramètres) est le modèle du labo chinois Moonshot AI, dont les poids ouverts ont été promis pour le 27 juillet.",
+      "explain_en": "Kimi K3 (2.8 trillion parameters) comes from Chinese lab Moonshot AI, with open weights promised for July 27."
+    },
+    {
+      "q_fr": "Un modèle « open-weight » garantit que…",
+      "q_en": "An \"open-weight\" model guarantees that…",
+      "choices_fr": ["Ses données d'entraînement sont publiques", "Ses poids sont téléchargeables et exécutables localement", "Il est gratuit pour tout usage commercial", "Son code d'entraînement est open source"],
+      "choices_en": ["Its training data is public", "Its weights can be downloaded and run locally", "It's free for any commercial use", "Its training code is open source"],
+      "answer": 1,
+      "explain_fr": "Seuls les poids sont garantis publics. Données, code d'entraînement et conditions d'usage commercial dépendent de chaque labo et de sa licence.",
+      "explain_en": "Only the weights are guaranteed public. Data, training code and commercial terms depend on each lab and its license."
+    },
+    {
+      "q_fr": "Quel chercheur célèbre a rejoint Anthropic cette semaine ?",
+      "q_en": "Which famous researcher joined Anthropic this week?",
+      "choices_fr": ["Yann LeCun", "Ilya Sutskever", "Andrej Karpathy", "Demis Hassabis"],
+      "choices_en": ["Yann LeCun", "Ilya Sutskever", "Andrej Karpathy", "Demis Hassabis"],
+      "answer": 2,
+      "explain_fr": "Andrej Karpathy (ex-OpenAI, ex-Tesla, connu pour ses cours) a annoncé rejoindre Anthropic pour travailler sur la frontière des LLM.",
+      "explain_en": "Andrej Karpathy (ex-OpenAI, ex-Tesla, famous for his lectures) announced he's joining Anthropic to work on the LLM frontier."
+    }
+  ]
+}

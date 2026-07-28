@@ -1,0 +1,168 @@
+{
+  "flashcards": [
+    {
+      "q_fr": "Que signifie le S de SOLID, avec un exemple de violation ?",
+      "a_fr": "Single Responsibility : une classe n'a qu'une seule raison de changer. Violation : une classe `Invoice` qui calcule le total, génère le PDF et envoie l'email. Correction : trois classes, chacune ne changeant que pour une raison (règles de calcul, format PDF, envoi).",
+      "q_en": "What does the S in SOLID mean, with an example violation?",
+      "a_en": "Single Responsibility: a class has only one reason to change. Violation: an `Invoice` class that computes the total, generates the PDF and sends the email. Fix: three classes, each changing for only one reason (calculation rules, PDF format, sending)."
+    },
+    {
+      "q_fr": "Qu'est-ce que le principe Open/Closed et comment le respecter concrètement ?",
+      "a_fr": "Ouvert à l'extension, fermé à la modification : ajouter un comportement sans modifier le code existant. Concrètement : remplacer un `switch` qui grossit par une interface (ex. `PaymentMethod`) et une implémentation par cas — ajouter un cas = ajouter une classe.",
+      "q_en": "What is the Open/Closed principle and how do you apply it concretely?",
+      "a_en": "Open for extension, closed for modification: add behavior without modifying existing code. Concretely: replace a growing `switch` with an interface (e.g. `PaymentMethod`) and one implementation per case — adding a case = adding a class."
+    },
+    {
+      "q_fr": "Pourquoi `Square extends Rectangle` viole-t-il le principe de Liskov ?",
+      "a_fr": "Un sous-type doit être substituable à son parent sans surprise. Or `setWidth` sur un carré modifie aussi la hauteur : du code écrit pour `Rectangle` (poser largeur puis hauteur indépendamment) casse. La hiérarchie mathématique ne fait pas une bonne hiérarchie d'objets mutables.",
+      "q_en": "Why does `Square extends Rectangle` violate the Liskov principle?",
+      "a_en": "A subtype must be substitutable for its parent without surprises. But `setWidth` on a square also changes the height: code written for `Rectangle` (setting width then height independently) breaks. The mathematical hierarchy doesn't make a good hierarchy of mutable objects."
+    },
+    {
+      "q_fr": "Qu'est-ce que l'inversion de dépendances (le D de SOLID) ?",
+      "a_fr": "Dépendre d'abstractions plutôt que d'implémentations concrètes : `OrderService` reçoit un `OrderRepository` (interface) au lieu de faire `new MySqlOrderRepository()` en dur. Bénéfices : testable avec un faux repo, et on change d'implémentation sans toucher au service.",
+      "q_en": "What is dependency inversion (the D in SOLID)?",
+      "a_en": "Depend on abstractions rather than concrete implementations: `OrderService` receives an `OrderRepository` (interface) instead of a hardcoded `new MySqlOrderRepository()`. Benefits: testable with a fake repo, and you can swap implementations without touching the service."
+    },
+    {
+      "q_fr": "Quelle est l'intention du pattern strategy et un exemple concret ?",
+      "a_fr": "Rendre un algorithme interchangeable derrière une interface commune : le code appelant choisit une implémentation sans connaître les détails. Exemple : calcul des frais de port (standard / express / retrait), chaque mode étant une classe implémentant `ShippingStrategy`.",
+      "q_en": "What is the intent of the strategy pattern and a concrete example?",
+      "a_en": "Make an algorithm interchangeable behind a common interface: the calling code picks an implementation without knowing the details. Example: shipping cost computation (standard / express / pickup), each mode being a class implementing `ShippingStrategy`."
+    },
+    {
+      "q_fr": "Pourquoi se méfier du singleton ?",
+      "a_fr": "C'est un état global déguisé : couplage fort de tout le code qui l'appelle, tests interdépendants (l'état fuit entre tests), dépendances cachées (invisibles dans les signatures). Alternative : créer l'instance unique au démarrage et l'injecter.",
+      "q_en": "Why be wary of the singleton?",
+      "a_en": "It's global state in disguise: tight coupling of all calling code, interdependent tests (state leaks between tests), hidden dependencies (invisible in signatures). Alternative: create the single instance at startup and inject it."
+    },
+    {
+      "q_fr": "Qu'est-ce que l'architecture hexagonale (ports & adapters) ?",
+      "a_fr": "Le domaine métier au centre, sans dépendance technique ; il définit des ports (interfaces) ; l'infrastructure fournit des adapters qui les implémentent (Postgres, Stripe, HTTP). Règle : les dépendances pointent vers le centre. Bénéfice : tester le métier sans DB, changer d'infra sans toucher aux règles.",
+      "q_en": "What is hexagonal architecture (ports & adapters)?",
+      "a_en": "The business domain at the center, with no technical dependency; it defines ports (interfaces); infrastructure provides adapters implementing them (Postgres, Stripe, HTTP). Rule: dependencies point toward the center. Benefit: test the business logic without a DB, swap infrastructure without touching the rules."
+    },
+    {
+      "q_fr": "Qu'est-ce que YAGNI et quand faut-il abstraire ?",
+      "a_fr": "You Aren't Gonna Need It : ne pas construire pour un besoin hypothétique. Une abstraction se paie comptant (indirection, complexité) ; la bonne heuristique est d'abstraire à la deuxième ou troisième occurrence réelle, car une abstraction prématurée fausse coûte plus cher qu'une duplication temporaire.",
+      "q_en": "What is YAGNI and when should you abstract?",
+      "a_en": "You Aren't Gonna Need It: don't build for a hypothetical need. An abstraction is paid for upfront (indirection, complexity); the good heuristic is to abstract at the second or third real occurrence, because a wrong premature abstraction costs more than temporary duplication."
+    }
+  ],
+  "qcm": [
+    {
+      "q_fr": "Une classe `ReportService` calcule des statistiques, les formate en HTML et les envoie par email. Quel principe SOLID est violé ?",
+      "q_en": "A `ReportService` class computes statistics, formats them as HTML and emails them. Which SOLID principle is violated?",
+      "choices_fr": [
+        "Liskov Substitution",
+        "Open/Closed",
+        "Single Responsibility",
+        "Interface Segregation"
+      ],
+      "choices_en": [
+        "Liskov Substitution",
+        "Open/Closed",
+        "Single Responsibility",
+        "Interface Segregation"
+      ],
+      "answer": 2,
+      "explain_fr": "Trois raisons de changer (règles de calcul, format, canal d'envoi) dans une seule classe : violation du Single Responsibility Principle. On découpe en trois classes.",
+      "explain_en": "Three reasons to change (calculation rules, format, delivery channel) in one class: a Single Responsibility Principle violation. Split into three classes."
+    },
+    {
+      "q_fr": "Quel est le principal bénéfice de l'injection de dépendances pour les tests ?",
+      "q_en": "What is the main benefit of dependency injection for testing?",
+      "choices_fr": [
+        "On peut substituer une fausse implémentation (in-memory, mock) sans toucher à la classe testée",
+        "Les tests s'exécutent en parallèle automatiquement",
+        "Le container DI génère les tests unitaires",
+        "Les tests n'ont plus besoin d'assertions"
+      ],
+      "choices_en": [
+        "You can substitute a fake implementation (in-memory, mock) without touching the class under test",
+        "Tests automatically run in parallel",
+        "The DI container generates the unit tests",
+        "Tests no longer need assertions"
+      ],
+      "answer": 0,
+      "explain_fr": "La classe dépend d'une interface reçue de l'extérieur : en test, on injecte un faux repo en mémoire au lieu de la vraie base. C'est le bénéfice le plus cité en entretien.",
+      "explain_en": "The class depends on an interface received from outside: in tests you inject a fake in-memory repo instead of the real database. It's the most cited benefit in interviews."
+    },
+    {
+      "q_fr": "Dans l'architecture hexagonale, dans quel sens pointent les dépendances ?",
+      "q_en": "In hexagonal architecture, which way do dependencies point?",
+      "choices_fr": [
+        "Du domaine vers les adapters (le métier appelle Postgres directement)",
+        "Dans les deux sens, selon les besoins",
+        "Il n'y a pas de règle de dépendance",
+        "Vers le centre : les adapters dépendent du domaine, jamais l'inverse"
+      ],
+      "choices_en": [
+        "From the domain to the adapters (the business logic calls Postgres directly)",
+        "Both ways, depending on the need",
+        "There is no dependency rule",
+        "Toward the center: adapters depend on the domain, never the reverse"
+      ],
+      "answer": 3,
+      "explain_fr": "La règle de dépendance : tout pointe vers le domaine. Le domaine définit des ports (interfaces), les adapters les implémentent. Le métier ne connaît ni Postgres ni Express.",
+      "explain_en": "The dependency rule: everything points toward the domain. The domain defines ports (interfaces), adapters implement them. The business logic knows neither Postgres nor Express."
+    },
+    {
+      "q_fr": "Vous remplacez un `switch (shippingMode)` grandissant par une interface `ShippingStrategy` et trois implémentations. Quel pattern appliquez-vous ?",
+      "q_en": "You replace a growing `switch (shippingMode)` with a `ShippingStrategy` interface and three implementations. Which pattern are you applying?",
+      "choices_fr": [
+        "Observer",
+        "Strategy",
+        "Adapter",
+        "Singleton"
+      ],
+      "choices_en": [
+        "Observer",
+        "Strategy",
+        "Adapter",
+        "Singleton"
+      ],
+      "answer": 1,
+      "explain_fr": "Strategy : un algorithme interchangeable derrière une interface commune. C'est aussi une application directe du principe Open/Closed — ajouter un mode = ajouter une classe.",
+      "explain_en": "Strategy: an interchangeable algorithm behind a common interface. It's also a direct application of the Open/Closed principle — adding a mode = adding a class."
+    },
+    {
+      "q_fr": "Quel pattern reconnaissez-vous dans `button.addEventListener('click', handler)` ?",
+      "q_en": "Which pattern do you recognize in `button.addEventListener('click', handler)`?",
+      "choices_fr": [
+        "Factory",
+        "Adapter",
+        "Observer",
+        "Strategy"
+      ],
+      "choices_en": [
+        "Factory",
+        "Adapter",
+        "Observer",
+        "Strategy"
+      ],
+      "answer": 2,
+      "explain_fr": "Observer : des abonnés (handlers) sont notifiés quand un événement survient, sans que l'émetteur les connaisse. Savoir nommer les patterns dans les APIs du quotidien est très apprécié en entretien.",
+      "explain_en": "Observer: subscribers (handlers) get notified when an event occurs, without the emitter knowing them. Naming patterns inside everyday APIs is highly valued in interviews."
+    },
+    {
+      "q_fr": "Quand une abstraction (interface, couche) est-elle généralement justifiée ?",
+      "q_en": "When is an abstraction (interface, layer) generally justified?",
+      "choices_fr": [
+        "Dès le premier jet, pour anticiper tous les besoins futurs",
+        "Quand il existe plusieurs implémentations réelles ou un besoin de substitution en test",
+        "Jamais : toute abstraction est de la sur-ingénierie",
+        "Uniquement quand un framework l'impose"
+      ],
+      "choices_en": [
+        "From the first draft, to anticipate all future needs",
+        "When several real implementations exist or you need substitution in tests",
+        "Never: any abstraction is over-engineering",
+        "Only when a framework requires it"
+      ],
+      "answer": 1,
+      "explain_fr": "YAGNI : l'abstraction se paie comptant pour un bénéfice hypothétique. On abstrait à la deuxième occurrence réelle ou pour un besoin concret (tests), pas « au cas où ».",
+      "explain_en": "YAGNI: abstraction is paid upfront for a hypothetical benefit. Abstract at the second real occurrence or for a concrete need (tests), not \"just in case\"."
+    }
+  ]
+}

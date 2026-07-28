@@ -1,0 +1,168 @@
+{
+  "flashcards": [
+    {
+      "q_fr": "Quelle est la différence entre un processus et un thread ?",
+      "a_fr": "Le processus a son propre espace mémoire, isolé par l'OS ; le thread est un fil d'exécution à l'intérieur d'un processus, qui partage le heap (variables globales, objets) avec les autres threads mais garde sa propre pile. Threads : communication gratuite mais synchronisation obligatoire. Processus : isolation forte, communication explicite (IPC).",
+      "q_en": "What is the difference between a process and a thread?",
+      "a_en": "A process has its own memory space, isolated by the OS; a thread is an execution flow inside a process, sharing the heap (globals, objects) with the other threads but keeping its own stack. Threads: free communication but mandatory synchronization. Processes: strong isolation, explicit communication (IPC)."
+    },
+    {
+      "q_fr": "Concurrence vs parallélisme : quelle différence ?",
+      "a_fr": "La concurrence, c'est gérer plusieurs tâches sur la même période (elles peuvent s'entrelacer sur un seul cœur) : une question de structure. Le parallélisme, c'est les exécuter au même instant sur plusieurs cœurs : une question de matériel. Node.js est concurrent sans parallélisme JS ; un calcul découpé sur 8 cœurs est parallèle.",
+      "q_en": "Concurrency vs parallelism: what's the difference?",
+      "a_en": "Concurrency is dealing with several tasks over the same period (they may interleave on a single core): a matter of structure. Parallelism is executing them at the same instant on several cores: a matter of hardware. Node.js is concurrent without JS parallelism; a computation split across 8 cores is parallel."
+    },
+    {
+      "q_fr": "Pourquoi `compteur++` n'est-il pas thread-safe ?",
+      "a_fr": "Parce que c'est en réalité trois instructions : load (lire la valeur en mémoire), add (incrémenter le registre), store (réécrire). L'ordonnanceur peut suspendre un thread entre deux instructions : deux threads lisent la même valeur, et l'écriture de l'un écrase celle de l'autre — un incrément est perdu.",
+      "q_en": "Why isn't `counter++` thread-safe?",
+      "a_en": "Because it's actually three instructions: load (read the value from memory), add (increment the register), store (write it back). The scheduler can suspend a thread between two instructions: two threads read the same value, and one write clobbers the other — an increment is lost."
+    },
+    {
+      "q_fr": "Qu'est-ce qu'une section critique et à quoi sert un mutex ?",
+      "a_fr": "La section critique est la portion de code qui lit-modifie-écrit un état partagé. Un mutex (mutual exclusion) garantit qu'un seul thread à la fois l'exécute : les autres bloquent à l'entrée jusqu'à la libération du verrou. Règle d'or : le lock protège des données — tout accès à cet état, lectures comprises, doit passer par le même verrou.",
+      "q_en": "What is a critical section and what is a mutex for?",
+      "a_en": "The critical section is the code portion that reads-modifies-writes shared state. A mutex (mutual exclusion) guarantees only one thread at a time executes it: the others block at the entrance until the lock is released. Golden rule: a lock protects data — every access to that state, reads included, must go through the same lock."
+    },
+    {
+      "q_fr": "Quelles sont les quatre conditions d'un deadlock, et le remède le plus courant ?",
+      "a_fr": "Conditions de Coffman : exclusion mutuelle, rétention et attente (hold & wait), pas de préemption des verrous, attente circulaire. En casser une seule suffit. Remède le plus courant : imposer un ordre global d'acquisition des locks (toujours les prendre dans le même ordre), ce qui rend l'attente circulaire impossible.",
+      "q_en": "What are the four deadlock conditions, and the most common remedy?",
+      "a_en": "The Coffman conditions: mutual exclusion, hold & wait, no lock preemption, circular wait. Breaking a single one is enough. Most common remedy: impose a global lock-acquisition order (always take locks in the same order), which makes circular wait impossible."
+    },
+    {
+      "q_fr": "Qu'est-ce qu'une opération atomique et quand la préférer à un mutex ?",
+      "a_fr": "Une instruction matérielle indivisible (fetch_add, compare-and-swap) qu'aucun autre thread ne peut couper en deux. Pour un simple compteur ou un flag, `std::atomic` / `AtomicInteger` est plus léger qu'un mutex : pas de blocage, pas de deadlock possible. Dès que plusieurs variables doivent rester cohérentes ensemble, il faut revenir au lock.",
+      "q_en": "What is an atomic operation and when should you prefer it to a mutex?",
+      "a_en": "An indivisible hardware instruction (fetch_add, compare-and-swap) that no other thread can cut in half. For a simple counter or flag, `std::atomic` / `AtomicInteger` is lighter than a mutex: no blocking, no possible deadlock. As soon as several variables must stay consistent together, go back to a lock."
+    },
+    {
+      "q_fr": "Que fait le GIL de Python, et quelle conséquence pratique ?",
+      "a_fr": "Le Global Interpreter Lock fait qu'un seul thread exécute du bytecode Python à la fois. Conséquence : les threads Python sont utiles pour l'I/O (le GIL est relâché pendant les attentes réseau/disque) mais n'apportent aucun gain sur du calcul pur — pour le CPU-bound, on passe par multiprocessing.",
+      "q_en": "What does Python's GIL do, and what is the practical consequence?",
+      "a_en": "The Global Interpreter Lock means only one thread executes Python bytecode at a time. Consequence: Python threads are useful for I/O (the GIL is released during network/disk waits) but bring no gain on pure computation — for CPU-bound work, use multiprocessing."
+    },
+    {
+      "q_fr": "Async/await ou threads : quel est LE critère de choix ?",
+      "a_fr": "La nature de la charge. I/O-bound (le programme attend : API, DB, fichiers) → async/event loop, qui gère des milliers d'attentes sur un seul thread. CPU-bound (le programme calcule : encodage, crypto, ML) → plusieurs processus ou threads natifs, environ un par cœur. L'async n'accélère jamais un calcul.",
+      "q_en": "Async/await or threads: what is THE deciding criterion?",
+      "a_en": "The nature of the workload. I/O-bound (the program waits: APIs, DB, files) → async/event loop, handling thousands of waits on a single thread. CPU-bound (the program computes: encoding, crypto, ML) → several processes or native threads, roughly one per core. Async never speeds up a computation."
+    }
+  ],
+  "qcm": [
+    {
+      "q_fr": "Que partagent les threads d'un même processus ?",
+      "q_en": "What do the threads of the same process share?",
+      "choices_fr": [
+        "Rien : chaque thread est totalement isolé",
+        "Leur pile d'exécution (stack)",
+        "Le tas (heap) et les variables globales",
+        "Leurs registres CPU"
+      ],
+      "choices_en": [
+        "Nothing: each thread is fully isolated",
+        "Their execution stack",
+        "The heap and global variables",
+        "Their CPU registers"
+      ],
+      "answer": 2,
+      "explain_fr": "Les threads partagent le heap (objets, globales) — c'est ce qui rend la communication gratuite et les races possibles. Pile et registres restent propres à chaque thread.",
+      "explain_en": "Threads share the heap (objects, globals) — that's what makes communication free and races possible. Stack and registers stay per-thread."
+    },
+    {
+      "q_fr": "En combien d'instructions machine `compteur++` se décompose-t-il typiquement ?",
+      "q_en": "Into how many machine instructions does `counter++` typically decompose?",
+      "choices_fr": [
+        "Une seule : c'est atomique",
+        "Trois : load, add, store",
+        "Deux : add puis commit",
+        "Ça dépend du nombre de threads"
+      ],
+      "choices_en": [
+        "Just one: it's atomic",
+        "Three: load, add, store",
+        "Two: add then commit",
+        "It depends on the number of threads"
+      ],
+      "answer": 1,
+      "explain_fr": "Lire la valeur en mémoire, incrémenter le registre, réécrire. L'ordonnanceur peut suspendre le thread entre chacune : c'est là que l'entrelacement perd des écritures.",
+      "explain_en": "Read the value from memory, increment the register, write it back. The scheduler can suspend the thread between each: that's where interleaving loses writes."
+    },
+    {
+      "q_fr": "Quelle stratégie casse l'attente circulaire et évite le deadlock ?",
+      "q_en": "Which strategy breaks circular wait and avoids deadlock?",
+      "choices_fr": [
+        "Toujours acquérir les locks dans le même ordre global",
+        "Ajouter plus de locks pour réduire la contention",
+        "Utiliser sleep() avant chaque acquisition",
+        "Passer tous les threads en priorité maximale"
+      ],
+      "choices_en": [
+        "Always acquire locks in the same global order",
+        "Add more locks to reduce contention",
+        "Call sleep() before each acquisition",
+        "Set all threads to maximum priority"
+      ],
+      "answer": 0,
+      "explain_fr": "Si tous les threads prennent les verrous dans le même ordre, aucun cycle d'attente ne peut se former. Plus de locks ou du sleep ne changent rien aux quatre conditions de Coffman.",
+      "explain_en": "If every thread takes locks in the same order, no wait cycle can form. More locks or sleeps do nothing about the four Coffman conditions."
+    },
+    {
+      "q_fr": "Vous devez encoder 1000 vidéos en Python. Quel outil choisir ?",
+      "q_en": "You need to encode 1000 videos in Python. Which tool do you pick?",
+      "choices_fr": [
+        "asyncio : l'async gère des milliers de tâches",
+        "threading : les threads partagent la mémoire",
+        "Un seul thread avec des callbacks",
+        "multiprocessing : un processus par cœur"
+      ],
+      "choices_en": [
+        "asyncio: async handles thousands of tasks",
+        "threading: threads share memory",
+        "A single thread with callbacks",
+        "multiprocessing: one process per core"
+      ],
+      "answer": 3,
+      "explain_fr": "L'encodage est CPU-bound : il faut de vrais cœurs en parallèle. Le GIL neutralise threading pour le calcul, et l'async n'accélère aucun calcul — il ne fait qu'attendre efficacement.",
+      "explain_en": "Encoding is CPU-bound: you need real cores in parallel. The GIL neutralizes threading for computation, and async speeds up no computation — it only waits efficiently."
+    },
+    {
+      "q_fr": "Qu'est-ce qui caractérise une race condition ?",
+      "q_en": "What characterizes a race condition?",
+      "choices_fr": [
+        "Le programme est plus lent que prévu",
+        "Deux threads utilisent trop de mémoire",
+        "Le résultat dépend de l'ordre d'exécution des threads",
+        "Un thread attend un verrou indéfiniment"
+      ],
+      "choices_en": [
+        "The program is slower than expected",
+        "Two threads use too much memory",
+        "The result depends on the threads' execution order",
+        "A thread waits forever on a lock"
+      ],
+      "answer": 2,
+      "explain_fr": "Race condition = résultat non déterministe selon l'entrelacement des threads sur un état partagé non synchronisé. L'attente infinie sur un verrou, c'est le deadlock.",
+      "explain_en": "Race condition = non-deterministic result depending on thread interleaving over unsynchronized shared state. Waiting forever on a lock is a deadlock."
+    },
+    {
+      "q_fr": "Pourquoi n'y a-t-il pas de race sur les variables entre deux callbacks JavaScript ?",
+      "q_en": "Why is there no race on variables between two JavaScript callbacks?",
+      "choices_fr": [
+        "JavaScript verrouille automatiquement chaque variable",
+        "Un seul thread exécute le JS : deux callbacks ne tournent jamais en même temps",
+        "Le moteur V8 détecte et corrige les races",
+        "Les variables JS sont immuables"
+      ],
+      "choices_en": [
+        "JavaScript automatically locks every variable",
+        "A single thread runs the JS: two callbacks never run at the same time",
+        "The V8 engine detects and fixes races",
+        "JS variables are immutable"
+      ],
+      "answer": 1,
+      "explain_fr": "L'event loop exécute les callbacks un par un sur un seul thread : pas d'accès simultané à la mémoire. Les races logiques restent possibles (réponses qui arrivent dans le désordre).",
+      "explain_en": "The event loop runs callbacks one at a time on a single thread: no simultaneous memory access. Logical races remain possible (responses arriving out of order)."
+    }
+  ]
+}

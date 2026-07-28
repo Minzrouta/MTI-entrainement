@@ -6,6 +6,8 @@ export interface Topic {
   slug: string;
   category: string;
   level: string;
+  /** Fiche d'actualité du lundi : pas de numéro « Jour N », badge Actu. */
+  isActu: boolean;
   fr: CollectionEntry<'topics'>;
   en: CollectionEntry<'topics'>;
   quiz: CollectionEntry<'quizzes'>;
@@ -27,6 +29,21 @@ export async function getTopics(): Promise<Topic[]> {
     if (t) t.quiz = q;
   }
   return [...byDir.values()]
-    .map((t) => ({ ...t, category: t.fr!.data.category, level: t.fr!.data.level }) as Topic)
-    .sort((a, b) => b.date.localeCompare(a.date));
+    .map(
+      (t) =>
+        ({
+          ...t,
+          category: t.fr!.data.category,
+          level: t.fr!.data.level,
+          isActu: t.slug!.startsWith('actu'),
+        }) as Topic
+    )
+    // Plus récent d'abord ; à date égale (lundi de lancement), l'actu passe devant.
+    .sort((a, b) => b.date.localeCompare(a.date) || Number(b.isActu) - Number(a.isActu));
+}
+
+/** Numéro « Jour N » d'une fiche générale (les actus n'en ont pas). */
+export function dayNumbers(topics: Topic[]): Map<string, number> {
+  const generals = topics.filter((t) => !t.isActu);
+  return new Map(generals.map((t, i) => [t.dir, generals.length - i]));
 }

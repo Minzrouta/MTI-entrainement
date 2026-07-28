@@ -1,0 +1,168 @@
+{
+  "flashcards": [
+    {
+      "q_fr": "Quelle est la différence entre 401 et 403 ?",
+      "a_fr": "401 Unauthorized = non authentifié (le serveur ne sait pas qui vous êtes : token absent ou expiré). 403 Forbidden = authentifié mais sans les droits nécessaires. Se réauthentifier corrige un 401, jamais un 403.",
+      "q_en": "What's the difference between 401 and 403?",
+      "a_en": "401 Unauthorized = not authenticated (the server doesn't know who you are: missing or expired token). 403 Forbidden = authenticated but lacking permission. Re-authenticating fixes a 401, never a 403."
+    },
+    {
+      "q_fr": "Qu'est-ce qu'une méthode HTTP idempotente ? Citez celles qui le sont.",
+      "a_fr": "Une méthode qu'on peut rejouer N fois avec le même état final qu'une seule exécution : GET, HEAD, PUT, DELETE (et OPTIONS). POST ne l'est pas — le rejouer crée des doublons, d'où les clés d'idempotence des API de paiement.",
+      "q_en": "What is an idempotent HTTP method? Which ones are?",
+      "a_en": "A method you can replay N times with the same final state as one execution: GET, HEAD, PUT, DELETE (and OPTIONS). POST is not — replaying it creates duplicates, hence the idempotency keys of payment APIs."
+    },
+    {
+      "q_fr": "PUT vs PATCH : quelle différence ?",
+      "a_fr": "PUT remplace la ressource entière (ce qui n'est pas envoyé disparaît) et est idempotent par définition. PATCH applique une modification partielle et n'est pas idempotent par contrat. PUT peut aussi créer la ressource à une URL connue du client.",
+      "q_en": "PUT vs PATCH: what's the difference?",
+      "a_en": "PUT replaces the entire resource (anything not sent is wiped) and is idempotent by definition. PATCH applies a partial modification and is not idempotent by contract. PUT can also create the resource at a URL the client knows."
+    },
+    {
+      "q_fr": "Comment fonctionne la négociation de contenu ?",
+      "a_fr": "Le client annonce ses préférences via les headers Accept (format), Accept-Language (langue) et Accept-Encoding (compression) ; le serveur choisit et répond avec Content-Type / Content-Encoding, ou 406 Not Acceptable s'il ne peut pas satisfaire la demande.",
+      "q_en": "How does content negotiation work?",
+      "a_en": "The client announces its preferences via the Accept (format), Accept-Language (language) and Accept-Encoding (compression) headers; the server picks and answers with Content-Type / Content-Encoding, or 406 Not Acceptable if it can't satisfy the request."
+    },
+    {
+      "q_fr": "À quoi servent les attributs HttpOnly, Secure et SameSite d'un cookie ?",
+      "a_fr": "HttpOnly rend le cookie invisible à JavaScript (protège contre le vol par XSS), Secure limite son envoi au HTTPS, SameSite contrôle son envoi sur les requêtes cross-site (protection CSRF, valeur Lax par défaut dans les navigateurs).",
+      "q_en": "What are a cookie's HttpOnly, Secure and SameSite attributes for?",
+      "a_en": "HttpOnly makes the cookie invisible to JavaScript (protects against theft via XSS), Secure restricts it to HTTPS, SameSite controls whether it's sent on cross-site requests (CSRF protection, Lax by default in browsers)."
+    },
+    {
+      "q_fr": "Qu'est-ce que le head-of-line blocking en HTTP/1.1 et comment HTTP/2 puis HTTP/3 le traitent-ils ?",
+      "a_fr": "En 1.1, les requêtes d'une connexion sont séquentielles : une réponse lente bloque les suivantes. HTTP/2 multiplexe des streams sur une connexion TCP (fini le HOL au niveau HTTP), mais un paquet TCP perdu bloque encore tous les streams. HTTP/3/QUIC (UDP) rend chaque stream indépendant face à la perte.",
+      "q_en": "What is head-of-line blocking in HTTP/1.1 and how do HTTP/2 then HTTP/3 address it?",
+      "a_en": "In 1.1, requests on a connection are sequential: a slow response blocks the next ones. HTTP/2 multiplexes streams over one TCP connection (no more HTTP-level HOL), but one lost TCP packet still stalls all streams. HTTP/3/QUIC (UDP) makes each stream independent under loss."
+    },
+    {
+      "q_fr": "Résumez le handshake TLS en deux phrases.",
+      "a_fr": "Client et serveur négocient les algorithmes, le serveur prouve son identité avec un certificat signé par une autorité de confiance, et un échange Diffie-Hellman éphémère établit une clé de session symétrique. Tout le trafic HTTP est ensuite chiffré avec cette clé — en TLS 1.3, un seul aller-retour suffit.",
+      "q_en": "Summarize the TLS handshake in two sentences.",
+      "a_en": "Client and server negotiate algorithms, the server proves its identity with a certificate signed by a trusted authority, and an ephemeral Diffie-Hellman exchange establishes a symmetric session key. All HTTP traffic is then encrypted with that key — in TLS 1.3 a single round trip is enough."
+    },
+    {
+      "q_fr": "Que signifient 502 et 503, et qui les émet en général ?",
+      "a_fr": "502 Bad Gateway : le reverse proxy (nginx, Traefik) n'a pas obtenu de réponse valide du backend (crashé, injoignable). 503 Service Unavailable : le service est surchargé ou en maintenance, souvent avec un Retry-After. Les deux viennent typiquement de la couche proxy/load balancer.",
+      "q_en": "What do 502 and 503 mean, and who typically emits them?",
+      "a_en": "502 Bad Gateway: the reverse proxy (nginx, Traefik) got no valid response from the backend (crashed, unreachable). 503 Service Unavailable: the service is overloaded or in maintenance, often with a Retry-After. Both typically come from the proxy/load-balancer layer."
+    }
+  ],
+  "qcm": [
+    {
+      "q_fr": "Votre API reçoit un JSON syntaxiquement valide mais dont l'email est déjà utilisé par un autre compte. Quel code renvoyer ?",
+      "q_en": "Your API receives syntactically valid JSON but the email is already used by another account. Which code should you return?",
+      "choices_fr": [
+        "400 Bad Request",
+        "500 Internal Server Error",
+        "409 Conflict",
+        "301 Moved Permanently"
+      ],
+      "choices_en": [
+        "400 Bad Request",
+        "500 Internal Server Error",
+        "409 Conflict",
+        "301 Moved Permanently"
+      ],
+      "answer": 2,
+      "explain_fr": "409 Conflict exprime un conflit avec l'état actuel de la ressource (unicité violée). 400 = requête malformée, 500 = bug serveur ; ici la requête est correcte, c'est l'état qui coince. 422 serait défendable pour une validation métier.",
+      "explain_en": "409 Conflict expresses a conflict with the resource's current state (uniqueness violated). 400 = malformed request, 500 = server bug; here the request is fine, the state is the problem. 422 would be defensible for business validation."
+    },
+    {
+      "q_fr": "Pourquoi un client HTTP peut-il retenter automatiquement un GET ou un DELETE, mais pas un POST ?",
+      "q_en": "Why can an HTTP client automatically retry a GET or DELETE, but not a POST?",
+      "choices_fr": [
+        "GET et DELETE sont idempotents : les rejouer ne change pas l'état final ; POST peut créer un doublon",
+        "POST est plus lent à exécuter côté serveur",
+        "GET et DELETE ne traversent pas les proxies",
+        "POST est chiffré différemment en TLS"
+      ],
+      "choices_en": [
+        "GET and DELETE are idempotent: replaying them doesn't change the final state; POST can create a duplicate",
+        "POST is slower to execute server-side",
+        "GET and DELETE don't go through proxies",
+        "POST is encrypted differently in TLS"
+      ],
+      "answer": 0,
+      "explain_fr": "L'idempotence est le contrat qui rend le retry sûr. Pour retenter un POST sans risque, les API fournissent une clé d'idempotence (header Idempotency-Key).",
+      "explain_en": "Idempotence is the contract that makes retries safe. To retry a POST safely, APIs provide an idempotency key (Idempotency-Key header)."
+    },
+    {
+      "q_fr": "Que signifie une réponse 304 Not Modified ?",
+      "q_en": "What does a 304 Not Modified response mean?",
+      "choices_fr": [
+        "La ressource a été déplacée temporairement",
+        "La copie en cache du client est encore valide : pas de body renvoyé",
+        "Le serveur refuse la modification demandée",
+        "La ressource a été supprimée"
+      ],
+      "choices_en": [
+        "The resource was temporarily moved",
+        "The client's cached copy is still valid: no body is returned",
+        "The server refuses the requested modification",
+        "The resource was deleted"
+      ],
+      "answer": 1,
+      "explain_fr": "Le client revalide avec If-None-Match (ETag) ou If-Modified-Since ; si rien n'a changé, le serveur répond 304 sans body et le client réutilise son cache. Économie de bande passante majeure.",
+      "explain_en": "The client revalidates with If-None-Match (ETag) or If-Modified-Since; if nothing changed, the server answers 304 with no body and the client reuses its cache. Major bandwidth savings."
+    },
+    {
+      "q_fr": "Quelle est LA nouveauté d'HTTP/2 qui supprime le head-of-line blocking au niveau HTTP ?",
+      "q_en": "What is THE HTTP/2 feature that removes HTTP-level head-of-line blocking?",
+      "choices_fr": [
+        "La compression gzip des bodies",
+        "Le passage à UDP",
+        "Les connexions keep-alive",
+        "Le multiplexing de streams sur une seule connexion TCP"
+      ],
+      "choices_en": [
+        "Gzip compression of bodies",
+        "Switching to UDP",
+        "Keep-alive connections",
+        "Multiplexing streams over a single TCP connection"
+      ],
+      "answer": 3,
+      "explain_fr": "HTTP/2 entrelace des dizaines de streams binaires sur un seul TCP : une réponse lente ne bloque plus les autres. Le keep-alive existait déjà en 1.1, et c'est HTTP/3 qui passe à UDP (QUIC).",
+      "explain_en": "HTTP/2 interleaves dozens of binary streams over one TCP connection: a slow response no longer blocks the others. Keep-alive already existed in 1.1, and it's HTTP/3 that moves to UDP (QUIC)."
+    },
+    {
+      "q_fr": "Pourquoi HTTP/3 utilise-t-il QUIC sur UDP plutôt que TCP ?",
+      "q_en": "Why does HTTP/3 use QUIC over UDP rather than TCP?",
+      "choices_fr": [
+        "UDP est chiffré nativement, pas TCP",
+        "Un paquet TCP perdu bloque tous les streams multiplexés ; avec QUIC chaque stream est indépendant face à la perte",
+        "UDP est prioritaire sur les routeurs",
+        "TCP ne supporte pas TLS 1.3"
+      ],
+      "choices_en": [
+        "UDP is natively encrypted, TCP isn't",
+        "One lost TCP packet stalls all multiplexed streams; with QUIC each stream is independent under loss",
+        "UDP has priority on routers",
+        "TCP doesn't support TLS 1.3"
+      ],
+      "answer": 1,
+      "explain_fr": "C'est le HOL blocking résiduel de TCP qui motive QUIC. Bonus de QUIC : TLS 1.3 intégré au handshake et migration de connexion (Wi-Fi → 4G) sans couper.",
+      "explain_en": "TCP's residual HOL blocking is what motivates QUIC. QUIC bonuses: TLS 1.3 built into the handshake and connection migration (Wi-Fi → 4G) without dropping."
+    },
+    {
+      "q_fr": "Une API renvoie 200 OK avec {\"error\":\"user not found\"} dans le body. Quel est le vrai problème ?",
+      "q_en": "An API returns 200 OK with {\"error\":\"user not found\"} in the body. What's the real problem?",
+      "choices_fr": [
+        "Aucun, le body fait foi",
+        "Il faudrait renvoyer 500",
+        "Caches, retrys, monitoring et clients générés se fient au code de statut : ils considéreront la requête réussie",
+        "Le JSON devrait être en XML"
+      ],
+      "choices_en": [
+        "None, the body is authoritative",
+        "It should return 500",
+        "Caches, retries, monitoring and generated clients trust the status code: they'll treat the request as successful",
+        "The JSON should be XML"
+      ],
+      "answer": 2,
+      "explain_fr": "Tout l'écosystème HTTP (caches, proxies, SDK générés, alerting) raisonne sur le code de statut. Un « 200 d'erreur » casse le cache, fausse les métriques et masque les pannes : ici, un 404 s'impose.",
+      "explain_en": "The whole HTTP ecosystem (caches, proxies, generated SDKs, alerting) reasons on the status code. An 'error 200' breaks caching, skews metrics and hides failures: a 404 is the right answer here."
+    }
+  ]
+}

@@ -1,0 +1,168 @@
+{
+  "flashcards": [
+    {
+      "q_fr": "Pourquoi une hashmap offre-t-elle un accès en O(1) en moyenne ?",
+      "a_fr": "La fonction de hachage transforme la clé en entier, réduit modulo la capacité du tableau interne : l'index du bucket est obtenu par un simple calcul + un accès tableau, indépendamment du nombre d'éléments. « En moyenne » car les collisions peuvent allonger un bucket.",
+      "q_en": "Why does a hashmap offer O(1) access on average?",
+      "a_en": "The hash function turns the key into an integer, reduced modulo the internal array's capacity: the bucket index comes from a simple computation + one array access, regardless of the number of elements. \"On average\" because collisions can lengthen a bucket."
+    },
+    {
+      "q_fr": "Quelles sont les deux grandes stratégies de résolution des collisions ?",
+      "a_fr": "Le chaining : chaque bucket contient une liste (ou un arbre) des entrées en collision. L'open addressing : en cas de collision, on sonde d'autres cases du tableau (probing) — plus compact et cache-friendly, mais load factor < 1 obligatoire et suppression via tombstones.",
+      "q_en": "What are the two main collision resolution strategies?",
+      "a_en": "Chaining: each bucket holds a list (or tree) of colliding entries. Open addressing: on collision, probe other slots of the array — more compact and cache-friendly, but requires a load factor < 1 and deletion via tombstones."
+    },
+    {
+      "q_fr": "Qu'est-ce que le load factor et que déclenche-t-il ?",
+      "a_fr": "Le ratio nombre d'éléments / nombre de buckets. Quand il dépasse un seuil (0.75 en Java, ~0.66 en CPython), la table alloue un tableau plus grand (souvent ×2) et re-hache toutes les entrées, car hash mod capacité change avec la capacité.",
+      "q_en": "What is the load factor and what does it trigger?",
+      "a_en": "The ratio of elements to buckets. When it crosses a threshold (0.75 in Java, ~0.66 in CPython), the table allocates a larger array (usually ×2) and rehashes every entry, because hash mod capacity changes with the capacity."
+    },
+    {
+      "q_fr": "Pourquoi dit-on que l'insertion reste en O(1) amorti malgré le resize en O(n) ?",
+      "a_fr": "Le resize coûte O(n) mais se déclenche de plus en plus rarement (environ toutes les n insertions). Réparti sur l'ensemble des insertions, le surcoût moyen par opération reste constant — même raisonnement que pour un tableau dynamique (ArrayList, vector).",
+      "q_en": "Why is insertion amortized O(1) despite the O(n) resize?",
+      "a_en": "The resize costs O(n) but triggers less and less often (roughly every n insertions). Spread across all insertions, the average extra cost per operation stays constant — the same reasoning as for a dynamic array (ArrayList, vector)."
+    },
+    {
+      "q_fr": "Qu'est-ce qu'une attaque par hash flooding et comment s'en défend-on ?",
+      "a_fr": "Un attaquant forge des milliers de clés qui collisionnent toutes (fonction de hachage connue) : chaque insertion devient O(n), le serveur qui parse un JSON ou des paramètres HTTP tombe en DoS. Défenses : hachage à graine aléatoire par processus (SipHash dans Python, Ruby, Rust) et treeification des buckets (Java 8+).",
+      "q_en": "What is a hash flooding attack and how do you defend against it?",
+      "a_en": "An attacker forges thousands of keys that all collide (known hash function): every insertion becomes O(n) and the server parsing JSON or HTTP parameters falls to a DoS. Defenses: per-process random-seeded hashing (SipHash in Python, Ruby, Rust) and bucket treeification (Java 8+)."
+    },
+    {
+      "q_fr": "Qu'est-ce qui fait une bonne clé de hashmap ?",
+      "a_fr": "Une clé immuable (ou qui ne mute jamais tant qu'elle est dans la map) avec égalité et hash cohérents : a.equals(b) implique hash(a) == hash(b). Une clé mutée après insertion devient introuvable (mauvais bucket) ; en Java, redéfinir equals sans hashCode est le bug classique.",
+      "q_en": "What makes a good hashmap key?",
+      "a_en": "An immutable key (or one that never mutates while in the map) with consistent equality and hash: a.equals(b) implies hash(a) == hash(b). A key mutated after insertion becomes unfindable (wrong bucket); in Java, overriding equals without hashCode is the classic bug."
+    },
+    {
+      "q_fr": "Quand préférer Map à un objet en JavaScript ?",
+      "a_fr": "Clés dynamiques ou non-string, besoin de .size, insertions/suppressions fréquentes, et surtout données venant de l'utilisateur (l'objet nu est vulnérable à la pollution de prototype via __proto__). L'objet reste bien pour une struct à forme fixe (config, DTO).",
+      "q_en": "When should you prefer Map over an object in JavaScript?",
+      "a_en": "Dynamic or non-string keys, need for .size, frequent insertions/deletions, and above all user-provided data (a bare object is vulnerable to prototype pollution via __proto__). The object remains fine for a fixed-shape struct (config, DTO)."
+    },
+    {
+      "q_fr": "Comment résoudre two-sum en O(n) avec une hashmap ?",
+      "a_fr": "Un seul passage : pour chaque nums[i], calculer le complément target - nums[i] ; s'il est déjà dans la map (valeur → index), retourner les deux indices, sinon insérer nums[i] → i. Chaque test et insertion est en O(1), contre O(n²) pour la double boucle naïve.",
+      "q_en": "How do you solve two-sum in O(n) with a hashmap?",
+      "a_en": "A single pass: for each nums[i], compute the complement target - nums[i]; if it's already in the map (value → index), return both indices, otherwise insert nums[i] → i. Each check and insertion is O(1), versus O(n²) for the naive double loop."
+    }
+  ],
+  "qcm": [
+    {
+      "q_fr": "Comment une hashmap trouve-t-elle le bucket d'une clé ?",
+      "q_en": "How does a hashmap find a key's bucket?",
+      "choices_fr": [
+        "Elle compare la clé à toutes les clés stockées",
+        "Elle parcourt un arbre binaire de recherche",
+        "Elle calcule hash(clé) modulo la capacité du tableau interne",
+        "Elle trie les clés puis fait une recherche dichotomique"
+      ],
+      "choices_en": [
+        "It compares the key to every stored key",
+        "It walks a binary search tree",
+        "It computes hash(key) modulo the internal array's capacity",
+        "It sorts the keys then binary-searches"
+      ],
+      "answer": 2,
+      "explain_fr": "Hash → entier → modulo capacité → index du bucket : un calcul et un accès tableau, sans parcourir les autres clés. C'est ça, le O(1) moyen.",
+      "explain_en": "Hash → integer → modulo capacity → bucket index: one computation and one array access, without scanning other keys. That's the average O(1)."
+    },
+    {
+      "q_fr": "Qu'est-ce que le load factor d'une hashmap ?",
+      "q_en": "What is a hashmap's load factor?",
+      "choices_fr": [
+        "Le ratio nombre d'éléments / nombre de buckets",
+        "La mémoire totale occupée par la table",
+        "Le nombre de collisions depuis la création",
+        "La longueur du bucket le plus rempli"
+      ],
+      "choices_en": [
+        "The ratio of elements to buckets",
+        "The total memory used by the table",
+        "The number of collisions since creation",
+        "The length of the fullest bucket"
+      ],
+      "answer": 0,
+      "explain_fr": "Load factor = n / capacité. Quand il dépasse un seuil (0.75 en Java), la table double sa capacité et re-hache toutes les entrées pour garder des buckets courts.",
+      "explain_en": "Load factor = n / capacity. When it crosses a threshold (0.75 in Java), the table doubles its capacity and rehashes every entry to keep buckets short."
+    },
+    {
+      "q_fr": "Quelle est la complexité d'un get dans le pire cas pour une hashmap à chaînage simple (sans treeification) ?",
+      "q_en": "What is the worst-case complexity of a get in a plain chaining hashmap (no treeification)?",
+      "choices_fr": [
+        "O(1)",
+        "O(log n)",
+        "O(n log n)",
+        "O(n)"
+      ],
+      "choices_en": [
+        "O(1)",
+        "O(log n)",
+        "O(n log n)",
+        "O(n)"
+      ],
+      "answer": 3,
+      "explain_fr": "Si toutes les clés collisionnent dans le même bucket, la table dégénère en liste chaînée : parcours en O(n). Java 8+ limite la casse à O(log n) en transformant les gros buckets en arbre rouge-noir.",
+      "explain_en": "If every key collides into the same bucket, the table degenerates into a linked list: an O(n) scan. Java 8+ caps the damage at O(log n) by turning large buckets into red-black trees."
+    },
+    {
+      "q_fr": "En quoi consiste une attaque par hash flooding ?",
+      "q_en": "What does a hash flooding attack consist of?",
+      "choices_fr": [
+        "Saturer la RAM en insérant des valeurs très volumineuses",
+        "Forger des clés qui collisionnent toutes pour forcer le pire cas O(n)",
+        "Deviner les valeurs stockées en mesurant les temps d'accès",
+        "Provoquer des resizes en boucle pour bloquer la table"
+      ],
+      "choices_en": [
+        "Filling RAM by inserting very large values",
+        "Forging keys that all collide to force the O(n) worst case",
+        "Guessing stored values by timing accesses",
+        "Triggering resizes in a loop to lock the table"
+      ],
+      "answer": 1,
+      "explain_fr": "L'attaquant exploite une fonction de hachage prévisible pour envoyer des clés toutes en collision (params HTTP, JSON) : chaque insertion devient O(n) et le CPU s'effondre. Parade : SipHash avec graine aléatoire, treeification.",
+      "explain_en": "The attacker exploits a predictable hash function to send all-colliding keys (HTTP params, JSON): each insertion becomes O(n) and the CPU collapses. Countermeasures: random-seeded SipHash, treeification."
+    },
+    {
+      "q_fr": "En Java, que doit garantir une classe utilisée comme clé de HashMap ?",
+      "q_en": "In Java, what must a class used as a HashMap key guarantee?",
+      "choices_fr": [
+        "Si a.equals(b) alors a.hashCode() == b.hashCode(), et stabilité tant que la clé est dans la map",
+        "Un hashCode différent pour chaque instance",
+        "L'implémentation de Comparable pour ordonner les buckets",
+        "Uniquement la redéfinition de equals, hashCode étant hérité"
+      ],
+      "choices_en": [
+        "If a.equals(b) then a.hashCode() == b.hashCode(), and stability while the key is in the map",
+        "A different hashCode for every instance",
+        "Implementing Comparable to order the buckets",
+        "Only overriding equals, since hashCode is inherited"
+      ],
+      "answer": 0,
+      "explain_fr": "Le contrat equals/hashCode : deux objets égaux doivent avoir le même hash, sinon ils atterrissent dans des buckets différents et get ne retrouve rien. Redéfinir equals sans hashCode est le bug Java classique.",
+      "explain_en": "The equals/hashCode contract: two equal objects must share the same hash, otherwise they land in different buckets and get finds nothing. Overriding equals without hashCode is the classic Java bug."
+    },
+    {
+      "q_fr": "Dans two-sum en O(n), qu'associe la hashmap ?",
+      "q_en": "In O(n) two-sum, what does the hashmap associate?",
+      "choices_fr": [
+        "Chaque paire d'indices à sa somme",
+        "Chaque index à son complément",
+        "Chaque valeur déjà vue à son index",
+        "Chaque valeur à son nombre d'occurrences"
+      ],
+      "choices_en": [
+        "Each pair of indices to its sum",
+        "Each index to its complement",
+        "Each already-seen value to its index",
+        "Each value to its occurrence count"
+      ],
+      "answer": 2,
+      "explain_fr": "On stocke valeur → index au fil du parcours ; pour chaque élément on teste si son complément (target - valeur) a déjà été vu, en O(1). Un seul passage suffit.",
+      "explain_en": "You store value → index as you go; for each element you check in O(1) whether its complement (target - value) was already seen. A single pass is enough."
+    }
+  ]
+}

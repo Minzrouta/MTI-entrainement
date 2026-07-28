@@ -1,0 +1,168 @@
+{
+  "flashcards": [
+    {
+      "q_fr": "Qu'est-ce que le Virtual DOM et quel problème résout-il ?",
+      "a_fr": "Une représentation légère de l'UI sous forme d'objets JavaScript. À chaque changement d'état, React reconstruit cet arbre (peu coûteux), le compare à l'ancien (diffing) et n'applique au DOM réel — la partie lente — que les différences. Il rend le modèle déclaratif UI = f(state) viable sans re-render complet du DOM.",
+      "q_en": "What is the Virtual DOM and what problem does it solve?",
+      "a_en": "A lightweight representation of the UI as JavaScript objects. On every state change, React rebuilds this tree (cheap), compares it to the old one (diffing) and applies only the differences to the real DOM — the slow part. It makes the declarative UI = f(state) model viable without a full DOM re-render."
+    },
+    {
+      "q_fr": "Quelles sont les deux phases d'une mise à jour React ?",
+      "a_fr": "Render : React appelle les composants et produit un nouveau Virtual DOM ; phase pure et interruptible (StrictMode la double en dev pour détecter les impuretés). Commit : React applique la liste minimale de mutations au DOM réel, de façon synchrone. Ensuite le navigateur paint, puis les useEffect s'exécutent.",
+      "q_en": "What are the two phases of a React update?",
+      "a_en": "Render: React calls the components and produces a new Virtual DOM; a pure, interruptible phase (StrictMode double-renders in dev to detect impurities). Commit: React applies the minimal list of mutations to the real DOM, synchronously. Then the browser paints, then the useEffects run."
+    },
+    {
+      "q_fr": "Quelles heuristiques permettent à React de differ deux arbres en O(n) ?",
+      "a_fr": "Deux règles : si le type d'un élément change à une position donnée, tout le sous-arbre est démonté et recréé (état local perdu) ; si le type est identique, React garde le nœud, met à jour les props modifiées et descend récursivement. Dans les listes, les keys complètent le diff en donnant une identité stable aux éléments.",
+      "q_en": "Which heuristics let React diff two trees in O(n)?",
+      "a_en": "Two rules: if an element's type changes at a given position, the whole subtree is unmounted and recreated (local state lost); if the type is the same, React keeps the node, updates the changed props and recurses down. In lists, keys complete the diff by giving elements a stable identity."
+    },
+    {
+      "q_fr": "À quoi servent les keys dans une liste React ?",
+      "a_fr": "Elles donnent une identité stable à chaque élément pour que la reconciliation détecte déplacements, insertions et suppressions au lieu de comparer position par position. React peut alors déplacer le nœud DOM en conservant son état (input, focus). Key correcte : un id stable issu des données, pas l'index.",
+      "q_en": "What are keys for in a React list?",
+      "a_en": "They give each element a stable identity so reconciliation can detect moves, insertions and deletions instead of comparing position by position. React can then move the DOM node while preserving its state (input, focus). Correct key: a stable id from the data, not the index."
+    },
+    {
+      "q_fr": "Quelles sont les règles des hooks et pourquoi existent-elles ?",
+      "a_fr": "Appeler les hooks uniquement au niveau supérieur du composant (jamais dans un if, une boucle, une fonction imbriquée) et uniquement depuis un composant React ou un hook custom. Raison : React associe chaque hook à sa valeur par ordre d'appel entre deux renders ; un hook conditionnel décale la liste et corrompt tout l'état.",
+      "q_en": "What are the rules of hooks and why do they exist?",
+      "a_en": "Call hooks only at the top level of the component (never in an if, a loop or a nested function) and only from a React component or a custom hook. Reason: React matches each hook to its value by call order between renders; a conditional hook shifts the list and corrupts all the state."
+    },
+    {
+      "q_fr": "useEffect : à quoi servent le tableau de dépendances et le cleanup ?",
+      "a_fr": "Les deps disent quand relancer l'effet : à chaque render si absentes, au montage seulement si [], quand une valeur listée change sinon — toute valeur réactive lue dans l'effet doit y figurer (sinon stale closure). Le cleanup retourné s'exécute avant chaque relance et au démontage : c'est là qu'on annule fetchs, timers et subscriptions.",
+      "q_en": "useEffect: what are the dependency array and the cleanup for?",
+      "a_en": "The deps say when to re-run the effect: every render if absent, only on mount if [], whenever a listed value changes otherwise — every reactive value read inside must be listed (else stale closure). The returned cleanup runs before each re-run and on unmount: that's where you cancel fetches, timers and subscriptions."
+    },
+    {
+      "q_fr": "Pourquoi ne faut-il jamais muter le state directement ?",
+      "a_fr": "React compare l'ancienne et la nouvelle valeur avec Object.is : muter un objet ou un tableau garde la même référence, donc React ne voit aucun changement et ne re-rend pas. Il faut créer une nouvelle valeur : setItems([...items, x]), setUser({ ...user, name }).",
+      "q_en": "Why must you never mutate state directly?",
+      "a_en": "React compares old and new values with Object.is: mutating an object or array keeps the same reference, so React sees no change and doesn't re-render. You must create a new value: setItems([...items, x]), setUser({ ...user, name })."
+    },
+    {
+      "q_fr": "Lifting state up, Context, state manager : quand choisir quoi ?",
+      "a_fr": "Dans l'ordre : lifting state up (remonter l'état dans le parent commun, passé en props) couvre la plupart des cas ; Context pour une valeur globale et peu changeante (thème, utilisateur, langue) en sachant que chaque changement re-rend tous les consommateurs ; state manager (Redux Toolkit, Zustand) ou TanStack Query quand l'état global devient complexe ou vient du serveur.",
+      "q_en": "Lifting state up, Context, state manager: when to pick which?",
+      "a_en": "In order: lifting state up (move state into the common parent, passed as props) covers most cases; Context for a global, rarely changing value (theme, user, language), knowing every change re-renders all consumers; a state manager (Redux Toolkit, Zustand) or TanStack Query when global state gets complex or comes from the server."
+    }
+  ],
+  "qcm": [
+    {
+      "q_fr": "Que se passe-t-il après `items.push(x); setItems(items)` ?",
+      "q_en": "What happens after `items.push(x); setItems(items)`?",
+      "choices_fr": [
+        "React re-rend le composant avec le nouvel élément",
+        "React lève une exception « state is read-only »",
+        "Pas de re-render : la référence n'a pas changé (Object.is)",
+        "Le re-render n'a lieu qu'au prochain événement"
+      ],
+      "choices_en": [
+        "React re-renders the component with the new element",
+        "React throws a \"state is read-only\" exception",
+        "No re-render: the reference hasn't changed (Object.is)",
+        "The re-render only happens on the next event"
+      ],
+      "answer": 2,
+      "explain_fr": "React compare l'ancienne et la nouvelle valeur avec Object.is : même référence → rien n'a changé à ses yeux. Créer un nouveau tableau : setItems([...items, x]).",
+      "explain_en": "React compares old and new values with Object.is: same reference → nothing changed as far as it's concerned. Create a new array: setItems([...items, x])."
+    },
+    {
+      "q_fr": "Quand un `useEffect` avec un tableau de dépendances vide `[]` s'exécute-t-il ?",
+      "q_en": "When does a `useEffect` with an empty dependency array `[]` run?",
+      "choices_fr": [
+        "Une seule fois, après le premier commit (montage)",
+        "Avant chaque render",
+        "À chaque changement de props",
+        "Jamais"
+      ],
+      "choices_en": [
+        "Once, after the first commit (mount)",
+        "Before every render",
+        "On every props change",
+        "Never"
+      ],
+      "answer": 0,
+      "explain_fr": "Un tableau vide = aucune dépendance → l'effet ne se relance jamais : il s'exécute une fois après le premier commit, et son cleanup au démontage.",
+      "explain_en": "An empty array = no dependencies → the effect never re-runs: it executes once after the first commit, and its cleanup on unmount."
+    },
+    {
+      "q_fr": "Lors de la reconciliation, que fait React si un élément change de type au même endroit (`<div>` → `<span>`) ?",
+      "q_en": "During reconciliation, what does React do if an element changes type at the same position (`<div>` → `<span>`)?",
+      "choices_fr": [
+        "Il met à jour uniquement les props communes",
+        "Il fusionne les deux arbres",
+        "Il déplace le nœud DOM existant",
+        "Il démonte tout le sous-arbre et le reconstruit (état local perdu)"
+      ],
+      "choices_en": [
+        "It updates only the shared props",
+        "It merges the two trees",
+        "It moves the existing DOM node",
+        "It unmounts the whole subtree and rebuilds it (local state lost)"
+      ],
+      "answer": 3,
+      "explain_fr": "C'est l'heuristique clé du diff O(n) : type différent = sous-arbre jeté et recréé, y compris l'état des composants enfants. Même type = mise à jour des props seulement.",
+      "explain_en": "That's the key heuristic of the O(n) diff: different type = subtree thrown away and recreated, including child components' state. Same type = props update only."
+    },
+    {
+      "q_fr": "Quand la fonction de cleanup retournée par un `useEffect` est-elle exécutée ?",
+      "q_en": "When is the cleanup function returned by a `useEffect` executed?",
+      "choices_fr": [
+        "Uniquement au démontage du composant",
+        "Avant chaque nouvelle exécution de l'effet, et au démontage",
+        "Après chaque render, avant le paint",
+        "Seulement si le tableau de deps est vide"
+      ],
+      "choices_en": [
+        "Only when the component unmounts",
+        "Before each new run of the effect, and on unmount",
+        "After every render, before the paint",
+        "Only if the deps array is empty"
+      ],
+      "answer": 1,
+      "explain_fr": "React nettoie l'effet précédent avant de relancer le suivant, et au démontage. C'est ce qui évite requêtes obsolètes, doubles subscriptions et fuites de timers.",
+      "explain_en": "React cleans up the previous effect before re-running the next one, and on unmount. That's what prevents stale requests, duplicate subscriptions and timer leaks."
+    },
+    {
+      "q_fr": "Dans quel cas `useCallback` est-il réellement utile ?",
+      "q_en": "In which case is `useCallback` actually useful?",
+      "choices_fr": [
+        "Dès qu'un composant définit une fonction",
+        "Pour rendre une fonction asynchrone",
+        "Quand la fonction est passée à un enfant React.memo ou listée dans les deps d'un autre hook",
+        "Pour accélérer l'exécution de la fonction"
+      ],
+      "choices_en": [
+        "Whenever a component defines a function",
+        "To make a function asynchronous",
+        "When the function is passed to a React.memo child or listed in another hook's deps",
+        "To make the function execute faster"
+      ],
+      "answer": 2,
+      "explain_fr": "useCallback ne fait que stabiliser la référence entre deux renders. Sans consommateur sensible à cette référence (React.memo, deps d'un hook), il ajoute du coût pour rien.",
+      "explain_en": "useCallback only stabilizes the reference between renders. Without a consumer sensitive to that reference (React.memo, a hook's deps), it adds cost for nothing."
+    },
+    {
+      "q_fr": "Pourquoi `key={index}` pose-t-il problème sur une liste modifiable ?",
+      "q_en": "Why is `key={index}` a problem on a list that can change?",
+      "choices_fr": [
+        "Les index provoquent des collisions de keys",
+        "L'index identifie la position, pas l'élément : après insertion ou tri, React associe l'état (input, focus) aux mauvais éléments",
+        "React interdit les keys numériques",
+        "Le rendu de la liste devient impossible sans id"
+      ],
+      "choices_en": [
+        "Indexes cause key collisions",
+        "The index identifies the position, not the element: after an insertion or sort, React attaches state (input, focus) to the wrong elements",
+        "React forbids numeric keys",
+        "Rendering the list becomes impossible without an id"
+      ],
+      "answer": 1,
+      "explain_fr": "React suit l'identité via la key. Si les index se décalent, l'état local et DOM reste accroché à la position — d'où des inputs qui « sautent » de ligne. Key stable = id issu des données.",
+      "explain_en": "React tracks identity through the key. If indexes shift, local and DOM state stays attached to the position — hence inputs that \"jump\" rows. Stable key = an id from the data."
+    }
+  ]
+}

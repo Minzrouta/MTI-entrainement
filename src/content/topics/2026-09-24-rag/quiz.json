@@ -1,0 +1,168 @@
+{
+  "flashcards": [
+    {
+      "q_fr": "Qu'est-ce qu'un embedding et à quoi sert-il ?",
+      "a_fr": "Un vecteur dense de nombres flottants (384 à 3072 dimensions) produit par un modèle entraîné pour que deux textes proches en sens donnent des vecteurs proches. Il permet la recherche sémantique : on retrouve des textes par similarité de sens, pas par mots-clés.",
+      "q_en": "What is an embedding and what is it for?",
+      "a_en": "A dense vector of floats (384 to 3072 dimensions) produced by a model trained so that texts close in meaning yield close vectors. It enables semantic search: finding texts by similarity of meaning, not by keywords."
+    },
+    {
+      "q_fr": "Comment mesure-t-on la proximité entre deux embeddings ?",
+      "a_fr": "Avec la similarité cosinus : le cosinus de l'angle entre les deux vecteurs (1 = même direction, 0 = sans rapport). Avec des vecteurs normalisés, c'est un simple produit scalaire, et le classement est identique à celui de la distance euclidienne.",
+      "q_en": "How do you measure how close two embeddings are?",
+      "a_en": "With cosine similarity: the cosine of the angle between the two vectors (1 = same direction, 0 = unrelated). With normalized vectors it's a simple dot product, and the ranking matches Euclidean distance."
+    },
+    {
+      "q_fr": "Décris les deux phases du pipeline RAG.",
+      "a_fr": "Indexation (offline) : documents → chunking → embedding de chaque chunk → stockage en base vectorielle avec texte et métadonnées. Requête (online) : question → embedding (même modèle) → recherche top-k par similarité → chunks injectés dans le prompt → génération par le LLM.",
+      "q_en": "Describe the two phases of the RAG pipeline.",
+      "a_en": "Indexing (offline): documents → chunking → embedding of each chunk → storage in a vector database with text and metadata. Query (online): question → embedding (same model) → top-k similarity search → chunks injected into the prompt → LLM generation."
+    },
+    {
+      "q_fr": "Pourquoi choisir RAG plutôt que fine-tuning pour de la connaissance d'entreprise ?",
+      "a_fr": "Fraîcheur (réindexer un document suffit, pas de réentraînement), coût (embeddings marginaux contre GPU + dataset), citations (sources traçables et vérifiables). Le fine-tuning sert à modifier le comportement (ton, format), pas à injecter des faits.",
+      "q_en": "Why choose RAG over fine-tuning for company knowledge?",
+      "a_en": "Freshness (reindexing a document is enough, no retraining), cost (marginal embeddings versus GPUs + dataset), citations (traceable, verifiable sources). Fine-tuning is for changing behavior (tone, format), not injecting facts."
+    },
+    {
+      "q_fr": "Qu'est-ce que pgvector et quand le préférer à une base vectorielle dédiée ?",
+      "a_fr": "Une extension PostgreSQL qui ajoute un type vecteur, la recherche par similarité et des index HNSW/IVFFlat. À préférer par défaut : les vecteurs restent dans la base qu'on administre déjà, avec SQL et jointures. Les bases dédiées (Qdrant, Weaviate, Pinecone) ne se justifient qu'à très grande échelle.",
+      "q_en": "What is pgvector and when should you prefer it over a dedicated vector database?",
+      "a_en": "A PostgreSQL extension adding a vector type, similarity search and HNSW/IVFFlat indexes. Prefer it by default: vectors stay in the database you already run, with SQL and joins. Dedicated databases (Qdrant, Weaviate, Pinecone) only pay off at very large scale."
+    },
+    {
+      "q_fr": "Qu'est-ce que le chunking et pourquoi un chunking naïf pose-t-il problème ?",
+      "a_fr": "Le découpage des documents en morceaux avant embedding. Un découpage naïf (tous les N caractères) coupe phrases et tableaux en deux → chunks incompréhensibles et retrieval dégradé. Mieux : découper selon la structure (titres, paragraphes) avec 10-20 % de chevauchement.",
+      "q_en": "What is chunking and why is naive chunking a problem?",
+      "a_en": "Splitting documents into pieces before embedding. Naive splitting (every N characters) cuts sentences and tables in half → incomprehensible chunks and degraded retrieval. Better: split along structure (headings, paragraphs) with 10-20% overlap."
+    },
+    {
+      "q_fr": "Qu'apportent la recherche hybride et le reranking ?",
+      "a_fr": "L'hybride combine recherche lexicale (BM25, exacte sur les mots — attrape codes d'erreur et références) et vectorielle (sémantique), fusionnées par RRF. Le reranking re-classe les ~50 premiers candidats avec un cross-encoder plus précis mais plus lent, pour un top-5 de qualité.",
+      "q_en": "What do hybrid search and reranking bring?",
+      "a_en": "Hybrid combines lexical search (BM25, exact on words — catches error codes and references) and vector search (semantic), fused with RRF. Reranking re-orders the top ~50 candidates with a more precise but slower cross-encoder, yielding a high-quality top-5."
+    },
+    {
+      "q_fr": "Comment évalue-t-on un système RAG ?",
+      "a_fr": "Le retrieval d'abord : sur un jeu de questions annotées, mesurer si les bons chunks remontent (recall@k). Ensuite seulement la génération : fidélité au contexte, taux de citation. Si le retrieval rate, aucun prompt ne sauvera la réponse.",
+      "q_en": "How do you evaluate a RAG system?",
+      "a_en": "Retrieval first: on an annotated question set, measure whether the right chunks come back (recall@k). Only then generation: faithfulness to context, citation rate. If retrieval misses, no prompt will save the answer."
+    }
+  ],
+  "qcm": [
+    {
+      "q_fr": "Deux textes ont une similarité cosinus proche de 1. Qu'est-ce que cela signifie ?",
+      "q_en": "Two texts have a cosine similarity close to 1. What does that mean?",
+      "choices_fr": [
+        "Ils contiennent exactement les mêmes mots",
+        "Ils ont la même longueur",
+        "Leurs vecteurs pointent dans la même direction : sens très proche",
+        "Ils proviennent du même document"
+      ],
+      "choices_en": [
+        "They contain exactly the same words",
+        "They are the same length",
+        "Their vectors point in the same direction: very close meaning",
+        "They come from the same document"
+      ],
+      "answer": 2,
+      "explain_fr": "La similarité cosinus mesure l'angle entre les vecteurs, donc la proximité sémantique — indépendamment des mots exacts, de la longueur ou de la provenance.",
+      "explain_en": "Cosine similarity measures the angle between vectors, i.e. semantic proximity — regardless of exact words, length or origin."
+    },
+    {
+      "q_fr": "Dans un pipeline RAG, que fait-on au moment de la requête utilisateur ?",
+      "q_en": "In a RAG pipeline, what happens at user query time?",
+      "choices_fr": [
+        "On embed la question, on récupère les top-k chunks similaires, on les injecte dans le prompt",
+        "On réentraîne le modèle sur les documents pertinents",
+        "On envoie tous les documents dans le prompt du LLM",
+        "On recalcule les embeddings de tout le corpus"
+      ],
+      "choices_en": [
+        "Embed the question, retrieve the top-k similar chunks, inject them into the prompt",
+        "Retrain the model on the relevant documents",
+        "Send all the documents in the LLM prompt",
+        "Recompute embeddings for the whole corpus"
+      ],
+      "answer": 0,
+      "explain_fr": "Le corpus est indexé offline ; à la requête, seul l'embedding de la question est calculé, puis recherche kNN et injection du contexte. Aucun réentraînement, jamais tout le corpus.",
+      "explain_en": "The corpus is indexed offline; at query time only the question's embedding is computed, then kNN search and context injection. No retraining, never the whole corpus."
+    },
+    {
+      "q_fr": "Ton RAG donne de mauvaises réponses. Quel est le premier réflexe de débogage ?",
+      "q_en": "Your RAG gives bad answers. What is the first debugging reflex?",
+      "choices_fr": [
+        "Passer sur un LLM plus gros",
+        "Réécrire le prompt système",
+        "Augmenter le nombre de chunks injectés",
+        "Logger les chunks récupérés et vérifier s'ils contiennent la réponse"
+      ],
+      "choices_en": [
+        "Switch to a bigger LLM",
+        "Rewrite the system prompt",
+        "Increase the number of injected chunks",
+        "Log the retrieved chunks and check whether they contain the answer"
+      ],
+      "answer": 3,
+      "explain_fr": "Le retrieval d'abord : la plupart des mauvaises réponses viennent de mauvais chunks. Si le contexte ne contient pas la réponse, ni le prompt ni un LLM plus gros n'y changeront rien.",
+      "explain_en": "Retrieval first: most bad answers come from bad chunks. If the context doesn't contain the answer, neither the prompt nor a bigger LLM will fix it."
+    },
+    {
+      "q_fr": "Pourquoi la recherche hybride (BM25 + vecteurs) est-elle utile ?",
+      "q_en": "Why is hybrid search (BM25 + vectors) useful?",
+      "choices_fr": [
+        "Elle rend la recherche vectorielle plus rapide",
+        "Elle rattrape les termes exacts (codes d'erreur, références) que les embeddings ratent",
+        "Elle évite de devoir chunker les documents",
+        "Elle remplace le reranking"
+      ],
+      "choices_en": [
+        "It makes vector search faster",
+        "It catches exact terms (error codes, references) that embeddings miss",
+        "It removes the need to chunk documents",
+        "It replaces reranking"
+      ],
+      "answer": 1,
+      "explain_fr": "Les embeddings capturent le sens mais ratent souvent les identifiants exacts ; BM25 les attrape lexicalement. Les deux listes sont fusionnées (RRF). C'est complémentaire au reranking, pas un remplacement.",
+      "explain_en": "Embeddings capture meaning but often miss exact identifiers; BM25 catches them lexically. The two result lists are fused (RRF). It complements reranking, not replaces it."
+    },
+    {
+      "q_fr": "Que se passe-t-il si on indexe avec un modèle d'embedding et qu'on requête avec un autre ?",
+      "q_en": "What happens if you index with one embedding model and query with another?",
+      "choices_fr": [
+        "Les similarités n'ont plus de sens : les espaces vectoriels sont incompatibles",
+        "Ça marche si les deux modèles ont la même dimension",
+        "La recherche est juste un peu moins précise",
+        "La base vectorielle refuse la requête"
+      ],
+      "choices_en": [
+        "Similarities become meaningless: the vector spaces are incompatible",
+        "It works if both models have the same dimension",
+        "Search is just slightly less accurate",
+        "The vector database rejects the query"
+      ],
+      "answer": 0,
+      "explain_fr": "Chaque modèle définit son propre espace vectoriel. Même à dimensions égales, les axes n'ont aucun rapport : le retrieval devient du bruit. Changer de modèle impose de tout réindexer.",
+      "explain_en": "Each model defines its own vector space. Even with equal dimensions, the axes are unrelated: retrieval becomes noise. Switching models forces a full reindex."
+    },
+    {
+      "q_fr": "Quel cas justifie le fine-tuning plutôt que le RAG ?",
+      "q_en": "Which case justifies fine-tuning rather than RAG?",
+      "choices_fr": [
+        "Répondre sur la doc interne mise à jour chaque semaine",
+        "Citer les sources exactes de chaque réponse",
+        "Imposer un ton et un format de sortie très spécifiques",
+        "Répondre sur des données publiées après l'entraînement du modèle"
+      ],
+      "choices_en": [
+        "Answering over internal docs updated weekly",
+        "Citing the exact sources of each answer",
+        "Enforcing a very specific tone and output format",
+        "Answering over data published after the model's training"
+      ],
+      "answer": 2,
+      "explain_fr": "Le fine-tuning modifie le comportement (style, format, respect de consignes). Fraîcheur des données et citations sont précisément les points forts du RAG.",
+      "explain_en": "Fine-tuning changes behavior (style, format, instruction following). Data freshness and citations are exactly RAG's strong points."
+    }
+  ]
+}

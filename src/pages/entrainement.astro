@@ -1,10 +1,11 @@
 ---
 import Base from '../layouts/Base.astro';
-import { getTopics } from '../lib/topics';
+import { getTopics, dayNumbers } from '../lib/topics';
 
 const topics = await getTopics(); // desc
-const total = topics.length;
-const dayNo = (i: number) => total - i;
+const days = dayNumbers(topics);
+const labelFr = (t: (typeof topics)[number]) => (t.isActu ? 'Actu' : `Jour ${days.get(t.dir)}`);
+const labelEn = (t: (typeof topics)[number]) => (t.isActu ? 'News' : `Day ${days.get(t.dir)}`);
 ---
 
 <Base title="Entraînement">
@@ -30,13 +31,13 @@ const dayNo = (i: number) => total - i;
       <select id="topic-filter" style="font: inherit; padding: 0.3rem 0.5rem; margin-inline-start: 0.5rem; max-width: 100%;">
         <option value="" data-fr="Tous les sujets" data-en="All topics">Tous les sujets</option>
         {
-          topics.map((t, i) => (
+          topics.map((t) => (
             <option
               value={t.slug}
-              data-fr={`Jour ${dayNo(i)} — ${t.fr.data.title}`}
-              data-en={`Day ${dayNo(i)} — ${t.en.data.title}`}
+              data-fr={`${labelFr(t)} — ${t.fr.data.title}`}
+              data-en={`${labelEn(t)} — ${t.en.data.title}`}
             >
-              Jour {dayNo(i)} — {t.fr.data.title}
+              {labelFr(t)} — {t.fr.data.title}
             </option>
           ))
         }
@@ -45,12 +46,12 @@ const dayNo = (i: number) => total - i;
   </p>
 
   {
-    topics.map((t, i) => (
+    topics.map((t) => (
       <section class="training-topic" id={`t-${t.slug}`} data-date={t.date} data-slug={t.slug}>
         <h2>
           <span class="eyebrow" style="display: inline;">
-            <span data-l="fr">Jour {dayNo(i)}</span>
-            <span data-l="en">Day {dayNo(i)}</span>
+            <span data-l="fr">{labelFr(t)}</span>
+            <span data-l="en">{labelEn(t)}</span>
           </span>
           <span>
             <span data-l="fr">{t.fr.data.title}</span>

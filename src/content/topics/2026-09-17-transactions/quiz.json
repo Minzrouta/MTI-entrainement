@@ -1,0 +1,168 @@
+{
+  "flashcards": [
+    {
+      "q_fr": "Que signifie ACID, avec l'exemple du virement bancaire ?",
+      "a_fr": "Atomicité : débit + crédit, tout ou rien. Cohérence : les contraintes (solde >= 0) restent respectées. Isolation : personne ne voit l'état intermédiaire débité-mais-pas-crédité. Durabilité : commit acquitté = écrit dans le WAL, survit au crash.",
+      "q_en": "What does ACID mean, using the bank transfer example?",
+      "a_en": "Atomicity: debit + credit, all or nothing. Consistency: constraints (balance >= 0) stay respected. Isolation: nobody sees the debited-but-not-credited intermediate state. Durability: acknowledged commit = written to the WAL, survives a crash."
+    },
+    {
+      "q_fr": "Qu'est-ce qu'un dirty read ?",
+      "a_fr": "Lire une valeur modifiée par une transaction qui n'a pas encore commité. Si elle rollback, on a travaillé sur une donnée qui n'a jamais existé. Empêché dès READ COMMITTED (le défaut Postgres).",
+      "q_en": "What is a dirty read?",
+      "a_en": "Reading a value modified by a transaction that hasn't committed yet. If it rolls back, you've worked on data that never existed. Prevented from READ COMMITTED up (the Postgres default)."
+    },
+    {
+      "q_fr": "Quelle différence entre non-repeatable read et phantom read ?",
+      "a_fr": "Non-repeatable : une ligne existante relue a changé (UPDATE commité entre deux lectures). Phantom : l'ensemble des lignes matchant un critère a changé (INSERT/DELETE commité) — des lignes apparaissent ou disparaissent. REPEATABLE READ du standard bloque le premier, pas le second.",
+      "q_en": "What's the difference between a non-repeatable read and a phantom read?",
+      "a_en": "Non-repeatable: an existing row re-read has changed (committed UPDATE between two reads). Phantom: the set of rows matching a predicate has changed (committed INSERT/DELETE) — rows appear or disappear. The standard's REPEATABLE READ blocks the former, not the latter."
+    },
+    {
+      "q_fr": "Décris le scénario du lost update.",
+      "a_fr": "T1 et T2 lisent solde=100, chacune calcule en mémoire (100-80 et 100-50), chacune écrit son résultat : la seconde écriture écrase la première — 130 retirés, solde final 50. Corrections : update atomique (SET solde = solde - X), SELECT FOR UPDATE, ou verrou optimiste (colonne version).",
+      "q_en": "Describe the lost update scenario.",
+      "a_en": "T1 and T2 both read balance=100, each computes in memory (100-80 and 100-50), each writes its result: the second write overwrites the first — 130 withdrawn, final balance 50. Fixes: atomic update (SET balance = balance - X), SELECT FOR UPDATE, or optimistic locking (version column)."
+    },
+    {
+      "q_fr": "Comment fonctionne MVCC dans Postgres ?",
+      "a_fr": "Chaque UPDATE crée une nouvelle version de la ligne au lieu d'écraser l'ancienne ; chaque transaction lit un snapshot cohérent des versions commitées à son début. Lecteurs et écrivains ne se bloquent jamais mutuellement ; seules deux écritures sur la même ligne se sérialisent. VACUUM recycle les versions mortes.",
+      "q_en": "How does MVCC work in Postgres?",
+      "a_en": "Each UPDATE creates a new version of the row instead of overwriting the old one; each transaction reads a consistent snapshot of the versions committed at its start. Readers and writers never block each other; only two writes to the same row serialize. VACUUM recycles dead versions."
+    },
+    {
+      "q_fr": "Que fait SELECT ... FOR UPDATE ?",
+      "a_fr": "Lit la ligne et la verrouille jusqu'au COMMIT/ROLLBACK : toute transaction concurrente voulant la modifier ou la verrouiller attend. Verrou pessimiste qui ferme la fenêtre read-modify-write — l'anti-lost-update quand le calcul doit passer par l'applicatif.",
+      "q_en": "What does SELECT ... FOR UPDATE do?",
+      "a_en": "Reads the row and locks it until COMMIT/ROLLBACK: any concurrent transaction wanting to modify or lock it waits. A pessimistic lock closing the read-modify-write window — the anti-lost-update when the computation must go through application code."
+    },
+    {
+      "q_fr": "Qu'est-ce qu'un deadlock et comment le prévenir ?",
+      "a_fr": "T1 verrouille A puis attend B ; T2 verrouille B puis attend A : attente circulaire. La base le détecte et tue une des transactions (à retenter). Prévention : acquérir les verrous toujours dans le même ordre (id croissant) — plus de cycle possible — et garder les transactions courtes.",
+      "q_en": "What is a deadlock and how do you prevent it?",
+      "a_en": "T1 locks A then waits for B; T2 locks B then waits for A: circular wait. The database detects it and kills one transaction (to be retried). Prevention: always acquire locks in the same order (ascending id) — no cycle possible — and keep transactions short."
+    },
+    {
+      "q_fr": "Pourquoi ne faut-il jamais faire d'I/O externe (appel HTTP, email) dans une transaction ?",
+      "a_fr": "La transaction garde ses verrous et son snapshot pendant toute l'attente : connexions saturées, contention en cascade, VACUUM bloqué. Et si l'I/O réussit mais que la transaction rollback (ou l'inverse), les deux mondes divergent. I/O externe toujours hors transaction.",
+      "q_en": "Why should you never do external I/O (HTTP call, email) inside a transaction?",
+      "a_en": "The transaction holds its locks and snapshot for the whole wait: saturated connections, cascading contention, blocked VACUUM. And if the I/O succeeds but the transaction rolls back (or the reverse), the two worlds diverge. External I/O always outside the transaction."
+    }
+  ],
+  "qcm": [
+    {
+      "q_fr": "T1 lit une ligne modifiée par T2 qui n'a pas commité, puis T2 rollback. Quelle anomalie T1 a-t-elle subie ?",
+      "q_en": "T1 reads a row modified by T2, which hasn't committed, then T2 rolls back. Which anomaly did T1 suffer?",
+      "choices_fr": [
+        "Lost update",
+        "Phantom read",
+        "Dirty read",
+        "Non-repeatable read"
+      ],
+      "choices_en": [
+        "Lost update",
+        "Phantom read",
+        "Dirty read",
+        "Non-repeatable read"
+      ],
+      "answer": 2,
+      "explain_fr": "T1 a lu une donnée non commitée qui n'a finalement jamais existé : c'est le dirty read. Il est empêché dès le niveau READ COMMITTED — le défaut de Postgres, où ce scénario est donc impossible.",
+      "explain_en": "T1 read uncommitted data that ultimately never existed: that's the dirty read. It's prevented from READ COMMITTED up — the Postgres default, where this scenario is thus impossible."
+    },
+    {
+      "q_fr": "Quel est le niveau d'isolation par défaut de PostgreSQL ?",
+      "q_en": "What is PostgreSQL's default isolation level?",
+      "choices_fr": [
+        "Read committed",
+        "Read uncommitted",
+        "Repeatable read",
+        "Serializable"
+      ],
+      "choices_en": [
+        "Read committed",
+        "Read uncommitted",
+        "Repeatable read",
+        "Serializable"
+      ],
+      "answer": 0,
+      "explain_fr": "Postgres tourne en READ COMMITTED par défaut : pas de dirty reads, mais non-repeatable reads, phantoms et lost updates restent possibles. MySQL/InnoDB, lui, est en REPEATABLE READ par défaut — « ça dépend du moteur » est la réponse d'expert.",
+      "explain_en": "Postgres runs READ COMMITTED by default: no dirty reads, but non-repeatable reads, phantoms and lost updates remain possible. MySQL/InnoDB defaults to REPEATABLE READ — \"it depends on the engine\" is the expert answer."
+    },
+    {
+      "q_fr": "Deux requêtes concurrentes exécutent `UPDATE comptes SET solde = solde - 50 WHERE id = 1` (solde initial 100). Résultat final ?",
+      "q_en": "Two concurrent queries run `UPDATE accounts SET balance = balance - 50 WHERE id = 1` (initial balance 100). Final result?",
+      "choices_fr": [
+        "50 : l'une des deux écritures est perdue",
+        "0 : l'update atomique sérialise les deux écritures sous verrou de ligne",
+        "Une erreur de deadlock",
+        "Imprévisible sans SERIALIZABLE"
+      ],
+      "choices_en": [
+        "50: one of the two writes is lost",
+        "0: the atomic update serializes both writes under a row lock",
+        "A deadlock error",
+        "Unpredictable without SERIALIZABLE"
+      ],
+      "answer": 1,
+      "explain_fr": "`solde = solde - 50` calcule dans la base : la deuxième transaction attend le verrou de ligne de la première, puis relit la valeur commitée (50) et écrit 0. Pas de fenêtre read-modify-write, donc pas de lost update — c'est tout l'intérêt de l'update atomique.",
+      "explain_en": "`balance = balance - 50` computes inside the database: the second transaction waits for the first one's row lock, then re-reads the committed value (50) and writes 0. No read-modify-write window, so no lost update — the whole point of the atomic update."
+    },
+    {
+      "q_fr": "Dans Postgres (MVCC), que se passe-t-il quand un long SELECT analytique tourne pendant qu'une autre transaction UPDATE les mêmes lignes ?",
+      "q_en": "In Postgres (MVCC), what happens when a long analytical SELECT runs while another transaction UPDATEs the same rows?",
+      "choices_fr": [
+        "Le SELECT bloque l'UPDATE jusqu'à sa fin",
+        "L'UPDATE bloque le SELECT jusqu'au commit",
+        "Le SELECT échoue avec une erreur de sérialisation",
+        "Aucun blocage : le SELECT lit son snapshot, l'UPDATE crée de nouvelles versions"
+      ],
+      "choices_en": [
+        "The SELECT blocks the UPDATE until it finishes",
+        "The UPDATE blocks the SELECT until commit",
+        "The SELECT fails with a serialization error",
+        "No blocking: the SELECT reads its snapshot, the UPDATE creates new versions"
+      ],
+      "answer": 3,
+      "explain_fr": "C'est le principe de MVCC : les lecteurs ne bloquent jamais les écrivains et inversement. Le SELECT voit les versions commitées à son début ; l'UPDATE écrit de nouvelles versions à côté. Seules deux écritures sur la même ligne se bloquent.",
+      "explain_en": "That's the MVCC principle: readers never block writers and vice versa. The SELECT sees the versions committed at its start; the UPDATE writes new versions alongside. Only two writes to the same row block each other."
+    },
+    {
+      "q_fr": "Deux virements simultanés A→B et B→A deadlockent. Quelle est la vraie prévention ?",
+      "q_en": "Two simultaneous transfers A→B and B→A deadlock. What is the real prevention?",
+      "choices_fr": [
+        "Passer en SERIALIZABLE",
+        "Verrouiller toujours les comptes dans le même ordre (id croissant)",
+        "Ajouter un sleep aléatoire avant chaque transaction",
+        "Verrouiller toute la table comptes"
+      ],
+      "choices_en": [
+        "Switching to SERIALIZABLE",
+        "Always locking accounts in the same order (ascending id)",
+        "Adding a random sleep before each transaction",
+        "Locking the whole accounts table"
+      ],
+      "answer": 1,
+      "explain_fr": "Le deadlock exige un cycle d'attente : si tout le monde verrouille d'abord le plus petit id, aucun cycle n'est possible. SERIALIZABLE ne supprime pas les deadlocks, le sleep ne fait que les raréfier, et verrouiller la table tue la concurrence.",
+      "explain_en": "A deadlock requires a wait cycle: if everyone locks the smallest id first, no cycle is possible. SERIALIZABLE doesn't remove deadlocks, the sleep only makes them rarer, and locking the table kills concurrency."
+    },
+    {
+      "q_fr": "Que doit obligatoirement prévoir une application qui tourne en SERIALIZABLE ?",
+      "q_en": "What must an application running in SERIALIZABLE necessarily include?",
+      "choices_fr": [
+        "Un pool de connexions plus grand",
+        "Des index sur toutes les colonnes lues",
+        "Une boucle de retry sur les erreurs de sérialisation",
+        "Des SELECT FOR UPDATE partout"
+      ],
+      "choices_en": [
+        "A larger connection pool",
+        "Indexes on every read column",
+        "A retry loop on serialization errors",
+        "SELECT FOR UPDATE everywhere"
+      ],
+      "answer": 2,
+      "explain_fr": "SERIALIZABLE avorte des transactions par design quand il détecte une dépendance non sérialisable : c'est le prix de l'isolation parfaite. Sans retry sur ces erreurs (40001), vous transformez un mécanisme normal en 500 aléatoires.",
+      "explain_en": "SERIALIZABLE aborts transactions by design when it detects a non-serializable dependency: that's the price of perfect isolation. Without retries on those errors (40001), you turn a normal mechanism into random 500s."
+    }
+  ]
+}

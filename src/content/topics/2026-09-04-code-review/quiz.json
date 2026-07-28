@@ -1,0 +1,168 @@
+{
+  "flashcards": [
+    {
+      "q_fr": "À quoi sert vraiment une code review (au-delà de « trouver des bugs ») ?",
+      "a_fr": "Trois choses : partager la connaissance (personne n'est le seul à comprendre un module — assurance contre le bus factor), garantir la cohérence du codebase (patterns, conventions, gestion d'erreurs), et améliorer la conception grâce à une deuxième paire d'yeux (API, cas limites, tests, sécurité).",
+      "q_en": "What is a code review really for (beyond \"finding bugs\")?",
+      "a_en": "Three things: sharing knowledge (nobody is the only one who understands a module — insurance against the bus factor), keeping the codebase consistent (patterns, conventions, error handling), and improving design through a second pair of eyes (API, edge cases, tests, security)."
+    },
+    {
+      "q_fr": "Pourquoi le style ne doit-il pas être commenté en review ?",
+      "a_fr": "Parce que les linters et formatters (ESLint, Prettier, Black, clang-format) le vérifient automatiquement en CI, sans fatigue ni débat. Un humain qui commente l'indentation gaspille le temps de deux personnes ; si l'équipe débat du style en review, il manque un outil.",
+      "q_en": "Why shouldn't style be commented on in a review?",
+      "a_en": "Because linters and formatters (ESLint, Prettier, Black, clang-format) check it automatically in CI, without fatigue or debate. A human commenting on indentation wastes two people's time; if the team argues about style in review, a tool is missing."
+    },
+    {
+      "q_fr": "Quelle est la première chose à faire quand on review une PR ?",
+      "a_fr": "Comprendre l'intention : lire le titre, la description et le ticket lié avant la première ligne de diff. Puis aller du général (l'approche est-elle la bonne ?) au particulier (logique ligne à ligne, cas limites, tests).",
+      "q_en": "What is the first thing to do when reviewing a PR?",
+      "a_en": "Understand the intent: read the title, the description and the linked ticket before the first line of diff. Then go from general (is the approach right?) to specific (line-by-line logic, edge cases, tests)."
+    },
+    {
+      "q_fr": "Que sont les conventional comments et quels préfixes faut-il connaître ?",
+      "a_fr": "Un format de commentaire de review `label: sujet` (conventionalcomments.org) qui lève l'ambiguïté sur la gravité : `blocking:` (à résoudre avant merge), `question:` (besoin d'une réponse), `suggestion:` (amélioration proposée), `nit:` (détail mineur, jamais bloquant), `praise:` (souligner ce qui est bien).",
+      "q_en": "What are conventional comments and which prefixes should you know?",
+      "a_en": "A review comment format `label: subject` (conventionalcomments.org) that removes ambiguity about severity: `blocking:` (must be resolved before merge), `question:` (needs an answer), `suggestion:` (proposed improvement), `nit:` (minor detail, never blocking), `praise:` (highlighting what's good)."
+    },
+    {
+      "q_fr": "Pourquoi préférer les questions aux ordres dans un commentaire de review ?",
+      "a_fr": "Parce que le reviewer n'a pas tout le contexte. « Que se passe-t-il si la liste est vide ? » ouvre une discussion et laisse la porte à « c'est garanti non vide en amont » ; « gère la liste vide » présuppose que le reviewer a raison et braque l'auteur.",
+      "q_en": "Why prefer questions over orders in a review comment?",
+      "a_en": "Because the reviewer doesn't have all the context. \"What happens if the list is empty?\" opens a discussion and leaves room for \"it's guaranteed non-empty upstream\"; \"handle the empty list\" assumes the reviewer is right and puts the author on the defensive."
+    },
+    {
+      "q_fr": "Pourquoi viser des PR d'environ 200 lignes maximum ?",
+      "a_fr": "L'attention du reviewer décroche avec la taille du diff (les études SmartBear situent le décrochage vers 400 lignes) : une grosse PR est survolée et approuvée d'un « LGTM » distrait. Petite PR = review profonde, feedback rapide, moins de conflits, revert facile. Une grosse feature se découpe en PR successives.",
+      "q_en": "Why aim for PRs of roughly 200 lines maximum?",
+      "a_en": "Reviewer attention drops with diff size (the SmartBear studies place the drop-off around 400 lines): a big PR gets skimmed and approved with a distracted \"LGTM\". Small PR = deep review, fast feedback, fewer conflicts, easy revert. A big feature gets split into successive PRs."
+    },
+    {
+      "q_fr": "Quelles sont les trois règles pour bien recevoir une review ?",
+      "a_fr": "1) Ce n'est pas personnel : on review le code, pas la personne. 2) Répondre à tout : chaque commentaire reçoit un fix, une réponse ou un ticket, jamais un silence. 3) Le désaccord s'argumente : « je garde cette approche parce que X » est légitime ; appliquer en silence un changement qu'on juge mauvais ne l'est pas.",
+      "q_en": "What are the three rules for receiving a review well?",
+      "a_en": "1) It's not personal: the code is reviewed, not the person. 2) Respond to everything: each comment gets a fix, an answer or a ticket, never silence. 3) Disagreement comes with arguments: \"I'm keeping this approach because X\" is legitimate; silently applying a change you believe is wrong is not."
+    },
+    {
+      "q_fr": "Qu'est-ce que l'auto-review et pourquoi la faire ?",
+      "a_fr": "Relire son propre diff dans l'interface de PR avant de demander une review, comme si on était le reviewer : on attrape le console.log oublié, le fichier commité par erreur, le code mort. Avec une bonne description (quoi, pourquoi, comment tester), chaque minute d'auto-review économise un aller-retour de review, donc des heures de latence.",
+      "q_en": "What is a self-review and why do it?",
+      "a_en": "Re-reading your own diff in the PR interface before requesting a review, as if you were the reviewer: you catch the forgotten console.log, the file committed by mistake, the dead code. With a good description (what, why, how to test), every minute of self-review saves a review round-trip, hence hours of latency."
+    }
+  ],
+  "qcm": [
+    {
+      "q_fr": "Quel est l'apport principal d'une code review dans une équipe ?",
+      "q_en": "What is the main contribution of code review in a team?",
+      "choices_fr": [
+        "Vérifier que le style du code respecte les conventions",
+        "Partager la connaissance et garantir la cohérence du codebase",
+        "Remplacer les tests automatisés",
+        "Mesurer la productivité de chaque développeur"
+      ],
+      "choices_en": [
+        "Checking that the code style follows conventions",
+        "Sharing knowledge and keeping the codebase consistent",
+        "Replacing automated tests",
+        "Measuring each developer's productivity"
+      ],
+      "answer": 1,
+      "explain_fr": "Le style est le travail des linters en CI, les tests restent indispensables, et utiliser la review pour évaluer les gens détruit la confiance. La vraie valeur : connaissance partagée, cohérence, meilleure conception.",
+      "explain_en": "Style is the linters' job in CI, tests remain essential, and using reviews to evaluate people destroys trust. The real value: shared knowledge, consistency, better design."
+    },
+    {
+      "q_fr": "Que signifie le préfixe `nit:` dans un commentaire de review ?",
+      "q_en": "What does the `nit:` prefix mean in a review comment?",
+      "choices_fr": [
+        "Un bug critique à corriger avant le merge",
+        "Une question qui attend une réponse de l'auteur",
+        "Un problème de sécurité à escalader",
+        "Un détail mineur qui ne bloque jamais le merge"
+      ],
+      "choices_en": [
+        "A critical bug to fix before merging",
+        "A question awaiting an answer from the author",
+        "A security issue to escalate",
+        "A minor detail that never blocks the merge"
+      ],
+      "answer": 3,
+      "explain_fr": "`nit:` (nitpick) signale un détail mineur — nommage, micro-style non couvert par le linter — que l'auteur est libre d'appliquer ou non. Ce qui bloque le merge porte le préfixe `blocking:`.",
+      "explain_en": "`nit:` (nitpick) flags a minor detail — naming, micro-style not covered by the linter — that the author is free to apply or not. What blocks the merge carries the `blocking:` prefix."
+    },
+    {
+      "q_fr": "Pourquoi limiter la taille d'une PR à environ 200 lignes ?",
+      "q_en": "Why limit a PR's size to roughly 200 lines?",
+      "choices_fr": [
+        "Au-delà, l'attention du reviewer décroche et la review devient un survol",
+        "GitHub refuse les diffs plus grands",
+        "La CI est plus rapide sur les petits diffs",
+        "C'est une exigence des conventional comments"
+      ],
+      "choices_en": [
+        "Beyond that, reviewer attention drops and the review becomes a skim",
+        "GitHub rejects larger diffs",
+        "CI runs faster on small diffs",
+        "It's a requirement of conventional comments"
+      ],
+      "answer": 0,
+      "explain_fr": "C'est l'effet LGTM : plus le diff est gros, moins il est vraiment lu, plus l'approbation devient un tampon. Les études SmartBear situent le décrochage vers 400 lignes ; viser 200 garde de la marge.",
+      "explain_en": "That's the LGTM effect: the bigger the diff, the less it's actually read, the more the approval becomes a rubber stamp. The SmartBear studies place the drop-off around 400 lines; aiming for 200 keeps a margin."
+    },
+    {
+      "q_fr": "Le code d'une PR fonctionne et respecte les conventions, mais le reviewer aurait choisi une autre approche. Que doit-il faire selon le guide Google ?",
+      "q_en": "The code in a PR works and follows conventions, but the reviewer would have chosen a different approach. What should they do according to Google's guide?",
+      "choices_fr": [
+        "Bloquer la PR jusqu'à ce que l'auteur adopte son approche",
+        "Refuser de reviewer et passer la main",
+        "Approuver : le changement améliore la santé du code, la perfection n'est pas le standard",
+        "Réécrire lui-même le code de la PR"
+      ],
+      "choices_en": [
+        "Block the PR until the author adopts their approach",
+        "Refuse to review and hand it off",
+        "Approve: the change improves code health, perfection is not the standard",
+        "Rewrite the PR's code themselves"
+      ],
+      "answer": 2,
+      "explain_fr": "Le standard de merge du guide Google : on approuve dès que le changement améliore la santé globale du code, même imparfait. « Moi j'aurais fait autrement » n'est pas un motif de blocage — au mieux une `suggestion:`.",
+      "explain_en": "Google's merge standard: approve as soon as the change improves the overall health of the code, even if imperfect. \"I would have done it differently\" is not grounds for blocking — at best a `suggestion:`."
+    },
+    {
+      "q_fr": "Un reviewer demande un changement que tu juges injustifié. Quelle est la bonne réaction ?",
+      "q_en": "A reviewer requests a change you believe is unjustified. What is the right reaction?",
+      "choices_fr": [
+        "Appliquer le changement en silence pour ne pas faire de vagues",
+        "Ignorer le commentaire et merger",
+        "Escalader immédiatement au manager",
+        "Répondre au commentaire avec ses arguments et en discuter"
+      ],
+      "choices_en": [
+        "Apply the change silently to avoid making waves",
+        "Ignore the comment and merge",
+        "Escalate to the manager immediately",
+        "Reply to the comment with your arguments and discuss it"
+      ],
+      "answer": 3,
+      "explain_fr": "Le désaccord argumenté est légitime et attendu : on expose sa contrainte ou son contexte, et la discussion tranche (ou un tiers si elle s'enlise). Ignorer détruit la confiance ; appliquer en silence un changement qu'on juge mauvais est aussi une faute.",
+      "explain_en": "Argued disagreement is legitimate and expected: you state your constraint or context, and the discussion settles it (or a third party if it stalls). Ignoring destroys trust; silently applying a change you believe is wrong is also a mistake."
+    },
+    {
+      "q_fr": "Que doit faire l'auteur d'une PR juste avant de demander une review ?",
+      "q_en": "What should a PR author do right before requesting a review?",
+      "choices_fr": [
+        "Squasher tous ses commits en un seul",
+        "Relire son propre diff comme s'il était le reviewer et soigner la description",
+        "Assigner le maximum de reviewers pour aller plus vite",
+        "Désactiver le linter pour éviter les faux positifs"
+      ],
+      "choices_en": [
+        "Squash all commits into one",
+        "Re-read their own diff as if they were the reviewer and polish the description",
+        "Assign as many reviewers as possible to go faster",
+        "Disable the linter to avoid false positives"
+      ],
+      "answer": 1,
+      "explain_fr": "L'auto-review attrape le debug oublié, les fichiers parasites et le code mort ; la description donne le contexte (quoi, pourquoi, comment tester). Chaque aller-retour de review évité économise des heures de latence.",
+      "explain_en": "Self-review catches forgotten debug code, stray files and dead code; the description gives context (what, why, how to test). Every avoided review round-trip saves hours of latency."
+    }
+  ]
+}

@@ -1,0 +1,168 @@
+{
+  "flashcards": [
+    {
+      "q_fr": "Quelles sont les étapes de la méthode scientifique appliquée au debugging ?",
+      "a_fr": "1) Reproduire le bug de façon fiable ; 2) réduire au cas minimal (par dichotomie) ; 3) formuler une hypothèse falsifiable ; 4) mener une expérience en ne changeant qu'une variable à la fois ; 5) hypothèse confirmée → corriger + test de non-régression, réfutée → nouvelle hypothèse.",
+      "q_en": "What are the steps of the scientific method applied to debugging?",
+      "a_en": "1) Reproduce the bug reliably; 2) reduce to a minimal case (by bisection); 3) form a falsifiable hypothesis; 4) run an experiment changing only one variable at a time; 5) hypothesis confirmed → fix + regression test, refuted → new hypothesis."
+    },
+    {
+      "q_fr": "Pourquoi ne changer qu'une variable à la fois pendant une expérience de debugging ?",
+      "a_fr": "Si on change deux choses et que le bug disparaît, impossible de savoir laquelle était la cause — et on a peut-être introduit un second bug qui masque le premier. Une expérience doit pouvoir confirmer ou réfuter UNE hypothèse précise.",
+      "q_en": "Why change only one variable at a time during a debugging experiment?",
+      "a_en": "If you change two things and the bug disappears, you can't know which one was the cause — and you may have introduced a second bug masking the first. An experiment must be able to confirm or refute ONE precise hypothesis."
+    },
+    {
+      "q_fr": "Comment fonctionne git bisect et quelle est sa complexité ?",
+      "a_fr": "C'est une recherche binaire dans l'historique Git : on marque un commit `good` et un commit `bad`, Git checkout le commit du milieu, on teste et on répond good/bad, et on converge vers le premier commit cassé en O(log n) — ~10 tests pour 1000 commits. `git bisect run <cmd>` automatise tout via le code de sortie.",
+      "q_en": "How does git bisect work and what is its complexity?",
+      "a_en": "It's a binary search through Git history: you mark a `good` and a `bad` commit, Git checks out the midpoint, you test and answer good/bad, converging on the first broken commit in O(log n) — ~10 tests for 1000 commits. `git bisect run <cmd>` automates it via the exit code."
+    },
+    {
+      "q_fr": "Debugger vs printf : quand utiliser lequel ?",
+      "a_fr": "Debugger : explorer un état complexe à un instant T — breakpoints (y compris conditionnels), watch, step over/into, sans redéployer. printf/logs : capturer une chronologie (asynchrone, bugs intermittents) et déboguer la prod, où les logs sont le seul debugger disponible. Les deux sont complémentaires.",
+      "q_en": "Debugger vs printf: when to use which?",
+      "a_en": "Debugger: exploring complex state at a point in time — breakpoints (including conditional), watch, step over/into, without redeploying. printf/logs: capturing a timeline (async code, intermittent bugs) and debugging prod, where logs are the only debugger available. The two are complementary."
+    },
+    {
+      "q_fr": "Pourquoi un bug peut-il disparaître dès qu'on lance le debugger ou qu'on ajoute un print ?",
+      "a_fr": "C'est un heisenbug : l'observation modifie l'expérience. Le debugger fige les threads et le print ralentit l'exécution, ce qui change l'ordonnancement — signature typique d'une race condition ou d'un problème de timing. Réflexe : logging léger horodaté, thread sanitizer, relire les sections critiques.",
+      "q_en": "Why can a bug disappear as soon as you attach a debugger or add a print?",
+      "a_en": "It's a heisenbug: observing changes the experiment. The debugger freezes threads and the print slows execution, altering scheduling — the typical signature of a race condition or timing issue. Reflex: lightweight timestamped logging, thread sanitizer, re-read the critical sections."
+    },
+    {
+      "q_fr": "Pourquoi le rubber duck debugging fonctionne-t-il ?",
+      "a_fr": "Expliquer le problème à voix haute, ligne par ligne, force à verbaliser et donc à vérifier chaque hypothèse implicite (« ici cette variable vaut forcément X… ah non »). C'est en général une de ces hypothèses non vérifiées qui est fausse. D'où les questions qui se résolvent pendant qu'on les pose.",
+      "q_en": "Why does rubber duck debugging work?",
+      "a_en": "Explaining the problem out loud, line by line, forces you to verbalize and therefore check every implicit assumption (\"here this variable must be X… oh wait\"). One of those unchecked assumptions is usually the false one. Hence questions that solve themselves while being asked."
+    },
+    {
+      "q_fr": "Que doit contenir une bonne demande d'aide sur un bug ?",
+      "a_fr": "Un cas minimal reproductible (le code le plus court qui montre le bug), le comportement attendu, le comportement observé (message d'erreur complet), ce qui a déjà été essayé, et les versions/environnement. Construire le cas minimal résout souvent le problème avant même de poser la question.",
+      "q_en": "What should a good request for help on a bug contain?",
+      "a_en": "A minimal reproducible example (the shortest code showing the bug), the expected behavior, the observed behavior (full error message), what was already tried, and versions/environment. Building the minimal case often solves the problem before the question is even asked."
+    },
+    {
+      "q_fr": "Comment lire efficacement une stack trace ?",
+      "a_fr": "D'abord le message d'erreur en entier (le quoi), puis parcourir les frames jusqu'à la première qui appartient à VOTRE code (le où) — les frames du framework sont du contexte, pas des suspects. Attention au sens de lecture : selon le langage, l'appel le plus profond est en haut ou en bas (Python : en bas).",
+      "q_en": "How do you read a stack trace effectively?",
+      "a_en": "First the full error message (the what), then walk the frames to the first one that belongs to YOUR code (the where) — framework frames are context, not suspects. Mind the reading order: depending on the language, the deepest call is at the top or the bottom (Python: bottom)."
+    }
+  ],
+  "qcm": [
+    {
+      "q_fr": "Un test échoue en CI mais passe en local. Quel est le meilleur premier réflexe ?",
+      "q_en": "A test fails in CI but passes locally. What is the best first reflex?",
+      "choices_fr": [
+        "Relancer la CI jusqu'à ce que ça passe",
+        "Comparer les différences d'environnement (versions, variables, données, parallélisme)",
+        "Désactiver le test le temps de livrer",
+        "Réécrire le test"
+      ],
+      "choices_en": [
+        "Re-run CI until it passes",
+        "Compare environment differences (versions, variables, data, parallelism)",
+        "Disable the test until the release ships",
+        "Rewrite the test"
+      ],
+      "answer": 1,
+      "explain_fr": "Le bug vit forcément dans un delta entre les deux environnements : versions, variables d'env, données, ordre ou parallélisme des tests. Relancer ou désactiver ne fait que masquer — souvent une vraie race condition.",
+      "explain_en": "The bug necessarily lives in a delta between the two environments: versions, env vars, data, test order or parallelism. Re-running or disabling only masks it — often a real race condition."
+    },
+    {
+      "q_fr": "Combien d'étapes faut-il environ à git bisect pour isoler un commit fautif parmi 1000 ?",
+      "q_en": "About how many steps does git bisect need to isolate a faulty commit among 1000?",
+      "choices_fr": [
+        "1000, il les teste tous",
+        "500 en moyenne",
+        "Une dizaine (log2 de 1000)",
+        "Exactement 3"
+      ],
+      "choices_en": [
+        "1000, it tests them all",
+        "500 on average",
+        "About ten (log2 of 1000)",
+        "Exactly 3"
+      ],
+      "answer": 2,
+      "explain_fr": "git bisect est une recherche binaire : chaque test élimine la moitié des commits restants, donc log2(1000) ≈ 10 étapes. C'est ce qui rend la méthode utilisable même sur un gros historique.",
+      "explain_en": "git bisect is a binary search: each test eliminates half the remaining commits, so log2(1000) ≈ 10 steps. That's what makes the method practical even on a large history."
+    },
+    {
+      "q_fr": "Un bug disparaît dès que vous ajoutez un console.log. Cause la plus probable ?",
+      "q_en": "A bug disappears as soon as you add a console.log. Most likely cause?",
+      "choices_fr": [
+        "Une race condition : le log change le timing d'exécution",
+        "console.log corrige silencieusement les variables",
+        "Le bug était imaginaire",
+        "Un problème de cache navigateur"
+      ],
+      "choices_en": [
+        "A race condition: the log changes execution timing",
+        "console.log silently fixes the variables",
+        "The bug was imaginary",
+        "A browser cache issue"
+      ],
+      "answer": 0,
+      "explain_fr": "C'est un heisenbug : le log ralentit le code et modifie l'ordonnancement, ce qui masque la course. Le bug est toujours là — il reviendra en prod, là où personne n'a mis de log.",
+      "explain_en": "It's a heisenbug: the log slows the code down and alters scheduling, which hides the race. The bug is still there — it will come back in prod, where nobody added a log."
+    },
+    {
+      "q_fr": "Avec `git bisect run npm test`, comment git interprète-t-il le résultat de la commande ?",
+      "q_en": "With `git bisect run npm test`, how does git interpret the command's result?",
+      "choices_fr": [
+        "Il lit la sortie texte et cherche le mot « error »",
+        "Il demande confirmation à chaque étape",
+        "Code de sortie 0 = commit bad, autre = good",
+        "Code de sortie 0 = commit good, autre = bad"
+      ],
+      "choices_en": [
+        "It reads the text output looking for the word \"error\"",
+        "It asks for confirmation at every step",
+        "Exit code 0 = bad commit, anything else = good",
+        "Exit code 0 = good commit, anything else = bad"
+      ],
+      "answer": 3,
+      "explain_fr": "Convention Unix : exit code 0 = succès, donc commit good ; tout code non nul (hors 125, qui signifie « skip ») marque le commit bad. La bisection devient alors entièrement automatique.",
+      "explain_en": "Unix convention: exit code 0 = success, hence a good commit; any non-zero code (except 125, which means \"skip\") marks the commit bad. The bisection then becomes fully automatic."
+    },
+    {
+      "q_fr": "Qu'est-ce que le « shotgun debugging » ?",
+      "q_en": "What is \"shotgun debugging\"?",
+      "choices_fr": [
+        "Utiliser plusieurs debuggers en parallèle",
+        "Poser des breakpoints sur toutes les lignes",
+        "Modifier des lignes au hasard jusqu'à disparition du symptôme",
+        "Supprimer la moitié du code pour réduire le cas"
+      ],
+      "choices_en": [
+        "Using several debuggers in parallel",
+        "Setting breakpoints on every line",
+        "Changing random lines until the symptom disappears",
+        "Deleting half the code to reduce the case"
+      ],
+      "answer": 2,
+      "explain_fr": "L'anti-méthode par excellence : même si le symptôme disparaît, on n'a rien appris et on a probablement masqué la cause racine. À ne pas confondre avec la réduction dichotomique, qui est contrôlée et raisonnée.",
+      "explain_en": "The anti-method par excellence: even if the symptom disappears, you've learned nothing and probably masked the root cause. Not to be confused with bisection-based reduction, which is controlled and reasoned."
+    },
+    {
+      "q_fr": "Quelle est la meilleure structure pour répondre à « raconte-moi ton bug le plus dur » ?",
+      "q_en": "What is the best structure to answer \"tell me about your hardest bug\"?",
+      "choices_fr": [
+        "Contexte → symptôme → démarche → cause racine → fix + prévention",
+        "Lister toutes les technologies du projet en détail",
+        "Insister sur le nombre d'heures passées dessus",
+        "Expliquer que le bug venait du framework"
+      ],
+      "choices_en": [
+        "Context → symptom → approach → root cause → fix + prevention",
+        "Listing all the project's technologies in detail",
+        "Emphasizing how many hours it took",
+        "Explaining that the bug came from the framework"
+      ],
+      "answer": 0,
+      "explain_fr": "Le recruteur évalue la méthode, pas l'exploit : une histoire courte et structurée, avec une fausse piste assumée et une mesure de prévention, vaut mieux qu'un récit épique en vrac.",
+      "explain_en": "The interviewer evaluates the method, not the feat: a short, structured story, with an owned dead end and a prevention measure, beats an epic jumble."
+    }
+  ]
+}

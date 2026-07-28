@@ -1,10 +1,9 @@
 ---
 import Base from '../layouts/Base.astro';
-import { getTopics } from '../lib/topics';
+import { getTopics, dayNumbers } from '../lib/topics';
 
 const topics = await getTopics();
-const total = topics.length;
-const dayNo = (i: number) => total - i;
+const days = dayNumbers(topics);
 const categories = [...new Set(topics.map((t) => t.category))].sort();
 ---
 
@@ -33,12 +32,12 @@ const categories = [...new Set(topics.map((t) => t.category))].sort();
 
   <ul class="card-grid">
     {
-      topics.map((t, i) => (
+      topics.map((t) => (
         <li class="topic-card" data-date={t.date} data-category={t.category}>
           <p class="meta">
             <span>
-              <span data-l="fr">Jour {dayNo(i)}</span>
-              <span data-l="en">Day {dayNo(i)}</span>
+              <span data-l="fr">{t.isActu ? 'Actu' : `Jour ${days.get(t.dir)}`}</span>
+              <span data-l="en">{t.isActu ? 'News' : `Day ${days.get(t.dir)}`}</span>
             </span>
             <span>{t.date}</span>
             <span class="chip">{t.category}</span>

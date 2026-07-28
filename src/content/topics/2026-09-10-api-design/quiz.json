@@ -1,0 +1,168 @@
+{
+  "flashcards": [
+    {
+      "q_fr": "Quelle est la convention de nommage des ressources dans une API REST ?",
+      "a_fr": "Des noms au pluriel, jamais de verbes : `GET /users/42/orders` et non `/getOrdersOfUser`. Le verbe est porté par la méthode HTTP (GET lit, POST crée, PUT remplace, PATCH modifie, DELETE supprime).",
+      "q_en": "What is the resource naming convention in a REST API?",
+      "a_en": "Plural nouns, never verbs: `GET /users/42/orders`, not `/getOrdersOfUser`. The verb is carried by the HTTP method (GET reads, POST creates, PUT replaces, PATCH updates, DELETE removes)."
+    },
+    {
+      "q_fr": "Quelle différence entre les codes 401 et 403 ?",
+      "a_fr": "401 Unauthorized = le client n'est pas authentifié (credentials absents ou invalides). 403 Forbidden = le client est authentifié mais n'a pas les droits. Bonus : certaines API renvoient 404 au lieu de 403 pour ne pas révéler l'existence d'une ressource.",
+      "q_en": "What's the difference between 401 and 403?",
+      "a_en": "401 Unauthorized = the client is not authenticated (missing or invalid credentials). 403 Forbidden = the client is authenticated but lacks permission. Bonus: some APIs return 404 instead of 403 to avoid revealing a resource exists."
+    },
+    {
+      "q_fr": "Qu'est-ce que RFC 9457 (Problem Details) ?",
+      "a_fr": "Le standard des erreurs HTTP structurées : content-type `application/problem+json` avec les champs `type` (URL identifiant la catégorie d'erreur), `title`, `status`, `detail`, `instance`, plus des extensions métier. Un client peut brancher sur `type` sans parser un message texte.",
+      "q_en": "What is RFC 9457 (Problem Details)?",
+      "a_en": "The standard for structured HTTP errors: `application/problem+json` content type with the fields `type` (a URL identifying the error category), `title`, `status`, `detail`, `instance`, plus business extensions. A client can branch on `type` without parsing a text message."
+    },
+    {
+      "q_fr": "Pourquoi la pagination par cursor est-elle préférée à l'offset pour les gros volumes ?",
+      "a_fr": "Performance : l'offset force la DB à lire et jeter N lignes (lent en profondeur), le cursor fait un seek d'index direct (`WHERE created_at < :cursor`). Stabilité : des insertions pendant le parcours créent doublons ou trous avec l'offset, pas avec le cursor. Contrepartie : pas de saut direct à la page N.",
+      "q_en": "Why is cursor pagination preferred over offset for large volumes?",
+      "a_en": "Performance: offset forces the DB to read and discard N rows (slow at depth), a cursor does a direct index seek (`WHERE created_at < :cursor`). Stability: inserts while paging create duplicates or gaps with offset, not with a cursor. Trade-off: no direct jump to page N."
+    },
+    {
+      "q_fr": "À quoi sert le header Idempotency-Key ?",
+      "a_fr": "À rendre un POST rejouable sans danger. Le client envoie une clé unique par opération ; le serveur stocke `clé → réponse` et, si la même clé revient (retry après timeout), renvoie la réponse enregistrée sans réexécuter. Popularisé par Stripe pour éviter les doubles paiements.",
+      "q_en": "What is the Idempotency-Key header for?",
+      "a_en": "Making a POST safely replayable. The client sends a unique key per operation; the server stores `key → response` and, if the same key returns (retry after timeout), replays the recorded response without re-executing. Popularized by Stripe to prevent double charges."
+    },
+    {
+      "q_fr": "Comment une API doit-elle signaler qu'un client dépasse le rate limit ?",
+      "a_fr": "Code `429 Too Many Requests` avec un header `Retry-After` (secondes ou date) indiquant quand réessayer, plus les headers informatifs `RateLimit-Limit` / `RateLimit-Remaining`. Le client applique alors un backoff exponentiel avec jitter.",
+      "q_en": "How should an API signal that a client exceeds the rate limit?",
+      "a_en": "Status `429 Too Many Requests` with a `Retry-After` header (seconds or a date) indicating when to retry, plus the informative `RateLimit-Limit` / `RateLimit-Remaining` headers. The client then applies exponential backoff with jitter."
+    },
+    {
+      "q_fr": "Comment sécurise-t-on un webhook sortant ?",
+      "a_fr": "En signant le payload en HMAC-SHA256 avec un secret partagé, signature transmise en header et incluant un timestamp pour bloquer le rejeu. Le récepteur vérifie la signature (comparaison constante) et la fraîcheur, répond 2xx immédiatement, traite en asynchrone et déduplique par event id.",
+      "q_en": "How do you secure an outgoing webhook?",
+      "a_en": "By signing the payload with HMAC-SHA256 using a shared secret, the signature sent in a header and including a timestamp to block replay. The receiver verifies the signature (constant-time compare) and freshness, answers 2xx immediately, processes asynchronously and deduplicates by event id."
+    },
+    {
+      "q_fr": "Quand faut-il créer une nouvelle version d'API (v2) ?",
+      "a_fr": "Uniquement sur breaking change : suppression ou renommage de champ, changement de type ou de sémantique. Ajouter un champ ou un endpoint est rétrocompatible (les clients doivent ignorer les champs inconnus). Et on maintient la v1 avec une date de fin de vie annoncée.",
+      "q_en": "When should you create a new API version (v2)?",
+      "a_en": "Only on breaking changes: field removal or rename, type or semantics change. Adding a field or endpoint is backward compatible (clients must ignore unknown fields). And you keep v1 alive with an announced end-of-life date."
+    }
+  ],
+  "qcm": [
+    {
+      "q_fr": "Quel code de statut pour un payload JSON valide syntaxiquement mais qui viole une règle métier ?",
+      "q_en": "Which status code for a syntactically valid JSON payload that violates a business rule?",
+      "choices_fr": [
+        "400 Bad Request",
+        "409 Conflict",
+        "422 Unprocessable Content",
+        "500 Internal Server Error"
+      ],
+      "choices_en": [
+        "400 Bad Request",
+        "409 Conflict",
+        "422 Unprocessable Content",
+        "500 Internal Server Error"
+      ],
+      "answer": 2,
+      "explain_fr": "422 = le serveur comprend la requête mais ne peut pas la traiter (validation métier). 400 = requête malformée (JSON invalide), 409 = conflit d'état (ex. ressource déjà existante), 500 = bug côté serveur.",
+      "explain_en": "422 = the server understands the request but can't process it (business validation). 400 = malformed request (invalid JSON), 409 = state conflict (e.g. resource already exists), 500 = server-side bug."
+    },
+    {
+      "q_fr": "Pourquoi répondre 200 avec `{\"success\": false}` est-il un anti-pattern ?",
+      "q_en": "Why is replying 200 with `{\"success\": false}` an anti-pattern?",
+      "choices_fr": [
+        "Parce que JSON ne supporte pas les booléens",
+        "Caches, métriques et retries se basent sur le code de statut, qui ment",
+        "Parce que 200 est réservé aux GET",
+        "Parce que le corps d'une erreur doit être vide"
+      ],
+      "choices_en": [
+        "Because JSON doesn't support booleans",
+        "Caches, metrics and retries rely on the status code, which is lying",
+        "Because 200 is reserved for GET",
+        "Because an error body must be empty"
+      ],
+      "answer": 1,
+      "explain_fr": "Le code de statut est le canal d'erreur standard : proxies, monitoring et clients HTTP s'y fient. Un 200 qui contient une erreur casse le cache, fausse les métriques et empêche les retries automatiques.",
+      "explain_en": "The status code is the standard error channel: proxies, monitoring and HTTP clients rely on it. A 200 carrying an error breaks caching, skews metrics and prevents automatic retries."
+    },
+    {
+      "q_fr": "Un client parcourt une liste paginée par offset pendant que des éléments sont insérés en tête. Que risque-t-il ?",
+      "q_en": "A client pages through an offset-paginated list while items are inserted at the top. What can happen?",
+      "choices_fr": [
+        "Rien, l'offset est stable par définition",
+        "Une erreur 409 à chaque insertion",
+        "La perte de sa session",
+        "Voir des doublons ou rater des éléments"
+      ],
+      "choices_en": [
+        "Nothing, offset is stable by definition",
+        "A 409 error on every insert",
+        "Losing their session",
+        "Seeing duplicates or missing items"
+      ],
+      "answer": 3,
+      "explain_fr": "L'offset compte depuis le début de la liste : si la liste bouge entre deux pages, les éléments glissent (doublons) ou sautent (trous). Le cursor, ancré sur le dernier élément vu, est insensible aux insertions.",
+      "explain_en": "Offset counts from the start of the list: if the list shifts between pages, items slide (duplicates) or skip (gaps). A cursor, anchored on the last seen item, is immune to inserts."
+    },
+    {
+      "q_fr": "Quel changement d'API est un breaking change nécessitant une v2 ?",
+      "q_en": "Which API change is a breaking change requiring a v2?",
+      "choices_fr": [
+        "Renommer le champ `created` en `created_at` dans une réponse",
+        "Ajouter un champ `avatar_url` dans une réponse",
+        "Ajouter un nouvel endpoint `GET /stats`",
+        "Ajouter un query param optionnel `?sort=`"
+      ],
+      "choices_en": [
+        "Renaming the `created` field to `created_at` in a response",
+        "Adding an `avatar_url` field to a response",
+        "Adding a new `GET /stats` endpoint",
+        "Adding an optional `?sort=` query param"
+      ],
+      "answer": 0,
+      "explain_fr": "Renommer un champ casse tous les clients qui le lisent. Ajouter un champ, un endpoint ou un param optionnel est rétrocompatible : les clients doivent ignorer ce qu'ils ne connaissent pas.",
+      "explain_en": "Renaming a field breaks every client reading it. Adding a field, an endpoint or an optional param is backward compatible: clients must ignore what they don't know."
+    },
+    {
+      "q_fr": "Pourquoi un consommateur de webhooks doit-il dédupliquer les événements par id ?",
+      "q_en": "Why must a webhook consumer deduplicate events by id?",
+      "choices_fr": [
+        "Parce que HTTP ne garantit pas l'ordre des requêtes",
+        "Parce que les retries de l'émetteur garantissent de l'at-least-once : les doublons sont normaux",
+        "Parce que la signature HMAC change à chaque envoi",
+        "Parce que les événements expirent au bout d'une heure"
+      ],
+      "choices_en": [
+        "Because HTTP doesn't guarantee request ordering",
+        "Because the sender's retries guarantee at-least-once delivery: duplicates are normal",
+        "Because the HMAC signature changes on every send",
+        "Because events expire after one hour"
+      ],
+      "answer": 1,
+      "explain_fr": "L'émetteur réessaie tant qu'il n'a pas reçu de 2xx : si votre 2xx se perd, l'événement revient. La livraison est at-least-once, le traitement doit donc être idempotent (dédupliquer par event id).",
+      "explain_en": "The sender retries until it receives a 2xx: if your 2xx is lost, the event comes again. Delivery is at-least-once, so processing must be idempotent (deduplicate by event id)."
+    },
+    {
+      "q_fr": "Que doit faire un client qui reçoit un 429 avec `Retry-After: 30` ?",
+      "q_en": "What should a client do upon receiving a 429 with `Retry-After: 30`?",
+      "choices_fr": [
+        "Réessayer immédiatement sur un autre endpoint",
+        "Abandonner définitivement la requête",
+        "Attendre au moins 30 secondes puis réessayer, avec backoff si ça persiste",
+        "Basculer en HTTP/1.0 pour contourner la limite"
+      ],
+      "choices_en": [
+        "Retry immediately on another endpoint",
+        "Permanently abandon the request",
+        "Wait at least 30 seconds then retry, with backoff if it persists",
+        "Downgrade to HTTP/1.0 to bypass the limit"
+      ],
+      "answer": 2,
+      "explain_fr": "`Retry-After` indique le délai minimal avant de réessayer. Un client bien élevé le respecte et applique un backoff exponentiel avec jitter — marteler l'API ne fera qu'allonger le ban.",
+      "explain_en": "`Retry-After` states the minimum delay before retrying. A well-behaved client honors it and applies exponential backoff with jitter — hammering the API only extends the ban."
+    }
+  ]
+}

@@ -1,0 +1,168 @@
+{
+  "flashcards": [
+    {
+      "q_fr": "Pourquoi ne faut-il jamais stocker un mot de passe chiffré (et pas seulement jamais en clair) ?",
+      "a_fr": "Le chiffrement est réversible par définition : quiconque obtient la clé (dump, backup, admin malveillant) récupère tous les mots de passe d'un coup. On stocke un hash cryptographique, fonction à sens unique impossible à inverser.",
+      "q_en": "Why must you never store an encrypted password (not just never plaintext)?",
+      "a_en": "Encryption is reversible by definition: anyone who obtains the key (dump, backup, malicious admin) recovers every password at once. You store a cryptographic hash, a one-way function that cannot be inverted."
+    },
+    {
+      "q_fr": "Pourquoi MD5 ou SHA-256 seuls ne conviennent-ils pas pour les mots de passe ?",
+      "a_fr": "Ce sont des hashs conçus pour être rapides : un GPU en calcule des milliards par seconde, rendant brute force et dictionnaires praticables sur un dump. Il faut un algorithme volontairement lent et coûteux : bcrypt, scrypt ou argon2id.",
+      "q_en": "Why are MD5 or SHA-256 alone unsuitable for passwords?",
+      "a_en": "They are hashes designed to be fast: a GPU computes billions per second, making brute force and dictionaries practical on a dump. You need a deliberately slow, costly algorithm: bcrypt, scrypt or argon2id."
+    },
+    {
+      "q_fr": "À quoi sert le salt et contre quelle attaque protège-t-il ?",
+      "a_fr": "Valeur aléatoire unique par utilisateur ajoutée avant hashing : deux mots de passe identiques donnent des hashs différents, et les rainbow tables (tables hash → mot de passe précalculées) deviennent inutiles. Chaque hash doit être attaqué individuellement.",
+      "q_en": "What is the salt for and which attack does it defeat?",
+      "a_en": "A unique random value per user added before hashing: two identical passwords yield different hashes, and rainbow tables (precomputed hash → password tables) become useless. Every hash must be attacked individually."
+    },
+    {
+      "q_fr": "Le salt doit-il rester secret ?",
+      "a_fr": "Non. bcrypt le stocke en clair dans sa chaîne de sortie ($2b$12$salt+hash). Le modèle de menace suppose que l'attaquant a tout : le salt combat le précalcul, c'est la lenteur de l'algorithme qui fournit la protection.",
+      "q_en": "Must the salt stay secret?",
+      "a_en": "No. bcrypt stores it in plain sight in its output string ($2b$12$salt+hash). The threat model assumes the attacker has everything: the salt defeats precomputation, and the algorithm's slowness provides the protection."
+    },
+    {
+      "q_fr": "Qu'est-ce que le facteur de coût de bcrypt/argon2id et comment le régler ?",
+      "a_fr": "Un paramètre qui contrôle la lenteur du calcul (2^cost itérations pour bcrypt, mémoire/temps pour argon2id). On vise ~100 ms par hash côté serveur : invisible pour un login, ruineux pour un attaquant. On l'augmente quand le matériel progresse.",
+      "q_en": "What is the bcrypt/argon2id cost factor and how do you tune it?",
+      "a_en": "A parameter controlling how slow the computation is (2^cost iterations for bcrypt, memory/time for argon2id). Aim for ~100 ms per hash server-side: invisible for one login, ruinous for an attacker. Raise it as hardware improves."
+    },
+    {
+      "q_fr": "Qu'est-ce qu'une timing attack et comment s'en protéger ?",
+      "a_fr": "Une comparaison naïve (===) s'arrête au premier octet différent : le temps de réponse fuit de l'information et permet de deviner un secret octet par octet. Contre-mesure : comparaison en temps constant (crypto.timingSafeEqual, bcrypt.compare).",
+      "q_en": "What is a timing attack and how do you defend against it?",
+      "a_en": "A naive comparison (===) stops at the first differing byte: response time leaks information, letting an attacker guess a secret byte by byte. Countermeasure: constant-time comparison (crypto.timingSafeEqual, bcrypt.compare)."
+    },
+    {
+      "q_fr": "Comment concevoir un flow « mot de passe oublié » sûr ?",
+      "a_fr": "Token aléatoire à usage unique et expirant (15-60 min), dont on stocke le hash en DB ; invalidé après usage ; réponse identique que l'email existe ou non (anti-énumération) ; on envoie un lien, jamais le mot de passe.",
+      "q_en": "How do you design a safe \"forgot password\" flow?",
+      "a_en": "Random single-use expiring token (15-60 min) whose hash is stored in the DB; invalidated after use; identical response whether the email exists or not (anti-enumeration); you send a link, never the password."
+    },
+    {
+      "q_fr": "Que changent les passkeys (WebAuthn) par rapport aux mots de passe ?",
+      "a_fr": "Plus de secret partagé : une paire de clés est générée par appareil, le serveur ne stocke que la clé publique. Rien à hasher, rien à faire fuiter, résistant au phishing — le navigateur vérifie l'origine du site.",
+      "q_en": "What do passkeys (WebAuthn) change compared to passwords?",
+      "a_en": "No shared secret anymore: a key pair is generated per device and the server stores only the public key. Nothing to hash, nothing to leak, phishing-resistant — the browser verifies the site's origin."
+    }
+  ],
+  "qcm": [
+    {
+      "q_fr": "Quelle est la bonne façon de stocker un mot de passe ?",
+      "q_en": "What is the correct way to store a password?",
+      "choices_fr": [
+        "Chiffré en AES-256 avec une clé bien protégée",
+        "Hashé en SHA-256 pour être irréversible",
+        "Hashé avec bcrypt ou argon2id et un salt unique",
+        "En clair mais dans une base à accès restreint"
+      ],
+      "choices_en": [
+        "Encrypted with AES-256 and a well-protected key",
+        "Hashed with SHA-256 to be irreversible",
+        "Hashed with bcrypt or argon2id and a unique salt",
+        "Plaintext but in an access-restricted database"
+      ],
+      "answer": 2,
+      "explain_fr": "AES est réversible (la clé fuit), SHA-256 est trop rapide (brute force GPU), le clair est indéfendable. Seul un algorithme lent dédié avec salt (bcrypt, argon2id) tient sur un dump de base.",
+      "explain_en": "AES is reversible (keys leak), SHA-256 is too fast (GPU brute force), plaintext is indefensible. Only a dedicated slow salted algorithm (bcrypt, argon2id) survives a database dump."
+    },
+    {
+      "q_fr": "Contre quoi le salt protège-t-il principalement ?",
+      "q_en": "What does the salt mainly protect against?",
+      "choices_fr": [
+        "Le brute force en ligne sur le formulaire de login",
+        "Les rainbow tables et les hashs identiques entre utilisateurs",
+        "Le vol de la base de données",
+        "Les timing attacks"
+      ],
+      "choices_en": [
+        "Online brute force against the login form",
+        "Rainbow tables and identical hashes across users",
+        "Database theft",
+        "Timing attacks"
+      ],
+      "answer": 1,
+      "explain_fr": "Le salt rend chaque hash unique : le précalcul (rainbow tables) devient inutile et deux utilisateurs avec le même mot de passe sont indistinguables. Il n'empêche ni le vol ni le brute force en ligne (rate limiting).",
+      "explain_en": "The salt makes every hash unique: precomputation (rainbow tables) becomes useless and two users with the same password are indistinguishable. It prevents neither theft nor online brute force (that's rate limiting)."
+    },
+    {
+      "q_fr": "Pourquoi bcrypt est-il volontairement lent ?",
+      "q_en": "Why is bcrypt deliberately slow?",
+      "choices_fr": [
+        "Pour rendre le brute force hors ligne économiquement impraticable",
+        "Parce que c'est un vieil algorithme mal optimisé",
+        "Pour laisser le temps de logger les tentatives",
+        "Pour générer un salt plus aléatoire"
+      ],
+      "choices_en": [
+        "To make offline brute force economically impractical",
+        "Because it's an old, poorly optimized algorithm",
+        "To leave time to log attempts",
+        "To generate a more random salt"
+      ],
+      "answer": 0,
+      "explain_fr": "~100 ms par tentative est invisible pour un login légitime mais multiplie par des millions le coût d'un attaquant qui teste des milliards de candidats sur un dump. La lenteur est la feature, réglable via le cost factor.",
+      "explain_en": "~100 ms per attempt is invisible for a legitimate login but multiplies an attacker's cost by millions when testing billions of candidates on a dump. Slowness is the feature, tunable via the cost factor."
+    },
+    {
+      "q_fr": "Un site vous renvoie votre mot de passe par email après un « mot de passe oublié ». Qu'en déduisez-vous ?",
+      "q_en": "A site emails you your password back after a \"forgot password\". What do you conclude?",
+      "choices_fr": [
+        "Il utilise bcrypt avec un coût trop faible",
+        "Il a inversé le hash grâce au salt",
+        "C'est une pratique normale si l'email est chiffré",
+        "Il stocke les mots de passe en clair ou chiffrés (réversible)"
+      ],
+      "choices_en": [
+        "It uses bcrypt with too low a cost",
+        "It reversed the hash thanks to the salt",
+        "It's normal practice if the email is encrypted",
+        "It stores passwords plaintext or encrypted (reversible)"
+      ],
+      "answer": 3,
+      "explain_fr": "Un hash est à sens unique : impossible de retrouver le mot de passe, quel que soit le coût ou le salt. Si le site peut le renvoyer, c'est qu'il ne l'a jamais hashé. Un reset correct envoie un lien à token expirant.",
+      "explain_en": "A hash is one-way: recovering the password is impossible, whatever the cost or salt. If the site can send it back, it never hashed it. A proper reset sends an expiring token link."
+    },
+    {
+      "q_fr": "Pourquoi comparer un token secret avec === est-il dangereux ?",
+      "q_en": "Why is comparing a secret token with === dangerous?",
+      "choices_fr": [
+        "=== ne compare que les références en JavaScript",
+        "La comparaison s'arrête au premier octet différent : le temps de réponse fuit le secret",
+        "=== convertit les types et accepte des tokens invalides",
+        "Ce n'est pas dangereux si le token est hashé"
+      ],
+      "choices_en": [
+        "=== only compares references in JavaScript",
+        "The comparison stops at the first differing byte: response time leaks the secret",
+        "=== coerces types and accepts invalid tokens",
+        "It's not dangerous if the token is hashed"
+      ],
+      "answer": 1,
+      "explain_fr": "C'est la timing attack : en mesurant finement les temps de réponse, on devine le secret octet par octet. On utilise crypto.timingSafeEqual (ou bcrypt.compare, qui l'intègre) pour un temps constant.",
+      "explain_en": "That's the timing attack: by finely measuring response times, you guess the secret byte by byte. Use crypto.timingSafeEqual (or bcrypt.compare, which includes it) for constant time."
+    },
+    {
+      "q_fr": "Que contient la chaîne bcrypt « $2b$12$N9qo8uLO... » stockée en base ?",
+      "q_en": "What does the bcrypt string \"$2b$12$N9qo8uLO...\" stored in the DB contain?",
+      "choices_fr": [
+        "Uniquement le hash, le salt étant dans une autre colonne",
+        "Le mot de passe chiffré avec la clé 2b",
+        "La version de l'algo, le facteur de coût, le salt et le hash",
+        "Le hash SHA-256 du mot de passe salé"
+      ],
+      "choices_en": [
+        "Only the hash, the salt living in another column",
+        "The password encrypted with key 2b",
+        "The algorithm version, cost factor, salt and hash",
+        "The SHA-256 hash of the salted password"
+      ],
+      "answer": 2,
+      "explain_fr": "Le format est auto-descriptif : $2b$ (version), 12 (coût, 2^12 itérations), puis salt et hash encodés. C'est pour ça qu'il n'y a pas de colonne salt et que bcrypt.compare n'a besoin que de cette chaîne.",
+      "explain_en": "The format is self-describing: $2b$ (version), 12 (cost, 2^12 iterations), then encoded salt and hash. That's why there is no salt column and bcrypt.compare needs only this string."
+    }
+  ]
+}

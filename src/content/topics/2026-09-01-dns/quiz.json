@@ -1,0 +1,168 @@
+{
+  "flashcards": [
+    {
+      "q_fr": "Déroulez la résolution DNS complète quand aucun cache n'a la réponse.",
+      "a_fr": "Cache navigateur → cache OS → resolver récursif (FAI, 1.1.1.1…). S'il n'a rien en cache, il interroge : 1) la racine « . » qui indique les serveurs du TLD, 2) le TLD (.com) qui indique les serveurs autoritaires du domaine, 3) l'autoritaire qui donne l'enregistrement final. La réponse remonte et est mise en cache partout pour TTL secondes.",
+      "q_en": "Walk through full DNS resolution when no cache has the answer.",
+      "a_en": "Browser cache → OS cache → recursive resolver (ISP, 1.1.1.1…). If it has nothing cached, it queries: 1) the root \".\" which points to the TLD servers, 2) the TLD (.com) which points to the domain's authoritative servers, 3) the authoritative server which returns the final record. The answer flows back and is cached everywhere for TTL seconds."
+    },
+    {
+      "q_fr": "Quelle différence entre un resolver récursif et un serveur autoritaire ?",
+      "a_fr": "Le récursif enquête pour le compte du client : il parcourt la hiérarchie (racine → TLD → autoritaire) et met les réponses en cache. L'autoritaire détient la vérité pour sa zone et répond directement, sans interroger personne. 8.8.8.8 est récursif ; les serveurs NS de votre domaine sont autoritaires.",
+      "q_en": "What's the difference between a recursive resolver and an authoritative server?",
+      "a_en": "The recursive one investigates on the client's behalf: it walks the hierarchy (root → TLD → authoritative) and caches answers. The authoritative one holds the truth for its zone and answers directly, querying no one. 8.8.8.8 is recursive; your domain's NS servers are authoritative."
+    },
+    {
+      "q_fr": "Pourquoi dit-on que « la propagation DNS n'existe pas » ?",
+      "a_fr": "Le DNS ne pousse rien : après un changement, chaque cache sert l'ancienne valeur jusqu'à expiration de son TTL, puis va chercher la nouvelle. « Attendre la propagation » = attendre l'expiration des caches. D'où la pratique : baisser le TTL avant une migration, le remonter après.",
+      "q_en": "Why do we say \"DNS propagation doesn't exist\"?",
+      "a_en": "DNS pushes nothing: after a change, each cache serves the old value until its TTL expires, then fetches the new one. \"Waiting for propagation\" = waiting for cache expiration. Hence the practice: lower the TTL before a migration, raise it back afterwards."
+    },
+    {
+      "q_fr": "A, AAAA, CNAME : quelles différences ?",
+      "a_fr": "A : nom → adresse IPv4. AAAA : nom → adresse IPv6. CNAME : alias d'un nom vers un autre nom, résolu ensuite (indirection supplémentaire). Un nom portant un CNAME ne peut porter aucun autre enregistrement, d'où l'impossibilité du CNAME à l'apex du domaine.",
+      "q_en": "A, AAAA, CNAME: what are the differences?",
+      "a_en": "A: name → IPv4 address. AAAA: name → IPv6 address. CNAME: alias from one name to another, resolved next (extra indirection). A name carrying a CNAME can carry no other record, hence CNAME being impossible at the domain apex."
+    },
+    {
+      "q_fr": "À quoi servent les enregistrements MX, TXT et NS ?",
+      "a_fr": "MX : désigne les serveurs de mail du domaine, avec une priorité. TXT : texte libre — vérifications de propriété (Google, Let's Encrypt DNS-01) et anti-usurpation email (SPF, DKIM, DMARC). NS : délègue la zone à ses serveurs autoritaires.",
+      "q_en": "What are MX, TXT and NS records for?",
+      "a_en": "MX: designates the domain's mail servers, with a priority. TXT: free text — ownership verifications (Google, Let's Encrypt DNS-01) and email anti-spoofing (SPF, DKIM, DMARC). NS: delegates the zone to its authoritative servers."
+    },
+    {
+      "q_fr": "Qu'est-ce qu'un enregistrement wildcard et quel workflow de déploiement permet-il ?",
+      "a_fr": "`*.domaine.tld` attrape tous les sous-domaines non définis explicitement et les pointe vers une même cible (ex. un VPS). Combiné à un reverse proxy (Traefik, nginx), chaque nouvelle app = un nouveau sous-domaine sans toucher à la zone DNS : le pattern « un sous-domaine par app ».",
+      "q_en": "What is a wildcard record and what deployment workflow does it enable?",
+      "a_en": "`*.domain.tld` catches every subdomain not explicitly defined and points them to one target (e.g. a VPS). Combined with a reverse proxy (Traefik, nginx), each new app = a new subdomain without touching the DNS zone: the \"one subdomain per app\" pattern."
+    },
+    {
+      "q_fr": "Que fait `dig +trace` et en quoi diffère-t-il d'un `dig` normal ?",
+      "a_fr": "`dig domaine` interroge votre resolver récursif, caches compris. `dig +trace` court-circuite les caches et rejoue toute la hiérarchie depuis la racine : NS de la racine → NS du TLD → réponse de l'autoritaire. Idéal pour vérifier ce que les serveurs autoritaires servent vraiment, indépendamment des caches.",
+      "q_en": "What does `dig +trace` do and how does it differ from a normal `dig`?",
+      "a_en": "`dig domain` queries your recursive resolver, caches included. `dig +trace` bypasses the caches and replays the whole hierarchy from the root: root NS → TLD NS → authoritative answer. Ideal for checking what the authoritative servers really serve, independently of caches."
+    },
+    {
+      "q_fr": "Que sont DoH et DoT ?",
+      "a_fr": "DNS-over-HTTPS et DNS-over-TLS : ils chiffrent les requêtes DNS entre le client et le resolver, alors que le DNS historique circule en clair sur le port 53, lisible (et modifiable) par tout intermédiaire sur le chemin.",
+      "q_en": "What are DoH and DoT?",
+      "a_en": "DNS-over-HTTPS and DNS-over-TLS: they encrypt DNS queries between the client and the resolver, whereas historical DNS travels in cleartext on port 53, readable (and modifiable) by any intermediary on the path."
+    }
+  ],
+  "qcm": [
+    {
+      "q_fr": "Dans quel ordre un resolver récursif sans cache interroge-t-il la hiérarchie DNS ?",
+      "q_en": "In what order does a cache-less recursive resolver query the DNS hierarchy?",
+      "choices_fr": [
+        "Autoritaire → TLD → racine",
+        "TLD → racine → autoritaire",
+        "Racine → TLD → autoritaire",
+        "Racine → autoritaire → TLD"
+      ],
+      "choices_en": [
+        "Authoritative → TLD → root",
+        "TLD → root → authoritative",
+        "Root → TLD → authoritative",
+        "Root → authoritative → TLD"
+      ],
+      "answer": 2,
+      "explain_fr": "La hiérarchie se descend : la racine indique les serveurs du TLD (.com), le TLD indique les autoritaires du domaine, l'autoritaire donne l'enregistrement final. Chaque niveau ne sait que déléguer au suivant.",
+      "explain_en": "You walk down the hierarchy: the root points to the TLD servers (.com), the TLD points to the domain's authoritative servers, the authoritative returns the final record. Each level only knows how to delegate to the next."
+    },
+    {
+      "q_fr": "Vous changez l'IP d'un enregistrement A (TTL 3600). Un utilisateur voit encore l'ancienne IP 30 minutes après. Pourquoi ?",
+      "q_en": "You change an A record's IP (TTL 3600). A user still sees the old IP 30 minutes later. Why?",
+      "choices_fr": [
+        "La propagation mondiale prend toujours 24 à 48 heures",
+        "Son resolver a l'ancienne valeur en cache et la servira jusqu'à expiration du TTL",
+        "Le serveur autoritaire n'a pas encore poussé la mise à jour vers les resolvers",
+        "Son navigateur doit être réinstallé"
+      ],
+      "choices_en": [
+        "Global propagation always takes 24 to 48 hours",
+        "Their resolver has the old value cached and will serve it until the TTL expires",
+        "The authoritative server hasn't pushed the update to resolvers yet",
+        "Their browser needs reinstalling"
+      ],
+      "answer": 1,
+      "explain_fr": "Aucune propagation : le resolver de l'utilisateur a mis la réponse en cache pour 3600 s et la sert jusqu'à expiration. Rien n'est « poussé » — c'est de l'expiration de cache. D'où le TTL baissé avant migration.",
+      "explain_en": "No propagation: the user's resolver cached the answer for 3600s and serves it until expiry. Nothing is \"pushed\" — it's cache expiration. Hence lowering the TTL before a migration."
+    },
+    {
+      "q_fr": "Pourquoi ne peut-on pas mettre un CNAME sur l'apex du domaine (example.com) ?",
+      "q_en": "Why can't you put a CNAME on the domain apex (example.com)?",
+      "choices_fr": [
+        "Un nom portant un CNAME ne peut porter aucun autre enregistrement, or l'apex porte déjà NS (et souvent MX)",
+        "Le CNAME est réservé aux sous-domaines www",
+        "Les TLD interdisent les alias pour des raisons de sécurité",
+        "Le CNAME ne fonctionne qu'en IPv6"
+      ],
+      "choices_en": [
+        "A name with a CNAME can carry no other record, and the apex already carries NS (and often MX)",
+        "CNAME is reserved for www subdomains",
+        "TLDs forbid aliases for security reasons",
+        "CNAME only works over IPv6"
+      ],
+      "answer": 0,
+      "explain_fr": "Règle du protocole : CNAME est exclusif de tout autre enregistrement sur le même nom. L'apex portant obligatoirement les NS de la zone, le CNAME y est impossible — d'où les ALIAS/ANAME propriétaires de certains hébergeurs.",
+      "explain_en": "Protocol rule: CNAME is exclusive of any other record on the same name. Since the apex must carry the zone's NS records, a CNAME there is impossible — hence some providers' proprietary ALIAS/ANAME."
+    },
+    {
+      "q_fr": "Quel enregistrement utilisez-vous pour prouver la propriété d'un domaine (vérification Google, Let's Encrypt DNS-01) ?",
+      "q_en": "Which record do you use to prove domain ownership (Google verification, Let's Encrypt DNS-01)?",
+      "choices_fr": [
+        "MX",
+        "AAAA",
+        "TXT",
+        "NS"
+      ],
+      "choices_en": [
+        "MX",
+        "AAAA",
+        "TXT",
+        "NS"
+      ],
+      "answer": 2,
+      "explain_fr": "Le TXT porte du texte libre : le service fournit une chaîne à publier, et sa présence prouve le contrôle de la zone. Même mécanisme pour SPF/DKIM/DMARC côté email.",
+      "explain_en": "TXT carries free text: the service provides a string to publish, and its presence proves control of the zone. Same mechanism for SPF/DKIM/DMARC on the email side."
+    },
+    {
+      "q_fr": "Que teste `dig @8.8.8.8 monsite.com` par rapport à `dig monsite.com` ?",
+      "q_en": "What does `dig @8.8.8.8 mysite.com` test compared to `dig mysite.com`?",
+      "choices_fr": [
+        "La même chose, @ ne change que le format de sortie",
+        "La réponse vue par un resolver précis (Google) au lieu du resolver par défaut — utile pour comparer les caches",
+        "La résolution inverse de l'IP 8.8.8.8",
+        "La disponibilité du port 80 de monsite.com"
+      ],
+      "choices_en": [
+        "The same thing, @ only changes the output format",
+        "The answer seen by a specific resolver (Google) instead of the default one — useful for comparing caches",
+        "The reverse resolution of IP 8.8.8.8",
+        "Whether mysite.com's port 80 is up"
+      ],
+      "answer": 1,
+      "explain_fr": "`@serveur` désigne le serveur DNS à interroger. Comparer son resolver local, 1.1.1.1 et 8.8.8.8 permet de diagnostiquer des caches expirant à des moments différents après un changement.",
+      "explain_en": "`@server` selects which DNS server to query. Comparing your local resolver, 1.1.1.1 and 8.8.8.8 helps diagnose caches expiring at different times after a change."
+    },
+    {
+      "q_fr": "Dans « que se passe-t-il quand tu tapes une URL ? », où se place la résolution DNS ?",
+      "q_en": "In \"what happens when you type a URL?\", where does DNS resolution fit?",
+      "choices_fr": [
+        "Après le handshake TCP, pour vérifier le certificat",
+        "En parallèle du rendu de la page",
+        "Uniquement si le site n'est pas en HTTPS",
+        "Toute première étape : il faut l'IP avant d'ouvrir la connexion TCP"
+      ],
+      "choices_en": [
+        "After the TCP handshake, to verify the certificate",
+        "In parallel with page rendering",
+        "Only if the site isn't on HTTPS",
+        "Very first step: you need the IP before opening the TCP connection"
+      ],
+      "answer": 3,
+      "explain_fr": "L'ordre canonique : DNS (nom → IP) → connexion TCP → handshake TLS si HTTPS → requête/réponse HTTP → parsing et rendu. Sans IP, impossible d'ouvrir la moindre connexion.",
+      "explain_en": "The canonical order: DNS (name → IP) → TCP connection → TLS handshake if HTTPS → HTTP request/response → parsing and rendering. Without the IP, no connection can be opened."
+    }
+  ]
+}

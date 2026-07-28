@@ -1,0 +1,168 @@
+{
+  "flashcards": [
+    {
+      "q_fr": "Décris le three-way handshake TCP.",
+      "a_fr": "SYN : le client propose son numéro de séquence initial. SYN-ACK : le serveur l'acquitte et propose le sien. ACK : le client confirme. Les deux côtés ont synchronisé leurs numéros de séquence ; la connexion est établie au prix d'un RTT complet avant toute donnée.",
+      "q_en": "Describe the TCP three-way handshake.",
+      "a_en": "SYN: the client proposes its initial sequence number. SYN-ACK: the server acknowledges it and proposes its own. ACK: the client confirms. Both sides have synchronized sequence numbers; the connection is established at the cost of a full RTT before any data."
+    },
+    {
+      "q_fr": "Quelles garanties TCP offre-t-il qu'UDP n'offre pas ?",
+      "a_fr": "Livraison dans l'ordre et sans doublon (numéros de séquence), retransmission des segments perdus (ACK + timeout), flow control (fenêtre du récepteur) et congestion control (adaptation au réseau). UDP n'ajoute que les ports et un checksum au-dessus d'IP.",
+      "q_en": "Which guarantees does TCP provide that UDP does not?",
+      "a_en": "In-order, duplicate-free delivery (sequence numbers), retransmission of lost segments (ACK + timeout), flow control (receiver window) and congestion control (adapting to the network). UDP only adds ports and a checksum on top of IP."
+    },
+    {
+      "q_fr": "Pourquoi DNS utilise-t-il UDP ?",
+      "a_fr": "L'échange est minuscule : une question, une réponse, qui tiennent dans un datagramme. Établir une connexion TCP (1 RTT) coûterait plus cher que l'échange lui-même ; en cas de perte, le client réessaie simplement. TCP reste utilisé pour les grandes réponses et les transferts de zone.",
+      "q_en": "Why does DNS use UDP?",
+      "a_en": "The exchange is tiny: one question, one answer, fitting in a single datagram. Establishing a TCP connection (1 RTT) would cost more than the exchange itself; on loss, the client simply retries. TCP is still used for large responses and zone transfers."
+    },
+    {
+      "q_fr": "Qu'est-ce qui identifie une connexion TCP unique ?",
+      "a_fr": "Le quadruplet (IP source, port source, IP destination, port destination). C'est pour ça qu'un serveur peut servir des milliers de clients sur le même port 443 : chaque client a une IP/port source différent, donc un quadruplet différent.",
+      "q_en": "What identifies a unique TCP connection?",
+      "a_en": "The 4-tuple (source IP, source port, destination IP, destination port). That's why a server can serve thousands of clients on the same port 443: each client has a different source IP/port, hence a different tuple."
+    },
+    {
+      "q_fr": "Comment fonctionne le NAT et quelle est sa conséquence pour un serveur ?",
+      "a_fr": "Le routeur réécrit IP/port source des paquets sortants vers son IP publique et mémorise le mapping pour router les réponses. Conséquence : une machine derrière un NAT ne peut pas recevoir de connexion entrante spontanée — il faut une redirection de port ou des techniques STUN/TURN (WebRTC).",
+      "q_en": "How does NAT work and what is the consequence for a server?",
+      "a_en": "The router rewrites outgoing packets' source IP/port to its public IP and memorizes the mapping to route replies back. Consequence: a machine behind NAT cannot receive spontaneous incoming connections — you need port forwarding or STUN/TURN techniques (WebRTC)."
+    },
+    {
+      "q_fr": "Latence vs bande passante : quelle différence et pourquoi ça compte ?",
+      "a_fr": "La bande passante est le débit du tuyau (Mo/s), la latence le temps d'un aller-retour (ms). Les petites requêtes sont dominées par la latence : 3-4 RTT (DNS, handshake TCP, TLS) avant le premier octet. Augmenter le débit n'y change rien ; il faut réduire les allers-retours (keep-alive, HTTP/2-3, CDN).",
+      "q_en": "Latency vs bandwidth: what's the difference and why does it matter?",
+      "a_en": "Bandwidth is the pipe's throughput (MB/s), latency the time of one round trip (ms). Small requests are latency-bound: 3-4 RTTs (DNS, TCP handshake, TLS) before the first byte. More throughput changes nothing; you must cut round trips (keep-alive, HTTP/2-3, CDN)."
+    },
+    {
+      "q_fr": "Que fait le congestion control de TCP ?",
+      "a_fr": "L'émetteur sonde prudemment le réseau (slow start : débit doublé à chaque RTT, puis évitement de congestion) et réduit fortement son débit dès qu'une perte est détectée. C'est ce qui empêche l'effondrement d'Internet et explique qu'un transfert TCP n'atteint pas son débit max instantanément.",
+      "q_en": "What does TCP congestion control do?",
+      "a_en": "The sender cautiously probes the network (slow start: rate doubled every RTT, then congestion avoidance) and sharply cuts its rate as soon as a loss is detected. It's what prevents Internet collapse and why a TCP transfer doesn't reach max throughput instantly."
+    },
+    {
+      "q_fr": "Quels outils utiliser pour diagnostiquer un problème réseau, et pour quoi ?",
+      "a_fr": "ss -tlnp : qui écoute sur quels ports. ping : latence et joignabilité ICMP. traceroute : le chemin saut par saut. dig : résolution DNS. curl -w : décomposer une requête HTTP (DNS, TCP, TLS, TTFB, total). tcpdump : voir les paquets bruts.",
+      "q_en": "Which tools do you use to diagnose a network issue, and for what?",
+      "a_en": "ss -tlnp: who listens on which ports. ping: ICMP latency and reachability. traceroute: the path hop by hop. dig: DNS resolution. curl -w: break an HTTP request down (DNS, TCP, TLS, TTFB, total). tcpdump: see raw packets."
+    }
+  ],
+  "qcm": [
+    {
+      "q_fr": "Combien d'allers-retours (RTT) le three-way handshake TCP coûte-t-il avant le premier octet de données ?",
+      "q_en": "How many round trips (RTT) does the TCP three-way handshake cost before the first byte of data?",
+      "choices_fr": [
+        "Aucun, les données partent avec le SYN",
+        "Un RTT (SYN → SYN-ACK, puis ACK + données)",
+        "Trois RTT, un par segment",
+        "Ça dépend de la taille de la fenêtre"
+      ],
+      "choices_en": [
+        "None, data ships with the SYN",
+        "One RTT (SYN → SYN-ACK, then ACK + data)",
+        "Three RTTs, one per segment",
+        "It depends on the window size"
+      ],
+      "answer": 1,
+      "explain_fr": "SYN et SYN-ACK font l'aller-retour ; l'ACK final peut déjà accompagner les premières données. Un RTT complet est donc « perdu » avant tout octet utile — et TLS en ajoute par-dessus. C'est ce que QUIC cherche à éliminer.",
+      "explain_en": "SYN and SYN-ACK make the round trip; the final ACK can already ride with the first data. A full RTT is thus \"lost\" before any useful byte — and TLS adds more on top. That's what QUIC eliminates."
+    },
+    {
+      "q_fr": "Pourquoi un jeu en temps réel préfère-t-il UDP à TCP ?",
+      "q_en": "Why does a real-time game prefer UDP over TCP?",
+      "choices_fr": [
+        "UDP est chiffré par défaut",
+        "UDP a plus de bande passante que TCP",
+        "Retransmettre une position périmée est pire que l'ignorer : la fraîcheur prime",
+        "TCP ne supporte pas plus de 100 joueurs simultanés"
+      ],
+      "choices_en": [
+        "UDP is encrypted by default",
+        "UDP has more bandwidth than TCP",
+        "Retransmitting a stale position is worse than dropping it: freshness wins",
+        "TCP can't handle more than 100 simultaneous players"
+      ],
+      "answer": 2,
+      "explain_fr": "TCP retransmettrait la position perdue et bloquerait les suivantes en attendant (head-of-line blocking) — alors qu'une position vieille de 200 ms est déjà obsolète. UDP laisse le jeu envoyer la position la plus récente et oublier les pertes.",
+      "explain_en": "TCP would retransmit the lost position and block newer ones while waiting (head-of-line blocking) — while a 200 ms-old position is already obsolete. UDP lets the game send the latest position and forget about losses."
+    },
+    {
+      "q_fr": "Quelle est la raison principale du passage d'HTTP/3 à UDP (via QUIC) ?",
+      "q_en": "What is the main reason HTTP/3 moves to UDP (via QUIC)?",
+      "choices_fr": [
+        "Éliminer le head-of-line blocking de TCP et fusionner les handshakes transport + TLS",
+        "UDP est plus sécurisé que TCP",
+        "Réduire la taille des en-têtes HTTP",
+        "Permettre le multicast des pages web"
+      ],
+      "choices_en": [
+        "Eliminating TCP's head-of-line blocking and merging the transport + TLS handshakes",
+        "UDP is more secure than TCP",
+        "Reducing HTTP header size",
+        "Enabling multicast of web pages"
+      ],
+      "answer": 0,
+      "explain_fr": "En TCP, une seule perte bloque tout le flux multiplexé ; QUIC gère des streams indépendants et combine connexion + TLS 1.3 en un handshake. TCP étant figé dans les noyaux et middleboxes, UDP était le seul véhicule possible.",
+      "explain_en": "In TCP, a single loss blocks the whole multiplexed stream; QUIC manages independent streams and combines connection + TLS 1.3 in one handshake. With TCP frozen into kernels and middleboxes, UDP was the only possible vehicle."
+    },
+    {
+      "q_fr": "Avec `curl -w`, TTFB est mauvais mais DNS, TCP et TLS sont rapides. Où est le problème ?",
+      "q_en": "With `curl -w`, TTFB is bad but DNS, TCP and TLS are fast. Where is the problem?",
+      "choices_fr": [
+        "La bande passante du client est saturée",
+        "Le résolveur DNS est lent",
+        "Le handshake TCP a échoué",
+        "Côté serveur : le backend met du temps à produire la réponse"
+      ],
+      "choices_en": [
+        "The client's bandwidth is saturated",
+        "The DNS resolver is slow",
+        "The TCP handshake failed",
+        "Server-side: the backend takes long to produce the response"
+      ],
+      "answer": 3,
+      "explain_fr": "TTFB - TLS ≈ temps de calcul serveur : la connexion est établie vite, mais le premier octet tarde → requête SQL lente, code lent, file d'attente. La bande passante n'affecterait que le temps total de transfert, pas le premier octet.",
+      "explain_en": "TTFB - TLS ≈ server compute time: the connection is established quickly but the first byte is late → slow SQL, slow code, queuing. Bandwidth would only affect total transfer time, not the first byte."
+    },
+    {
+      "q_fr": "Que garantit réellement TCP ?",
+      "q_en": "What does TCP actually guarantee?",
+      "choices_fr": [
+        "Que tout message envoyé arrivera à destination",
+        "L'ordre et l'intégrité des octets reçus, avec retransmission tant que la connexion vit",
+        "Un délai de livraison maximal borné",
+        "Le chiffrement des données en transit"
+      ],
+      "choices_en": [
+        "That every sent message will reach its destination",
+        "Order and integrity of received bytes, with retransmission as long as the connection lives",
+        "A bounded maximum delivery delay",
+        "Encryption of data in transit"
+      ],
+      "answer": 1,
+      "explain_fr": "TCP ne peut rien livrer si le lien est coupé : il garantit que ce qui arrive est ordonné, complet et sans doublon, et retransmet ce qui manque. Ni délai borné, ni chiffrement (c'est TLS). L'application doit gérer timeouts et reconnexions.",
+      "explain_en": "TCP can deliver nothing if the link is cut: it guarantees that what arrives is ordered, complete and duplicate-free, and retransmits what's missing. No bounded delay, no encryption (that's TLS). The application must handle timeouts and reconnections."
+    },
+    {
+      "q_fr": "Un serveur écoute sur le port 443. Comment distingue-t-il les milliers de clients connectés simultanément ?",
+      "q_en": "A server listens on port 443. How does it tell thousands of simultaneously connected clients apart?",
+      "choices_fr": [
+        "Il ouvre un port différent pour chaque client",
+        "Il utilise l'ID de session TLS",
+        "Chaque connexion est identifiée par le quadruplet IP/port source + IP/port destination",
+        "Il ne peut servir qu'un client à la fois par port"
+      ],
+      "choices_en": [
+        "It opens a different port for each client",
+        "It uses the TLS session ID",
+        "Each connection is identified by the source IP/port + destination IP/port 4-tuple",
+        "It can only serve one client at a time per port"
+      ],
+      "answer": 2,
+      "explain_fr": "Le port serveur ne change jamais : c'est le couple IP/port du client qui varie, rendant chaque quadruplet unique. Chaque accept() retourne une socket dédiée associée à ce quadruplet.",
+      "explain_en": "The server port never changes: it's the client's IP/port pair that varies, making each 4-tuple unique. Each accept() returns a dedicated socket bound to that tuple."
+    }
+  ]
+}

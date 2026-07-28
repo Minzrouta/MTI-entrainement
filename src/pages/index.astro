@@ -1,22 +1,21 @@
 ---
 import Base from '../layouts/Base.astro';
-import { getTopics } from '../lib/topics';
+import { getTopics, dayNumbers } from '../lib/topics';
 import { dateFr, dateEn } from '../lib/format';
 
 const topics = await getTopics(); // du plus récent au plus ancien
-const total = topics.length;
-const dayNo = (i: number) => total - i; // Jour 1 = le plus ancien
+const days = dayNumbers(topics);
 ---
 
 <Base>
   <section aria-label="La fiche du jour">
     {
-      topics.map((t, i) => (
+      topics.map((t) => (
         <article class="fiche hero-candidate" data-date={t.date} data-dir={t.dir}>
           <p class="eyebrow">
             <span>
-              <span data-l="fr">Jour {dayNo(i)}</span>
-              <span data-l="en">Day {dayNo(i)}</span>
+              <span data-l="fr">{t.isActu ? 'Actu' : `Jour ${days.get(t.dir)}`}</span>
+              <span data-l="en">{t.isActu ? 'News' : `Day ${days.get(t.dir)}`}</span>
             </span>
             <span class="sep">·</span>
             <span>
@@ -54,12 +53,12 @@ const dayNo = (i: number) => total - i; // Jour 1 = le plus ancien
   </h2>
   <ul class="card-grid" id="previous">
     {
-      topics.map((t, i) => (
+      topics.map((t) => (
         <li class="topic-card" data-date={t.date} data-dir={t.dir}>
           <p class="meta">
             <span>
-              <span data-l="fr">Jour {dayNo(i)}</span>
-              <span data-l="en">Day {dayNo(i)}</span>
+              <span data-l="fr">{t.isActu ? 'Actu' : `Jour ${days.get(t.dir)}`}</span>
+              <span data-l="en">{t.isActu ? 'News' : `Day ${days.get(t.dir)}`}</span>
             </span>
             <span>{t.date}</span>
             <span class="chip">{t.category}</span>

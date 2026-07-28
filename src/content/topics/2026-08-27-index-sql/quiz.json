@@ -1,0 +1,168 @@
+{
+  "flashcards": [
+    {
+      "q_fr": "Pourquoi une recherche via un index B-tree est-elle en O(log n) ?",
+      "a_fr": "Le B-tree est un arbre équilibré à nœuds très larges : une page de 8 Ko contient des centaines de clés, donc l'arbre a une hauteur de 3-4 même pour des millions de lignes. Une recherche descend simplement l'arbre nœud par nœud au lieu de lire toute la table (O(n)).",
+      "q_en": "Why is a lookup through a B-tree index O(log n)?",
+      "a_en": "A B-tree is a balanced tree with very wide nodes: an 8 KB page holds hundreds of keys, so the tree is only 3-4 levels tall even for millions of rows. A lookup just walks down the tree node by node instead of reading the whole table (O(n))."
+    },
+    {
+      "q_fr": "Qu'est-ce que la règle du « leftmost prefix » pour un index composite ?",
+      "a_fr": "Un index sur (a, b) est trié par a puis b, comme un annuaire (nom, prénom). Il sert pour les requêtes filtrant sur a, ou sur a et b — mais pas sur b seul : sans le préfixe gauche, l'ordre de tri de l'index est inutilisable.",
+      "q_en": "What is the \"leftmost prefix\" rule for a composite index?",
+      "a_en": "An index on (a, b) is sorted by a then b, like a phone book (last name, first name). It serves queries filtering on a, or on a and b — but not on b alone: without the left prefix, the index's sort order is unusable."
+    },
+    {
+      "q_fr": "Qu'est-ce qu'un index couvrant et pourquoi est-il si rapide ?",
+      "a_fr": "Un index qui contient toutes les colonnes demandées par la requête (clause INCLUDE en PostgreSQL). La base répond en lisant uniquement l'index, sans jamais toucher la table : c'est l'Index Only Scan, le scan le plus rapide.",
+      "q_en": "What is a covering index and why is it so fast?",
+      "a_en": "An index containing every column the query asks for (INCLUDE clause in PostgreSQL). The database answers by reading only the index, never touching the table: that's the Index Only Scan, the fastest scan there is."
+    },
+    {
+      "q_fr": "Cite trois situations où un index existant n'est pas utilisé.",
+      "a_fr": "1) Une fonction appliquée à la colonne (WHERE lower(email) = …) sans index fonctionnel. 2) LIKE '%terme' : pas de préfixe fixe, l'arbre trié ne sert à rien. 3) Faible sélectivité (booléen à 50/50) : le planner préfère lire la table. Aussi : types incompatibles, statistiques périmées.",
+      "q_en": "Name three situations where an existing index is not used.",
+      "a_en": "1) A function applied to the column (WHERE lower(email) = …) without a functional index. 2) LIKE '%term': no fixed prefix, the sorted tree is useless. 3) Low selectivity (a 50/50 boolean): the planner prefers reading the table. Also: incompatible types, stale statistics."
+    },
+    {
+      "q_fr": "Quel est le coût caché d'un index ?",
+      "a_fr": "Chaque INSERT/UPDATE/DELETE doit mettre à jour tous les index de la table : les écritures ralentissent, les pages se scindent, l'index se fragmente, et chaque index consomme disque et cache. Un index jamais interrogé est une taxe pure.",
+      "q_en": "What is the hidden cost of an index?",
+      "a_en": "Every INSERT/UPDATE/DELETE must update all the table's indexes: writes slow down, pages split, the index fragments, and each index consumes disk and cache. An index nobody queries is a pure tax."
+    },
+    {
+      "q_fr": "Quelle différence entre EXPLAIN et EXPLAIN ANALYZE ?",
+      "a_fr": "EXPLAIN montre le plan choisi par le planner avec des coûts estimés, sans exécuter. EXPLAIN ANALYZE exécute réellement la requête et ajoute temps et nombres de lignes réels. L'écart estimé/réel révèle des statistiques périmées. Attention : ANALYZE exécute vraiment un UPDATE/DELETE (→ BEGIN/ROLLBACK).",
+      "q_en": "What's the difference between EXPLAIN and EXPLAIN ANALYZE?",
+      "a_en": "EXPLAIN shows the planner's chosen plan with estimated costs, without executing. EXPLAIN ANALYZE actually runs the query and adds real times and row counts. The estimated/actual gap reveals stale statistics. Careful: ANALYZE really executes an UPDATE/DELETE (→ BEGIN/ROLLBACK)."
+    },
+    {
+      "q_fr": "Résume 1NF, 2NF et 3NF en une phrase chacune.",
+      "a_fr": "1NF : valeurs atomiques, pas de listes dans une colonne. 2NF : aucune colonne ne dépend d'une partie seulement d'une clé composite. 3NF : aucune dépendance transitive — une colonne non-clé ne dépend pas d'une autre colonne non-clé (ex. customer_city stockée dans orders).",
+      "q_en": "Summarize 1NF, 2NF and 3NF in one sentence each.",
+      "a_en": "1NF: atomic values, no lists inside a column. 2NF: no column depends on only part of a composite key. 3NF: no transitive dependency — a non-key column doesn't depend on another non-key column (e.g. customer_city stored in orders)."
+    },
+    {
+      "q_fr": "Qu'est-ce que le problème N+1 et comment le corriger ?",
+      "a_fr": "1 requête charge N lignes (100 commandes), puis 1 requête part pour chaque ligne (100 clients) : N+1 allers-retours au lieu de 2. Classique avec les ORM et le lazy loading. Correction : un JOIN ou l'eager loading (select_related, includes, JOIN FETCH). Détection : les logs SQL.",
+      "q_en": "What is the N+1 problem and how do you fix it?",
+      "a_en": "1 query loads N rows (100 orders), then 1 query fires for each row (100 customers): N+1 round trips instead of 2. Classic with ORMs and lazy loading. Fix: a JOIN or eager loading (select_related, includes, JOIN FETCH). Detection: SQL logs."
+    }
+  ],
+  "qcm": [
+    {
+      "q_fr": "Avec un index sur (last_name, first_name), quelle requête NE PEUT PAS l'utiliser ?",
+      "q_en": "With an index on (last_name, first_name), which query CANNOT use it?",
+      "choices_fr": [
+        "WHERE last_name = 'Dupont'",
+        "WHERE last_name = 'Dupont' AND first_name = 'Alice'",
+        "WHERE first_name = 'Alice'",
+        "WHERE last_name > 'M'"
+      ],
+      "choices_en": [
+        "WHERE last_name = 'Dupont'",
+        "WHERE last_name = 'Dupont' AND first_name = 'Alice'",
+        "WHERE first_name = 'Alice'",
+        "WHERE last_name > 'M'"
+      ],
+      "answer": 2,
+      "explain_fr": "Leftmost prefix : l'index est trié par last_name d'abord. Filtrer sur first_name seul revient à chercher tous les « Alice » dans un annuaire — il faut tout lire.",
+      "explain_en": "Leftmost prefix: the index is sorted by last_name first. Filtering on first_name alone is like finding every \"Alice\" in a phone book — you have to read everything."
+    },
+    {
+      "q_fr": "La colonne email est indexée, mais `WHERE lower(email) = 'a@b.fr'` fait un seq scan. Pourquoi ?",
+      "q_en": "The email column is indexed, but `WHERE lower(email) = 'a@b.fr'` does a seq scan. Why?",
+      "choices_fr": [
+        "L'index stocke email, pas lower(email) : la fonction le rend inutilisable",
+        "Les index ne fonctionnent pas sur les chaînes de caractères",
+        "lower() est trop lente pour le planner",
+        "Il manque un point-virgule à la requête"
+      ],
+      "choices_en": [
+        "The index stores email, not lower(email): the function makes it unusable",
+        "Indexes don't work on string columns",
+        "lower() is too slow for the planner",
+        "The query is missing a semicolon"
+      ],
+      "answer": 0,
+      "explain_fr": "L'index trie les valeurs brutes de email ; le planner ne peut pas s'en servir pour une expression transformée. Solution : un index fonctionnel CREATE INDEX ON users (lower(email)).",
+      "explain_en": "The index sorts raw email values; the planner can't use it for a transformed expression. Fix: a functional index CREATE INDEX ON users (lower(email))."
+    },
+    {
+      "q_fr": "Dans un plan, que signifie « Seq Scan … Rows Removed by Filter: 4999952 » ?",
+      "q_en": "In a plan, what does \"Seq Scan … Rows Removed by Filter: 4999952\" mean?",
+      "choices_fr": [
+        "L'index a éliminé 5 M de lignes très efficacement",
+        "5 M de lignes ont été supprimées de la table",
+        "La requête a été interrompue avant la fin",
+        "La table entière a été lue pour ne garder qu'une poignée de lignes : un index manque probablement"
+      ],
+      "choices_en": [
+        "The index eliminated 5M rows very efficiently",
+        "5M rows were deleted from the table",
+        "The query was interrupted before finishing",
+        "The whole table was read to keep only a handful of rows: an index is probably missing"
+      ],
+      "answer": 3,
+      "explain_fr": "Un Seq Scan qui jette des millions de lignes pour en garder quelques-unes est le symptôme classique d'un index manquant (ou inutilisable) sur la colonne filtrée.",
+      "explain_en": "A Seq Scan discarding millions of rows to keep a few is the classic symptom of a missing (or unusable) index on the filtered column."
+    },
+    {
+      "q_fr": "La table orders contient customer_id ET customer_city. Quelle forme normale est violée ?",
+      "q_en": "The orders table contains customer_id AND customer_city. Which normal form is violated?",
+      "choices_fr": [
+        "1NF — la ville n'est pas une valeur atomique",
+        "3NF — customer_city dépend de customer_id, une colonne non-clé : dépendance transitive",
+        "2NF — la ville dépend d'une partie de la clé",
+        "Aucune, ce schéma est normalisé"
+      ],
+      "choices_en": [
+        "1NF — the city is not an atomic value",
+        "3NF — customer_city depends on customer_id, a non-key column: transitive dependency",
+        "2NF — the city depends on part of the key",
+        "None, this schema is normalized"
+      ],
+      "answer": 1,
+      "explain_fr": "customer_city dépend du client, pas de la commande : c'est une dépendance transitive (order → customer_id → city). Si le client déménage, il faut mettre à jour toutes ses commandes — anomalie typique.",
+      "explain_en": "customer_city depends on the customer, not the order: a transitive dependency (order → customer_id → city). If the customer moves, every order must be updated — a typical anomaly."
+    },
+    {
+      "q_fr": "Lequel de ces LIKE peut s'appuyer sur un index B-tree classique ?",
+      "q_en": "Which of these LIKE patterns can leverage a regular B-tree index?",
+      "choices_fr": [
+        "LIKE '%@gmail.com'",
+        "LIKE '%dupont%'",
+        "LIKE 'dupont%'",
+        "Aucun : LIKE ignore toujours les index"
+      ],
+      "choices_en": [
+        "LIKE '%@gmail.com'",
+        "LIKE '%dupont%'",
+        "LIKE 'dupont%'",
+        "None: LIKE always ignores indexes"
+      ],
+      "answer": 2,
+      "explain_fr": "Un préfixe fixe ('dupont%') se traduit en range scan sur l'arbre trié. Un joker en tête rend le tri inutilisable — pour la recherche « contient », utiliser pg_trgm + index GIN.",
+      "explain_en": "A fixed prefix ('dupont%') translates to a range scan over the sorted tree. A leading wildcard makes the ordering useless — for \"contains\" search, use pg_trgm + a GIN index."
+    },
+    {
+      "q_fr": "Quel est l'effet principal d'ajouter 5 index à une table qui reçoit beaucoup d'écritures ?",
+      "q_en": "What is the main effect of adding 5 indexes to a write-heavy table?",
+      "choices_fr": [
+        "Chaque écriture doit mettre à jour les 5 index : les INSERT/UPDATE ralentissent",
+        "Les lectures ralentissent car le planner hésite entre les index",
+        "Aucun effet : les index ne coûtent qu'à la création",
+        "La table est verrouillée en lecture"
+      ],
+      "choices_en": [
+        "Every write must update all 5 indexes: INSERT/UPDATE slow down",
+        "Reads slow down because the planner hesitates between indexes",
+        "No effect: indexes only cost at creation time",
+        "The table becomes read-locked"
+      ],
+      "answer": 0,
+      "explain_fr": "C'est l'arbitrage fondamental : chaque index accélère certaines lectures mais taxe toutes les écritures (mise à jour des B-trees, scission de pages, espace disque).",
+      "explain_en": "That's the fundamental trade-off: each index speeds up some reads but taxes every write (B-tree updates, page splits, disk space)."
+    }
+  ]
+}

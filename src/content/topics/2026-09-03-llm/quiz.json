@@ -1,0 +1,168 @@
+{
+  "flashcards": [
+    {
+      "q_fr": "Que fait fondamentalement un LLM ?",
+      "a_fr": "Il prédit le token suivant : à partir du texte déjà présent, il produit une distribution de probabilités sur tout son vocabulaire, un token est tiré (sampling), ajouté au texte, et le processus recommence. Toute la génération est autorégressive.",
+      "q_en": "What does an LLM fundamentally do?",
+      "a_en": "It predicts the next token: from the text so far, it produces a probability distribution over its whole vocabulary, one token is drawn (sampling), appended to the text, and the process repeats. All generation is autoregressive."
+    },
+    {
+      "q_fr": "Qu'est-ce qu'un token et pourquoi « strawberry » piège-t-il les modèles ?",
+      "a_fr": "Un token est un fragment de texte fréquent (mot, morceau de mot, ponctuation) converti en entier par le tokenizer (BPE). Le modèle ne voit jamais les lettres : « strawberry » arrive en fragments comme `straw`+`berry`, donc compter les « r » demande une information qu'il n'a jamais observée directement.",
+      "q_en": "What is a token and why does \"strawberry\" trap models?",
+      "a_en": "A token is a frequent text fragment (word, word piece, punctuation) converted to an integer by the tokenizer (BPE). The model never sees letters: \"strawberry\" arrives as fragments like `straw`+`berry`, so counting the \"r\"s requires information it never directly observed."
+    },
+    {
+      "q_fr": "Qu'est-ce qu'un embedding, en une phrase ?",
+      "a_fr": "Un vecteur de nombres représentant un token (ou un texte) tel que la proximité géométrique entre vecteurs reflète la proximité de sens — « roi » et « reine » sont voisins dans cet espace.",
+      "q_en": "What is an embedding, in one sentence?",
+      "a_en": "A vector of numbers representing a token (or a text) such that geometric closeness between vectors reflects closeness in meaning — \"king\" and \"queen\" are neighbors in that space."
+    },
+    {
+      "q_fr": "Explique le mécanisme d'attention sans maths.",
+      "a_fr": "À chaque couche, chaque token « regarde » tous les tokens précédents et pondère leur influence selon leur pertinence pour lui : dans « le chien dort parce qu'il est fatigué », « il » donne un poids fort à « chien ». C'est un contexte pondéré, calculé dynamiquement et en parallèle sur toute la séquence — ce qui a remplacé les RNN.",
+      "q_en": "Explain the attention mechanism without math.",
+      "a_en": "At each layer, every token \"looks at\" all previous tokens and weights their influence by relevance to itself: in \"the dog sleeps because it is tired\", \"it\" gives a strong weight to \"dog\". It's a weighted context, computed dynamically and in parallel over the whole sequence — which is what replaced RNNs."
+    },
+    {
+      "q_fr": "Pré-entraînement vs fine-tuning vs RLHF : quelle différence ?",
+      "a_fr": "Pré-entraînement : prédire le token suivant sur des trillions de tokens → un base model qui complète du texte (99 % du coût). Fine-tuning (SFT) : apprendre le format instruction → réponse sur des dialogues choisis. RLHF : aligner sur les préférences humaines via un modèle de récompense entraîné sur des classements de réponses.",
+      "q_en": "Pre-training vs fine-tuning vs RLHF: what's the difference?",
+      "a_en": "Pre-training: predict the next token on trillions of tokens → a base model that completes text (99% of the cost). Fine-tuning (SFT): learn the instruction → answer format on curated dialogues. RLHF: align with human preferences via a reward model trained on ranked answers."
+    },
+    {
+      "q_fr": "À quoi servent la température et le top-p ?",
+      "a_fr": "Ils contrôlent le sampling : la température aplatit (haut = créatif/aléatoire) ou accentue (0 = quasi déterministe, toujours le token le plus probable) la distribution ; le top-p restreint le tirage au noyau de tokens couvrant p % de probabilité, coupant la longue traîne absurde.",
+      "q_en": "What are temperature and top-p for?",
+      "a_en": "They control sampling: temperature flattens (high = creative/random) or sharpens (0 = near deterministic, always the most probable token) the distribution; top-p restricts drawing to the nucleus of tokens covering p% of probability, cutting the absurd long tail."
+    },
+    {
+      "q_fr": "Qu'est-ce que la fenêtre de contexte et quelles sont ses limites ?",
+      "a_fr": "La quantité maximale de tokens que le modèle peut traiter en un appel (system + historique + documents + réponse). Limites : tout est re-traité à chaque appel (coût, latence), l'API est stateless (rien n'est mémorisé entre appels), et le milieu d'un long contexte est mal exploité (« lost in the middle »).",
+      "q_en": "What is the context window and what are its limits?",
+      "a_en": "The maximum number of tokens the model can process in one call (system + history + documents + answer). Limits: everything is reprocessed on every call (cost, latency), the API is stateless (nothing is remembered between calls), and the middle of a long context is poorly exploited (\"lost in the middle\")."
+    },
+    {
+      "q_fr": "Pourquoi les hallucinations sont-elles structurelles et non un simple bug ?",
+      "a_fr": "L'objectif d'entraînement récompense la plausibilité de la continuation, pas sa vérité : le modèle n'a ni base de faits ni mécanisme natif du « je ne sais pas ». Une référence inventée est souvent la suite la plus probable d'une question pointue. On atténue (RAG, outils, citations) mais on ne « corrige » pas.",
+      "q_en": "Why are hallucinations structural rather than a mere bug?",
+      "a_en": "The training objective rewards the plausibility of the continuation, not its truth: the model has no fact database and no native \"I don't know\" mechanism. An invented reference is often the most probable continuation of a niche question. You mitigate (RAG, tools, citations) but you don't \"fix\" it."
+    }
+  ],
+  "qcm": [
+    {
+      "q_fr": "Que produit exactement un LLM à chaque étape de génération ?",
+      "q_en": "What exactly does an LLM produce at each generation step?",
+      "choices_fr": [
+        "La phrase complète la plus probable",
+        "Un embedding de la réponse",
+        "Une distribution de probabilités sur tout le vocabulaire",
+        "Le mot suivant, choisi de façon déterministe"
+      ],
+      "choices_en": [
+        "The most probable complete sentence",
+        "An embedding of the answer",
+        "A probability distribution over the whole vocabulary",
+        "The next word, chosen deterministically"
+      ],
+      "answer": 2,
+      "explain_fr": "La sortie brute est une distribution de probabilités sur ~100k tokens ; c'est le sampling (température, top-p) qui en tire un. Rien n'est déterministe par défaut, et la réponse complète n'émerge que de la boucle autorégressive.",
+      "explain_en": "The raw output is a probability distribution over ~100k tokens; sampling (temperature, top-p) draws one. Nothing is deterministic by default, and the full answer only emerges from the autoregressive loop."
+    },
+    {
+      "q_fr": "Pourquoi un LLM se trompe-t-il souvent en comptant les « r » de « strawberry » ?",
+      "q_en": "Why does an LLM often miscount the \"r\"s in \"strawberry\"?",
+      "choices_fr": [
+        "Il traite des tokens (entiers), jamais des lettres individuelles",
+        "Sa fenêtre de contexte est trop courte pour le mot",
+        "Le RLHF le pousse à répondre trop vite",
+        "Sa température est trop élevée par défaut"
+      ],
+      "choices_en": [
+        "It processes tokens (integers), never individual letters",
+        "Its context window is too short for the word",
+        "RLHF pushes it to answer too fast",
+        "Its default temperature is too high"
+      ],
+      "answer": 0,
+      "explain_fr": "La tokenization découpe « strawberry » en fragments (`straw`+`berry`) convertis en entiers : le modèle n'a jamais accès aux caractères. Ni la fenêtre de contexte, ni la température, ni le RLHF ne sont en cause.",
+      "explain_en": "Tokenization cuts \"strawberry\" into fragments (`straw`+`berry`) converted to integers: the model never has access to characters. Neither the context window, temperature, nor RLHF is to blame."
+    },
+    {
+      "q_fr": "Quel est le rôle du RLHF dans la fabrication d'un assistant ?",
+      "q_en": "What is RLHF's role in building an assistant?",
+      "choices_fr": [
+        "Apprendre la grammaire et les faits au modèle",
+        "Agrandir la fenêtre de contexte",
+        "Compresser le modèle pour l'inférence",
+        "Aligner le modèle sur les préférences humaines via un modèle de récompense"
+      ],
+      "choices_en": [
+        "Teaching the model grammar and facts",
+        "Enlarging the context window",
+        "Compressing the model for inference",
+        "Aligning the model with human preferences via a reward model"
+      ],
+      "answer": 3,
+      "explain_fr": "Grammaire et faits viennent du pré-entraînement. Le RLHF entraîne un modèle de récompense sur des classements humains de réponses, puis optimise le LLM contre lui : c'est ce qui rend le modèle utile, poli, et capable de refuser.",
+      "explain_en": "Grammar and facts come from pre-training. RLHF trains a reward model on human rankings of answers, then optimizes the LLM against it: that's what makes the model helpful, polite, and able to refuse."
+    },
+    {
+      "q_fr": "Que garantit `temperature: 0` ?",
+      "q_en": "What does `temperature: 0` guarantee?",
+      "choices_fr": [
+        "Des réponses factuellement exactes",
+        "Un choix quasi déterministe du token le plus probable — pas la vérité",
+        "L'absence d'hallucinations",
+        "Une réponse plus courte"
+      ],
+      "choices_en": [
+        "Factually accurate answers",
+        "A near-deterministic choice of the most probable token — not truth",
+        "The absence of hallucinations",
+        "A shorter answer"
+      ],
+      "answer": 1,
+      "explain_fr": "Température 0 réduit la variance : le modèle prend (quasi) toujours le token le plus probable. Mais le plus probable peut être une hallucination confiante — déterminisme ≠ exactitude, et la longueur n'a rien à voir.",
+      "explain_en": "Temperature 0 reduces variance: the model (almost) always takes the most probable token. But the most probable can be a confident hallucination — determinism ≠ accuracy, and length has nothing to do with it."
+    },
+    {
+      "q_fr": "Pourquoi faut-il renvoyer tout l'historique de conversation à chaque appel API ?",
+      "q_en": "Why must the whole conversation history be resent on every API call?",
+      "choices_fr": [
+        "Parce que l'API est stateless : le modèle ne mémorise rien entre deux appels",
+        "Pour ré-entraîner le modèle sur la conversation",
+        "Pour que le cache serveur reste chaud",
+        "Parce que le system prompt expire à chaque tour"
+      ],
+      "choices_en": [
+        "Because the API is stateless: the model stores nothing between calls",
+        "To retrain the model on the conversation",
+        "To keep the server cache warm",
+        "Because the system prompt expires each turn"
+      ],
+      "answer": 0,
+      "explain_fr": "Le modèle est figé (poids constants) et l'API sans état : la « mémoire » d'une conversation n'est que le contexte que votre code renvoie à chaque requête. Rien n'est ré-entraîné, et le system prompt n'« expire » pas.",
+      "explain_en": "The model is frozen (constant weights) and the API stateless: a conversation's \"memory\" is just the context your code resends with each request. Nothing is retrained, and the system prompt doesn't \"expire\"."
+    },
+    {
+      "q_fr": "Qu'est-ce qui a permis au transformer de détrôner les RNN pour le langage ?",
+      "q_en": "What allowed the transformer to dethrone RNNs for language?",
+      "choices_fr": [
+        "Un vocabulaire plus grand",
+        "La suppression totale des hallucinations",
+        "L'attention : contexte pondéré calculé en parallèle sur toute la séquence",
+        "Des modèles plus petits donc moins chers"
+      ],
+      "choices_en": [
+        "A larger vocabulary",
+        "The total removal of hallucinations",
+        "Attention: weighted context computed in parallel over the whole sequence",
+        "Smaller, therefore cheaper, models"
+      ],
+      "answer": 2,
+      "explain_fr": "L'attention laisse chaque token pondérer tous les précédents selon leur pertinence, et se calcule en parallèle (contrairement au traitement séquentiel des RNN) : entraînement massivement scalable. Les transformers sont au contraire devenus énormes, et hallucinent toujours.",
+      "explain_en": "Attention lets each token weight all previous ones by relevance, and is computed in parallel (unlike RNNs' sequential processing): massively scalable training. Transformers actually got huge, and still hallucinate."
+    }
+  ]
+}

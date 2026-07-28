@@ -1,0 +1,168 @@
+{
+  "flashcards": [
+    {
+      "q_fr": "Que décrit exactement la notation Big O ?",
+      "a_fr": "La croissance du coût (temps ou mémoire) d'un algorithme en fonction de la taille de l'entrée n, en gardant le terme dominant et en jetant les constantes. Elle prédit le passage à l'échelle, pas la vitesse absolue en secondes.",
+      "q_en": "What exactly does Big O notation describe?",
+      "a_en": "How an algorithm's cost (time or memory) grows with the input size n, keeping the dominant term and dropping constants. It predicts scaling, not absolute speed in seconds."
+    },
+    {
+      "q_fr": "Pourquoi la recherche dichotomique est-elle O(log n) et quelle est sa précondition ?",
+      "a_fr": "Chaque comparaison élimine la moitié de l'espace de recherche restant : il faut log₂(n) étapes pour tomber à un seul élément (~20 pour un million). Précondition indispensable : le tableau doit être trié.",
+      "q_en": "Why is binary search O(log n) and what is its precondition?",
+      "a_en": "Each comparison eliminates half of the remaining search space: it takes log₂(n) steps to reach a single element (~20 for a million). Non-negotiable precondition: the array must be sorted."
+    },
+    {
+      "q_fr": "Quelle est la complexité moyenne et pire cas d'un lookup dans une hash map, et pourquoi ?",
+      "a_fr": "O(1) en moyenne : la fonction de hachage donne directement l'index du bucket. O(n) au pire : si toutes les clés collisionnent dans le même bucket, on parcourt une liste. Les bonnes implémentations redimensionnent pour maintenir le O(1) moyen.",
+      "q_en": "What is the average and worst-case complexity of a hash map lookup, and why?",
+      "a_en": "O(1) on average: the hash function directly yields the bucket index. O(n) worst case: if all keys collide into the same bucket, you traverse a list. Good implementations resize to keep the O(1) average."
+    },
+    {
+      "q_fr": "Qu'est-ce que la complexité amortie ? Donnez l'exemple canonique.",
+      "a_fr": "Le coût moyen garanti sur une séquence d'opérations, même si certaines sont chères. Exemple : le push d'un tableau dynamique est O(1) amorti — les réallocations O(n) existent, mais le doublement de capacité les rend exponentiellement rares.",
+      "q_en": "What is amortized complexity? Give the canonical example.",
+      "a_en": "The guaranteed average cost over a sequence of operations, even if some are expensive. Example: a dynamic array push is amortized O(1) — O(n) reallocations happen, but capacity doubling makes them exponentially rare."
+    },
+    {
+      "q_fr": "Quelle différence entre complexité en temps et en espace ? Exemple avec les tris.",
+      "a_fr": "Le temps compte les opérations, l'espace compte la mémoire supplémentaire allouée (pile de récursion incluse). Merge sort : O(n log n) temps mais O(n) espace (tableaux temporaires) ; heapsort : O(n log n) temps et O(1) espace (tri en place).",
+      "q_en": "What's the difference between time and space complexity? Example with sorts.",
+      "a_en": "Time counts operations, space counts extra allocated memory (recursion stack included). Merge sort: O(n log n) time but O(n) space (temporary arrays); heapsort: O(n log n) time and O(1) space (in-place sort)."
+    },
+    {
+      "q_fr": "Pourquoi `a.filter(x => b.includes(x))` est-il un piège de performance ?",
+      "a_fr": "includes() est un scan linéaire O(m) caché dans une boucle O(n) : total O(n × m). Le remplacer par un Set (construction O(m), lookup O(1)) ramène le tout à O(n + m) — on échange de la mémoire contre du temps.",
+      "q_en": "Why is `a.filter(x => b.includes(x))` a performance trap?",
+      "a_en": "includes() is an O(m) linear scan hidden inside an O(n) loop: O(n × m) total. Replacing it with a Set (O(m) build, O(1) lookup) brings it down to O(n + m) — trading memory for time."
+    },
+    {
+      "q_fr": "Pourquoi ne peut-on pas trier par comparaison plus vite que O(n log n) ?",
+      "a_fr": "Il y a n! permutations possibles et chaque comparaison n'apporte qu'un bit d'information : il faut au moins log₂(n!) ≈ n log n comparaisons pour les distinguer. Les tris non comparatifs (counting sort, radix sort) contournent la borne quand les clés s'y prêtent.",
+      "q_en": "Why can't comparison-based sorting beat O(n log n)?",
+      "a_en": "There are n! possible permutations and each comparison yields only one bit of information: you need at least log₂(n!) ≈ n log n comparisons to distinguish them. Non-comparison sorts (counting sort, radix sort) sidestep the bound when the keys allow it."
+    },
+    {
+      "q_fr": "Quicksort est O(n²) au pire cas : pourquoi reste-t-il le tri de référence ?",
+      "a_fr": "Le pire cas (pivot systématiquement mauvais) est rarissime avec un pivot aléatoire ou médian ; ses constantes sont excellentes (en place, cache-friendly). Les libs réelles se protègent : introsort bascule sur heapsort si la récursion dégénère.",
+      "q_en": "Quicksort is O(n²) worst case: why is it still the go-to sort?",
+      "a_en": "The worst case (systematically bad pivot) is vanishingly rare with a random or median pivot; its constants are excellent (in place, cache-friendly). Real libraries protect themselves: introsort switches to heapsort if recursion degenerates."
+    }
+  ],
+  "qcm": [
+    {
+      "q_fr": "Quelle est la complexité de deux boucles successives (non imbriquées) sur un tableau de taille n ?",
+      "q_en": "What is the complexity of two successive (non-nested) loops over an array of size n?",
+      "choices_fr": [
+        "O(n²)",
+        "O(n)",
+        "O(n log n)",
+        "O(2n) — c'est une classe distincte"
+      ],
+      "choices_en": [
+        "O(n²)",
+        "O(n)",
+        "O(n log n)",
+        "O(2n) — a distinct class"
+      ],
+      "answer": 1,
+      "explain_fr": "O(n) + O(n) = O(2n) = O(n) : les constantes disparaissent. Seule l'imbrication multiplie les coûts et donne du O(n²).",
+      "explain_en": "O(n) + O(n) = O(2n) = O(n): constants vanish. Only nesting multiplies costs and yields O(n²)."
+    },
+    {
+      "q_fr": "Quelle est la complexité en temps du Fibonacci récursif naïf (sans mémoïsation) ?",
+      "q_en": "What is the time complexity of naive recursive Fibonacci (no memoization)?",
+      "choices_fr": [
+        "O(n log n)",
+        "O(n²)",
+        "O(2ⁿ)",
+        "O(n)"
+      ],
+      "choices_en": [
+        "O(n log n)",
+        "O(n²)",
+        "O(2ⁿ)",
+        "O(n)"
+      ],
+      "answer": 2,
+      "explain_fr": "Chaque appel en déclenche deux : l'arbre d'appels double à chaque niveau, croissance exponentielle. La mémoïsation ramène à O(n) en calculant chaque valeur une seule fois.",
+      "explain_en": "Each call spawns two more: the call tree doubles at every level, exponential growth. Memoization brings it to O(n) by computing each value once."
+    },
+    {
+      "q_fr": "Pourquoi le push en fin de tableau dynamique est-il dit « O(1) amorti » et pas simplement O(1) ?",
+      "q_en": "Why is a push at the end of a dynamic array called \"amortized O(1)\" rather than plain O(1)?",
+      "choices_fr": [
+        "Parce que certains push déclenchent une réallocation O(n), mais le doublement de capacité les rend assez rares pour que la moyenne sur la séquence reste O(1)",
+        "Parce que le push est O(log n) une fois sur deux",
+        "Parce que la mémoire est libérée après chaque push",
+        "Parce que le pire cas est O(n²)"
+      ],
+      "choices_en": [
+        "Because some pushes trigger an O(n) reallocation, but capacity doubling makes them rare enough that the average over the sequence stays O(1)",
+        "Because push is O(log n) every other time",
+        "Because memory is freed after each push",
+        "Because the worst case is O(n²)"
+      ],
+      "answer": 0,
+      "explain_fr": "C'est la définition de l'analyse amortie : un coût O(n) occasionnel, étalé sur les N opérations qui l'ont précédé, donne un coût moyen constant garanti.",
+      "explain_en": "That's the definition of amortized analysis: an occasional O(n) cost, spread over the N operations before it, yields a guaranteed constant average cost."
+    },
+    {
+      "q_fr": "Sur un tableau TRIÉ, quelle approche trouve si une paire somme à une cible en O(n) temps et O(1) espace ?",
+      "q_en": "On a SORTED array, which approach finds whether a pair sums to a target in O(n) time and O(1) space?",
+      "choices_fr": [
+        "Double boucle sur toutes les paires",
+        "Hash map des compléments",
+        "Recherche dichotomique pour chaque élément",
+        "Deux pointeurs qui convergent depuis les extrémités"
+      ],
+      "choices_en": [
+        "Double loop over all pairs",
+        "Hash map of complements",
+        "Binary search for each element",
+        "Two pointers converging from both ends"
+      ],
+      "answer": 3,
+      "explain_fr": "Les deux pointeurs exploitent le tri : somme trop petite → avancer la gauche, trop grande → reculer la droite. O(n) temps, O(1) espace. La hash map fait O(n) temps mais O(n) espace ; la dichotomie par élément fait O(n log n).",
+      "explain_en": "Two pointers exploit the sorting: sum too small → move left up, too big → move right down. O(n) time, O(1) space. The hash map is O(n) time but O(n) space; per-element binary search is O(n log n)."
+    },
+    {
+      "q_fr": "Quelle est la complexité de l'insertion d'un élément au MILIEU d'un tableau dynamique ?",
+      "q_en": "What is the complexity of inserting an element in the MIDDLE of a dynamic array?",
+      "choices_fr": [
+        "O(1) amorti, comme en fin de tableau",
+        "O(n), car il faut décaler tous les éléments suivants",
+        "O(log n), grâce à l'indexation",
+        "O(n log n)"
+      ],
+      "choices_en": [
+        "Amortized O(1), like at the end",
+        "O(n), because all subsequent elements must shift",
+        "O(log n), thanks to indexing",
+        "O(n log n)"
+      ],
+      "answer": 1,
+      "explain_fr": "Insérer au milieu force le décalage de tous les éléments à droite : O(n). Le O(1) amorti ne vaut que pour l'ajout en fin. C'est la force de la liste chaînée (O(1) si on tient déjà le nœud) — au prix de l'accès O(n).",
+      "explain_en": "Inserting in the middle forces shifting every element to the right: O(n). Amortized O(1) only holds for appending at the end. That's the linked list's strength (O(1) if you already hold the node) — at the price of O(n) access."
+    },
+    {
+      "q_fr": "Un merge sort suivi d'un parcours linéaire : quelle est la complexité globale ?",
+      "q_en": "A merge sort followed by a linear traversal: what is the overall complexity?",
+      "choices_fr": [
+        "O(n)",
+        "O(n²)",
+        "O(n² log n)",
+        "O(n log n)"
+      ],
+      "choices_en": [
+        "O(n)",
+        "O(n²)",
+        "O(n² log n)",
+        "O(n log n)"
+      ],
+      "answer": 3,
+      "explain_fr": "O(n log n) + O(n) = O(n log n) : le terme dominant absorbe le reste. Réflexe à avoir dès qu'on ajoute un tri « pour simplifier » : il met un plancher O(n log n) à toute la solution.",
+      "explain_en": "O(n log n) + O(n) = O(n log n): the dominant term absorbs the rest. A reflex to have whenever you add a sort \"to simplify\": it puts an O(n log n) floor under the whole solution."
+    }
+  ]
+}

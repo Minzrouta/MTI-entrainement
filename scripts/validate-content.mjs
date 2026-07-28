@@ -13,8 +13,11 @@ for (const dir of dirs) {
     continue;
   }
   const date = dir.slice(0, 10);
-  if (dates.has(date)) errors.push(`${dir}: date en double avec ${dates.get(date)}`);
-  dates.set(date, dir);
+  // Une fiche générale + une actu peuvent partager un lundi ; deux du même type, non.
+  const isActu = dir.slice(11).startsWith('actu');
+  const key = `${date}:${isActu ? 'actu' : 'general'}`;
+  if (dates.has(key)) errors.push(`${dir}: date en double avec ${dates.get(key)}`);
+  dates.set(key, dir);
 
   for (const f of ['fr.md', 'en.md', 'quiz.json']) {
     if (!existsSync(join(ROOT, dir, f))) errors.push(`${dir}: ${f} manquant`);

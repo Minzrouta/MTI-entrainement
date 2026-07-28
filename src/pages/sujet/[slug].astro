@@ -1,17 +1,17 @@
 ---
 import { render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
-import { getTopics } from '../../lib/topics';
+import { getTopics, dayNumbers } from '../../lib/topics';
 import { dateFr, dateEn } from '../../lib/format';
 
 export async function getStaticPaths() {
   const topics = await getTopics(); // desc
-  const total = topics.length;
+  const days = dayNumbers(topics);
   return topics.map((t, i) => ({
     params: { slug: t.slug },
     props: {
       topic: t,
-      dayNo: total - i,
+      dayNo: days.get(t.dir) ?? null,
       older: topics[i + 1] ?? null,
       newer: topics[i - 1] ?? null,
     },
@@ -30,8 +30,8 @@ const enToc = enHeadings.filter((h) => h.depth === 2);
     <header class="fiche" style="margin-top: 2rem;">
       <p class="eyebrow">
         <span>
-          <span data-l="fr">Jour {dayNo}</span>
-          <span data-l="en">Day {dayNo}</span>
+          <span data-l="fr">{topic.isActu ? 'Actu' : `Jour ${dayNo}`}</span>
+          <span data-l="en">{topic.isActu ? 'News' : `Day ${dayNo}`}</span>
         </span>
         <span class="sep">·</span>
         <span>
