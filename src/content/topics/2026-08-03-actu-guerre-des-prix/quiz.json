@@ -1,0 +1,57 @@
+{
+  "flashcards": [
+    {
+      "q_fr": "Qu'a fait OpenAI le 30 juillet 2026 sur les prix de GPT-5.6 ?",
+      "a_fr": "Baisse de 80 % sur Luna (1 $ / 6 $ → 0,20 $ / 1,20 $ par million de tokens entrée/sortie) et de 20 % sur Terra (2,50 $ / 15 $ → 2 $ / 12 $). Le flagship Sol reste à 5 $ / 30 $. Le tout 21 jours seulement après le lancement de la famille GPT-5.6.",
+      "q_en": "What did OpenAI do to GPT-5.6 pricing on July 30, 2026?",
+      "a_en": "An 80% cut on Luna ($1 / $6 → $0.20 / $1.20 per million input/output tokens) and 20% on Terra ($2.50 / $15 → $2 / $12). Flagship Sol stayed at $5 / $30. All of it just 21 days after the GPT-5.6 family launched."
+    },
+    {
+      "q_fr": "Pourquoi parle-t-on de « coût par tâche » plutôt que de « prix par token » ?",
+      "a_fr": "Parce qu'un modèle plus cher au token peut revenir moins cher au total s'il résout le problème en un appel au lieu de cinq. Le prix affiché ne dit rien du nombre d'allers-retours, de tokens de raisonnement ou de reprises nécessaires — seul le coût par tâche résolue est comparable.",
+      "q_en": "Why talk about \"cost per task\" rather than \"price per token\"?",
+      "a_en": "Because a model that costs more per token can be cheaper overall if it solves the problem in one call instead of five. The sticker price says nothing about round trips, reasoning tokens or retries — only cost per solved task is comparable."
+    },
+    {
+      "q_fr": "Quels leviers concrets permettent de maîtriser le coût d'une fonctionnalité IA en production ?",
+      "a_fr": "Router par tier (petit modèle pour l'extraction/classification, flagship pour le raisonnement dur), mettre en cache les prompts systèmes répétés, passer en batch tout ce qui n'est pas temps réel, mesurer le coût par tâche résolue, et poser un plafond de dépense avec alerte.",
+      "q_en": "What concrete levers keep an AI feature's cost under control in production?",
+      "a_en": "Route by tier (small model for extraction/classification, flagship for hard reasoning), cache repeated system prompts, batch anything non-real-time, measure cost per solved task, and set a spend cap with an alert."
+    },
+    {
+      "q_fr": "Que s'est-il passé fin juillet 2026 avec les conversations Claude partagées, et quelle leçon en tirer ?",
+      "a_fr": "Le 25 juillet, des centaines de chats et Artifacts publics ont été retrouvés dans Google (CV, clés d'API, tableurs financiers) : les pages de partage n'avaient pas de balise noindex. Anthropic a corrigé via robots.txt le 28. Leçon : une URL non devinable n'est pas un contrôle d'accès — il faut une autorisation vérifiée côté serveur.",
+      "q_en": "What happened in late July 2026 with shared Claude conversations, and what's the lesson?",
+      "a_en": "On July 25, hundreds of public chats and Artifacts turned up in Google (resumes, API keys, financial spreadsheets): the share pages had no noindex tag. Anthropic fixed it via robots.txt on July 28. Lesson: an unguessable URL is not access control — you need verified server-side authorization."
+    }
+  ],
+  "qcm": [
+    {
+      "q_fr": "De combien OpenAI a-t-il baissé le prix de GPT-5.6 Luna le 30 juillet 2026 ?",
+      "q_en": "By how much did OpenAI cut the price of GPT-5.6 Luna on July 30, 2026?",
+      "choices_fr": ["20 %", "50 %", "80 %", "Le prix n'a pas bougé"],
+      "choices_en": ["20%", "50%", "80%", "The price didn't change"],
+      "answer": 2,
+      "explain_fr": "Luna est passé de 1 $ / 6 $ à 0,20 $ / 1,20 $ par million de tokens, soit −80 %. Terra a baissé de 20 % et le flagship Sol est resté inchangé.",
+      "explain_en": "Luna went from $1 / $6 to $0.20 / $1.20 per million tokens, a 80% cut. Terra dropped 20% and flagship Sol stayed unchanged."
+    },
+    {
+      "q_fr": "Pourquoi les conversations Claude partagées se sont-elles retrouvées dans Google ?",
+      "q_en": "Why did shared Claude conversations end up in Google?",
+      "choices_fr": ["Les pages de partage n'avaient pas de balise noindex", "La base de données d'Anthropic a été piratée", "Les utilisateurs avaient publié leurs liens sur Google", "Google a contourné l'authentification de claude.ai"],
+      "choices_en": ["The share pages had no noindex tag", "Anthropic's database was hacked", "Users had submitted their links to Google", "Google bypassed claude.ai authentication"],
+      "answer": 0,
+      "explain_fr": "Aucun piratage : les pages de partage étaient publiques par conception et sans noindex. Dès qu'un lien circulait sur un forum ou un réseau social, les crawlers le suivaient et indexaient le contenu.",
+      "explain_en": "No hack involved: the share pages were public by design and lacked noindex. As soon as a link circulated on a forum or social network, crawlers followed it and indexed the content."
+    },
+    {
+      "q_fr": "Quel modèle a pris la tête de l'Artificial Analysis Intelligence Index fin juillet 2026 ?",
+      "q_en": "Which model topped the Artificial Analysis Intelligence Index in late July 2026?",
+      "choices_fr": ["GPT-5.6 Sol", "Kimi K3", "Gemini 3 Ultra", "Claude Opus 5"],
+      "choices_en": ["GPT-5.6 Sol", "Kimi K3", "Gemini 3 Ultra", "Claude Opus 5"],
+      "answer": 3,
+      "explain_fr": "Claude Opus 5, sorti le 24 juillet, prend la première place avec 61 points — au même tarif qu'Opus 4.8 (5 $ / 25 $ par million de tokens), soit environ la moitié du coût par tâche de Fable 5.",
+      "explain_en": "Claude Opus 5, released July 24, took first place with 61 points — at the same price as Opus 4.8 ($5 / $25 per million tokens), roughly half Fable 5's cost per task."
+    }
+  ]
+}
