@@ -1,0 +1,57 @@
+{
+  "flashcards": [
+    {
+      "q_fr": "Comment fonctionne le filigrane invisible qu'Anthropic a annoncé le 11 août 2026 pour le texte de Claude ?",
+      "a_fr": "Le modèle biaise légèrement ses choix de mots selon une clé secrète : indétectable sur un mot, le motif ressort d'une analyse statistique sur quelques centaines de mots. La marque voyage avec le copier-coller et survit à des retouches légères, mais s'efface sous une réécriture lourde. Pour les fichiers, Anthropic ajoute des métadonnées de provenance signées au standard C2PA.",
+      "q_en": "How does the invisible watermark Anthropic announced on August 11, 2026 for Claude's text work?",
+      "a_en": "The model slightly biases its word choices using a secret key: undetectable on one word, the pattern emerges from statistical analysis over a few hundred words. The mark travels with copy-paste and survives light edits, but fades under heavy rewriting. For files, Anthropic adds signed provenance metadata using the C2PA standard."
+    },
+    {
+      "q_fr": "Quelle différence entre un filigrane, une provenance C2PA et un détecteur d'IA ?",
+      "a_fr": "Le filigrane est posé à la source par le fournisseur du modèle, avec une clé, et se vérifie statistiquement. La provenance C2PA est une signature cryptographique attachée au fichier, qui disparaît si on recopie le contenu ailleurs. Le détecteur (type GPTZero) devine après coup à partir de la perplexité et du style, avec des faux positifs documentés. Seuls les deux premiers relèvent de la provenance, le troisième de la stylométrie.",
+      "q_en": "What is the difference between a watermark, C2PA provenance and an AI detector?",
+      "a_en": "A watermark is placed at the source by the model provider, with a key, and is verified statistically. C2PA provenance is a cryptographic signature attached to the file, which disappears if the content is copied elsewhere. A detector (like GPTZero) guesses after the fact from perplexity and style, with documented false positives. Only the first two are provenance; the third is stylometry."
+    },
+    {
+      "q_fr": "Qu'impose l'article 50 du règlement européen sur l'IA, applicable depuis le 2 août 2026 ?",
+      "a_fr": "La transparence : informer l'utilisateur qu'il interagit avec une IA, et marquer les contenus synthétiques (texte, image, audio, vidéo) dans un format lisible par machine et détectable. Sanctions jusqu'à 15 millions d'euros ou 3 % du chiffre d'affaires mondial, le plus élevé des deux. Les systèmes déjà sur le marché ont jusqu'au 2 décembre 2026 pour se conformer au marquage.",
+      "q_en": "What does Article 50 of the EU AI Act, applicable since August 2, 2026, require?",
+      "a_en": "Transparency: tell users they are interacting with an AI, and mark synthetic content (text, image, audio, video) in a machine-readable and detectable format. Penalties up to 15 million euros or 3% of worldwide annual turnover, whichever is higher. Systems already on the market have until December 2, 2026 to meet the marking requirement."
+    },
+    {
+      "q_fr": "Pourquoi une estimation de coût d'une feature IA doit-elle porter une date ?",
+      "a_fr": "Parce que les tarifs bougent vite et dans les deux sens. Exemple de la semaine : Gemini 3.7 Flash est facturé 0,75 $ / 3,75 $ le million de tokens jusqu'au 31 décembre 2026, puis le prix double au 1er janvier 2027. Un budget calculé sur le tarif de lancement peut être faux six mois plus tard.",
+      "q_en": "Why should a cost estimate for an AI feature carry a date?",
+      "a_en": "Because prices move fast, and in both directions. This week's example: Gemini 3.7 Flash is billed at $0.75 / $3.75 per million tokens through December 31, 2026, then the price doubles on January 1, 2027. A budget built on the launch price can be wrong six months later."
+    }
+  ],
+  "qcm": [
+    {
+      "q_fr": "Que devient le filigrane de Claude quand on copie-colle son texte dans un autre document ?",
+      "q_en": "What happens to Claude's watermark when you copy-paste its text into another document?",
+      "choices_fr": ["Il disparaît, il est stocké dans les métadonnées du fichier", "Il voyage avec le texte et survit à des retouches légères", "Il ne fonctionne que dans l'application Claude", "Il devient visible sous forme de mention automatique"],
+      "choices_en": ["It disappears, it lives in the file metadata", "It travels with the text and survives light edits", "It only works inside the Claude app", "It becomes visible as an automatic disclaimer"],
+      "answer": 1,
+      "explain_fr": "Le filigrane textuel est encodé dans le choix des mots lui-même, donc il suit le texte partout. Ce sont les métadonnées C2PA, utilisées pour les fichiers, qui disparaissent quand on recopie le contenu ailleurs.",
+      "explain_en": "The text watermark is encoded in the word choices themselves, so it follows the text anywhere. It is the C2PA metadata, used for files, that disappears when content is copied elsewhere."
+    },
+    {
+      "q_fr": "Quelle réglementation a poussé Anthropic à marquer le texte généré par Claude ?",
+      "q_en": "Which regulation pushed Anthropic to watermark Claude's generated text?",
+      "choices_fr": ["L'article 50 du règlement européen sur l'IA", "Le RGPD", "Le Digital Services Act", "Le California AI Accountability Act"],
+      "choices_en": ["Article 50 of the EU AI Act", "GDPR", "The Digital Services Act", "The California AI Accountability Act"],
+      "answer": 0,
+      "explain_fr": "L'article 50 du règlement européen sur l'IA est applicable depuis le 2 août 2026 : les sorties des systèmes génératifs doivent être marquées dans un format lisible par machine et détectables comme générées par une IA, sous peine de 15 M€ ou 3 % du CA mondial.",
+      "explain_en": "Article 50 of the EU AI Act applies as of August 2, 2026: generative systems' outputs must be marked in a machine-readable format and detectable as AI-generated, on pain of 15M euros or 3% of worldwide turnover."
+    },
+    {
+      "q_fr": "Quel point commun entre les failles TeamCity (CVE-2026-63077) et IBM Langflow (CVE-2026-9198) de la semaine du 10 août 2026 ?",
+      "q_en": "What do the TeamCity (CVE-2026-63077) and IBM Langflow (CVE-2026-9198) flaws of the week of August 10, 2026 have in common?",
+      "choices_fr": ["Ce sont des failles XSS dans l'interface d'administration", "Elles ne concernent que les versions cloud hébergées", "Ce sont des exécutions de code à distance non authentifiées, activement exploitées", "Elles nécessitent un accès physique au serveur"],
+      "choices_en": ["They are XSS flaws in the admin interface", "They only affect hosted cloud versions", "They are unauthenticated remote code executions, actively exploited", "They require physical access to the server"],
+      "answer": 2,
+      "explain_fr": "Les deux permettent d'exécuter du code à distance sans aucune authentification, et étaient exploitées dans la nature. La cible est l'outillage interne (CI, plateformes de dev), qui donne accès aux secrets de build : il doit être protégé comme la production.",
+      "explain_en": "Both allow remote code execution with no authentication at all, and were exploited in the wild. The target is internal tooling (CI, dev platforms), which holds build secrets: it must be protected like production."
+    }
+  ]
+}
