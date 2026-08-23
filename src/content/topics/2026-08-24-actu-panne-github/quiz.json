@@ -1,0 +1,57 @@
+{
+  "flashcards": [
+    {
+      "q_fr": "Quelle a été la cause racine de la panne GitHub du 17 août 2026 ?",
+      "a_fr": "Ni un bug ni un changement de configuration : un pur manque de capacité. Un composant d'infrastructure critique du datacenter Central US n'a pas suivi un pic de trafic record et la pression s'est propagée en cascade, en commençant par l'authentification. Les proxys sidecar saturés étaient invisibles pour l'auto-scaling, qui ne comptait pas leur capacité. Résultat : 7h47 de dégradation mondiale (Actions, API, Copilot, auth).",
+      "q_en": "What was the root cause of the GitHub outage on August 17, 2026?",
+      "a_en": "Neither a bug nor a configuration change: a pure capacity shortage. A critical infrastructure component in the Central US data center failed to keep up with record traffic and the pressure cascaded, starting with authentication. The saturated sidecar proxies were invisible to auto-scaling, which did not account for their capacity. Result: 7h47 of global degradation (Actions, APIs, Copilot, auth)."
+    },
+    {
+      "q_fr": "D'où venait le trafic record qui a fait tomber GitHub, et quels chiffres le prouvent ?",
+      "a_fr": "Des agents IA qui committent en masse : les commits mensuels sont passés de 1,4 milliard en avril 2026 à 2,9 milliards en août, un doublement en quatre mois qu'aucune croissance humaine n'explique. S'y ajoutent environ 130 millions de PR fusionnées et plus de 115 millions de runs Actions par mois.",
+      "q_en": "Where did the record traffic that brought GitHub down come from, and which numbers prove it?",
+      "a_en": "From AI agents committing at scale: monthly commits went from 1.4 billion in April 2026 to 2.9 billion in August, a doubling in four months that no human growth explains. Add roughly 130 million merged PRs and over 115 million Actions runs per month."
+    },
+    {
+      "q_fr": "Quels sont les quatre ingrédients d'un retry bien conçu ?",
+      "a_fr": "Le backoff exponentiel (attendre de plus en plus longtemps entre les tentatives), le jitter (un aléa pour que tous les clients ne réessaient pas à la même seconde), le budget de retry (au-delà d'un certain taux d'échec, arrêter d'insister et dégrader proprement) et l'idempotence (rejouer la requête ne crée pas de doublon). Pendant la panne GitHub, les boucles de retry des clients Copilot ont augmenté le trafic en pleine récupération.",
+      "q_en": "What are the four ingredients of a well-designed retry?",
+      "a_en": "Exponential backoff (wait longer and longer between attempts), jitter (randomness so clients do not all retry in the same second), a retry budget (past a certain failure rate, stop insisting and degrade gracefully) and idempotency (replaying the request creates no duplicate). During the GitHub outage, Copilot client retry loops increased traffic in the middle of recovery."
+    },
+    {
+      "q_fr": "Pourquoi dit-on que la fenêtre de patch se compte désormais en heures ?",
+      "a_fr": "Exemples de la semaine du 18 août 2026 : le contournement d'authentification SharePoint (CVE-2026-55040) a été exploité quelques heures après la publication du PoC public, et la traversée de chemin vCenter (CVE-2026-59310) a compromis 361 serveurs dans 47 pays cinq jours après le correctif. La vraie défense n'est plus seulement de patcher vite, mais de ne pas exposer ces outils internes sur Internet.",
+      "q_en": "Why do we say the patch window is now measured in hours?",
+      "a_en": "Examples from the week of August 18, 2026: the SharePoint auth bypass (CVE-2026-55040) was exploited within hours of the public PoC, and the vCenter path traversal (CVE-2026-59310) compromised 361 servers across 47 countries five days after the fix. The real defense is no longer just patching fast, but not exposing these internal tools to the Internet."
+    }
+  ],
+  "qcm": [
+    {
+      "q_fr": "Qu'est-ce qui a causé la panne mondiale de GitHub du 17 août 2026 ?",
+      "q_en": "What caused GitHub's global outage on August 17, 2026?",
+      "choices_fr": ["Un déploiement de code raté un dimanche", "Une cyberattaque par ransomware", "Une erreur de configuration DNS", "Un manque de capacité face à un trafic record, invisible pour l'auto-scaling"],
+      "choices_en": ["A failed code deploy on a Sunday", "A ransomware cyberattack", "A DNS configuration error", "A capacity shortage against record traffic, invisible to auto-scaling"],
+      "answer": 3,
+      "explain_fr": "Le postmortem est explicite : ni code ni configuration. Un composant critique du datacenter Central US a saturé sous un trafic record (commits doublés par les agents IA), et l'auto-scaling ne mesurait pas la capacité des proxys sidecar concernés.",
+      "explain_en": "The postmortem is explicit: neither code nor configuration. A critical Central US data center component saturated under record traffic (commits doubled by AI agents), and auto-scaling did not measure the capacity of the affected sidecar proxies."
+    },
+    {
+      "q_fr": "Pendant la récupération de la panne, qu'est-ce qui a aggravé la situation ?",
+      "q_en": "During recovery from the outage, what made things worse?",
+      "choices_fr": ["Les boucles de retry des clients, qui ont augmenté le trafic au pire moment", "Une seconde panne électrique dans le datacenter", "Une grève des équipes d'astreinte", "Un rollback automatique défaillant"],
+      "choices_en": ["Client retry loops, which increased traffic at the worst moment", "A second power failure in the data center", "An on-call team strike", "A faulty automatic rollback"],
+      "answer": 0,
+      "explain_fr": "Les boucles de retry des services Copilot ont amplifié le trafic pendant la reprise : c'est la « retry storm ». D'où les remédiations annoncées : limites et budgets de retry cohérents entre services, en plus des 3 millions de cœurs CPU déployés.",
+      "explain_en": "Retry loops in Copilot services amplified traffic during recovery: the classic retry storm. Hence the announced remediations: consistent retry limits and budgets across services, on top of 3 million CPU cores deployed."
+    },
+    {
+      "q_fr": "Que révèle le dépôt SEC de Nvidia du 17 août 2026 ?",
+      "q_en": "What does Nvidia's August 17, 2026 SEC filing reveal?",
+      "choices_fr": ["Le rachat de SB Energy par Nvidia", "Une garantie de financement jusqu'à 105 Md$ pour un datacenter OpenAI de 8 GW dans l'Ohio", "L'entrée en bourse d'OpenAI", "Un partenariat exclusif entre Nvidia et Anthropic"],
+      "choices_en": ["Nvidia's acquisition of SB Energy", "A financing guarantee of up to $105B for an 8 GW OpenAI data center in Ohio", "OpenAI's IPO", "An exclusive partnership between Nvidia and Anthropic"],
+      "answer": 1,
+      "explain_fr": "Nvidia garantit jusqu'à 105 Md$ pour la première phase d'un campus de 8 gigawatts dans l'Ohio, construit et exploité par SB Energy avec un bail de 20 ans pour OpenAI, mise en service à partir de 2028. Le fournisseur de puces finance son propre client : un exemple type de la circularité de l'économie IA.",
+      "explain_en": "Nvidia backs up to $105B for the first phase of an 8 gigawatt campus in Ohio, built and operated by SB Energy under a 20-year lease to OpenAI, coming online from 2028. The chip supplier financing its own customer: a textbook example of the AI economy's circularity."
+    }
+  ]
+}
