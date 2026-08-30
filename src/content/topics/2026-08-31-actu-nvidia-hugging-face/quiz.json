@@ -1,0 +1,57 @@
+{
+  "flashcards": [
+    {
+      "q_fr": "Qu'a révélé The Information le 27 août 2026 à propos de Hugging Face, et quelle nuance faut-il connaître ?",
+      "a_fr": "Nvidia aurait accepté de racheter Hugging Face pour 12,9 milliards de dollars, presque le triple de sa dernière valorisation (4,5 Md$ en 2023). Nuance essentielle : aucun accord n'est signé, le deal peut encore capoter, et ni Nvidia ni Hugging Face n'ont commenté. Toute l'info repose sur une source anonyme « ayant une connaissance directe des discussions ».",
+      "q_en": "What did The Information reveal on August 27, 2026 about Hugging Face, and what nuance should you know?",
+      "a_en": "Nvidia reportedly agreed to acquire Hugging Face for $12.9 billion, almost triple its last valuation ($4.5B in 2023). Essential nuance: no agreement has been signed, the deal could still fall apart, and neither Nvidia nor Hugging Face commented. The whole story rests on an anonymous source 'with direct knowledge of the talks'."
+    },
+    {
+      "q_fr": "Pourquoi un rachat de Hugging Face par Nvidia inquiète-t-il la communauté des développeurs ?",
+      "a_fr": "Hugging Face doit sa position à sa neutralité : plus de 13 millions de développeurs y publient et consomment les modèles ouverts de Meta, Google, Mistral, Qwen ou DeepSeek. Racheté par le fournisseur dominant du compute, le hub poserait un problème de conflit d'intérêts : mise en avant des modèles optimisés CUDA, traitement des alternatives AMD ou des puces maison des clouds. C'est la question de la neutralité d'une infrastructure critique.",
+      "q_en": "Why does an Nvidia acquisition of Hugging Face worry the developer community?",
+      "a_en": "Hugging Face owes its position to its neutrality: more than 13 million developers publish and consume open models from Meta, Google, Mistral, Qwen or DeepSeek there. Owned by the dominant compute supplier, the hub would raise a conflict of interest problem: promotion of CUDA-optimized models, treatment of AMD alternatives or the clouds' custom chips. It is the question of critical infrastructure neutrality."
+    },
+    {
+      "q_fr": "Quelles sont les deux failles critiques corrigées par Next.js le 25 août 2026, et quelle leçon en tirer ?",
+      "a_fr": "Deux RCE non authentifiées : une faille dans libheif (utilisée par sharp pour optimiser les images AVIF, une image piégée suffit, l'optimisation AVIF est désactivée en attendant le correctif amont) et CVE-2026-75604 (RCE sur les serveurs Next.js hébergés sous Windows). Correctifs : 16.3.3 et 15.5.24. Leçon : la surface d'attaque inclut les dépendances transitives, ici Next.js utilise sharp qui utilise libheif.",
+      "q_en": "What are the two critical flaws Next.js patched on August 25, 2026, and what is the lesson?",
+      "a_en": "Two unauthenticated RCEs: a flaw in libheif (used by sharp for AVIF image optimization, one crafted image is enough, AVIF optimization is disabled until the upstream fix) and CVE-2026-75604 (RCE on Windows-hosted Next.js servers). Fixes: 16.3.3 and 15.5.24. Lesson: the attack surface includes transitive dependencies, here Next.js uses sharp which uses libheif."
+    },
+    {
+      "q_fr": "Que symbolise la fermeture de Mechanical Turk le 30 septembre 2026 ?",
+      "a_fr": "La fin du micro-étiquetage de masse. Lancée en 2005, la place de marché d'Amazon (plus de 500 000 workers au pic, surnommée « artificial artificial intelligence » par Bezos) a étiqueté les datasets de l'ère du machine learning. Les modèles font désormais ces tâches simples, et le travail humain s'est déplacé vers l'annotation experte, l'évaluation de réponses et le RLHF, chez Scale AI, Mercor ou Prolific. Amazon ferme aussi SageMaker Ground Truth et Augmented AI.",
+      "q_en": "What does the September 30, 2026 shutdown of Mechanical Turk symbolize?",
+      "a_en": "The end of mass micro-labeling. Launched in 2005, Amazon's marketplace (over 500,000 workers at its peak, dubbed 'artificial artificial intelligence' by Bezos) labeled the datasets of the machine learning era. Models now handle those simple tasks, and human work moved to expert annotation, answer evaluation and RLHF, at Scale AI, Mercor or Prolific. Amazon is also closing SageMaker Ground Truth and Augmented AI."
+    }
+  ],
+  "qcm": [
+    {
+      "q_fr": "Selon la presse du 27 août 2026, combien Nvidia paierait-il pour racheter Hugging Face ?",
+      "q_en": "According to press reports on August 27, 2026, how much would Nvidia pay to acquire Hugging Face?",
+      "choices_fr": ["4,5 milliards de dollars, sa dernière valorisation", "12,9 milliards de dollars, sans accord signé à ce stade", "105 milliards de dollars, comme le datacenter OpenAI", "Le rachat est officiellement signé pour 30 milliards"],
+      "choices_en": ["$4.5 billion, its last valuation", "$12.9 billion, with no signed agreement at this stage", "$105 billion, like the OpenAI data center", "The acquisition is officially signed for $30 billion"],
+      "answer": 1,
+      "explain_fr": "12,9 Md$ selon The Information, repris par CNBC, Bloomberg et Fortune, soit presque le triple de la valorisation de 2023 (4,5 Md$). Mais rien n'est signé : le deal peut encore capoter et aucune des deux entreprises n'a commenté. Les 105 Md$ correspondent au financement Nvidia du datacenter OpenAI de la semaine précédente.",
+      "explain_en": "$12.9B according to The Information, picked up by CNBC, Bloomberg and Fortune, almost triple the 2023 valuation ($4.5B). But nothing is signed: the deal could still fall apart and neither company commented. The $105B figure is Nvidia's OpenAI data center financing from the previous week."
+    },
+    {
+      "q_fr": "Pourquoi la faille AVIF corrigée par Next.js le 25 août est-elle un cas d'école de sécurité des dépendances ?",
+      "q_en": "Why is the AVIF flaw patched by Next.js on August 25 a textbook dependency security case?",
+      "choices_fr": ["Parce que la faille se situe dans le code de Next.js lui-même", "Parce qu'elle ne touche que les versions beta", "Parce que la faille est dans libheif, une dépendance transitive via sharp, et permet une RCE non authentifiée avec une simple image piégée", "Parce qu'elle nécessite un compte administrateur pour être exploitée"],
+      "choices_en": ["Because the flaw sits in Next.js's own code", "Because it only affects beta versions", "Because the flaw is in libheif, a transitive dependency via sharp, and allows unauthenticated RCE with a single crafted image", "Because it requires an admin account to exploit"],
+      "answer": 2,
+      "explain_fr": "La chaîne est Next.js → sharp → libheif : la faille se trouve deux étages plus bas que le framework que vous installez. Une image AVIF piégée soumise à l'optimisation d'images suffit, sans authentification. En attendant le correctif amont de libheif, Next.js 16.3.3 et 15.5.24 désactivent l'optimisation AVIF : couper la fonctionnalité est une mitigation légitime.",
+      "explain_en": "The chain is Next.js → sharp → libheif: the flaw sits two floors below the framework you install. A crafted AVIF image submitted to image optimization is enough, with no authentication. While waiting for the upstream libheif fix, Next.js 16.3.3 and 15.5.24 disable AVIF optimization: turning off the feature is a legitimate mitigation."
+    },
+    {
+      "q_fr": "Quel chiffre résume les résultats trimestriels de Nvidia publiés le 26 août 2026 ?",
+      "q_en": "Which figure sums up Nvidia's quarterly results published on August 26, 2026?",
+      "choices_fr": ["96,2 Md$ de chiffre d'affaires (+106 % sur un an), dont 89 Md$ de datacenter", "12,9 Md$ de chiffre d'affaires, en baisse de 20 %", "421 Md$ de chiffre d'affaires, record absolu de la tech", "2,9 Md$ de bénéfice, porté par le gaming"],
+      "choices_en": ["$96.2B revenue (up 106% year over year), including $89B from data center", "$12.9B revenue, down 20%", "$421B revenue, an all-time tech record", "$2.9B profit, driven by gaming"],
+      "answer": 0,
+      "explain_fr": "96,2 Md$ sur le trimestre clos le 26 juillet, +106 % sur un an, dont 89 Md$ de datacenter (+117 %) portés par Blackwell Ultra, avec une guidance à 108 Md$. L'action a pourtant reculé : quand le marché price la perfection, même un record déçoit. Les 12,9 Md$ sont le prix rapporté du rachat de Hugging Face, et 421 est le nombre de CVE du Patch Tuesday d'août.",
+      "explain_en": "$96.2B for the quarter ended July 26, up 106% year over year, including $89B from data center (up 117%) driven by Blackwell Ultra, with $108B guidance. The stock still slipped: when the market prices in perfection, even a record disappoints. $12.9B is the reported Hugging Face price, and 421 is the August Patch Tuesday CVE count."
+    }
+  ]
+}
