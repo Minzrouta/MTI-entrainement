@@ -1,0 +1,57 @@
+{
+  "flashcards": [
+    {
+      "q_fr": "Que s'est-il passé dans la campagne PaperCut révélée le 10 septembre 2026, et quels sont les chiffres à retenir ?",
+      "a_fr": "Un attaquant russophone a lancé des centaines d'agents IA (propulsés par OpenAI Codex et un modèle DeepSeek) contre des serveurs d'impression PaperCut, en exploitant CVE-2026-81578 (contournement d'authentification) et CVE-2026-82078 (exécution de code à distance). Bilan : 440 instances compromises, 395 organisations dans 48 pays, dont 204 écoles et universités. Première RCE en moins de 4 heures après le début, et 11 organisations compromises en 26 secondes au pic. Signalé indépendamment par Blackpoint Cyber et GreyNoise.",
+      "q_en": "What happened in the PaperCut campaign disclosed on September 10, 2026, and what are the key numbers?",
+      "a_en": "A Russian-speaking attacker turned hundreds of AI agents (powered by OpenAI Codex and a DeepSeek model) loose on PaperCut print servers, exploiting CVE-2026-81578 (authentication bypass) and CVE-2026-82078 (remote code execution). The toll: 440 compromised instances, 395 organizations in 48 countries, 204 of them schools and universities. First RCE in under 4 hours, and 11 organizations compromised in 26 seconds at peak. Independently reported by Blackpoint Cyber and GreyNoise."
+    },
+    {
+      "q_fr": "Qu'est-ce qui était réellement nouveau dans l'attaque PaperCut, et qu'est-ce qui ne l'était pas ?",
+      "a_fr": "L'outillage offensif n'avait rien de nouveau : Mimikatz, SharpHound, Certipy, Rubeus, Impacket, des charges Meterpreter en Java, tous publics depuis des années. Ce qui était nouveau, c'est que personne ne les pilotait à la main. Les agents tournaient en parallèle dans AionUi et partageaient leurs acquis via Hindsight, un service de mémoire persistante. L'IA n'a pas augmenté la sophistication de l'attaque, elle a effondré le coût marginal d'une cible supplémentaire, en supprimant le facteur limitant historique : le temps d'un humain compétent.",
+      "q_en": "What was genuinely new in the PaperCut attack, and what was not?",
+      "a_en": "The offensive tooling was not new: Mimikatz, SharpHound, Certipy, Rubeus, Impacket, Java Meterpreter payloads, all public for years. What was new is that nobody was driving them by hand. The agents ran in parallel inside AionUi and shared what they learned through Hindsight, a persistent memory service. AI did not raise the sophistication of the attack, it collapsed the marginal cost of one more target by removing the historic bottleneck: the time of a skilled human."
+    },
+    {
+      "q_fr": "Que propose Dario Amodei dans « We Must Pace the Frontier » du 12 septembre 2026 ?",
+      "a_fr": "Un essai de 3 800 mots dont la thèse est « nous devons ralentir le rythme auquel nous améliorons les capacités des modèles ». Son avertissement : dans 6 à 12 mois, un essaim d'agents autonomes pourrait prendre le contrôle d'une bonne partie d'Internet via un botnet persistant, pour des centaines de milliards de dollars de dégâts. Plan en trois temps : des évaluateurs tiers embarqués avec un accès de niveau salarié (Anthropic s'y engage unilatéralement), des standards de sécurité communs entre laboratoires, puis leur extension par les États. Altman et Musk ont approuvé en quelques heures, Trump a rejeté l'appel le lendemain.",
+      "q_en": "What does Dario Amodei propose in 'We Must Pace the Frontier' (September 12, 2026)?",
+      "a_en": "A 3,800-word essay whose thesis is 'we must slow the pace at which we improve the capabilities of AI models'. His warning: within 6 to 12 months, a swarm of autonomous agents could take over much of the internet with a persistent botnet, causing hundreds of billions of dollars in damage. Three-part plan: embedded third-party evaluators with employee-level access (Anthropic committing unilaterally), common safety standards across labs, then their extension by governments. Altman and Musk agreed within hours, Trump dismissed the call the next day."
+    },
+    {
+      "q_fr": "Pourquoi les 12 organisations sur 395 ayant perdu leur domain admin sont-elles une bonne nouvelle ?",
+      "a_fr": "Parce que malgré une récolte d'identifiants presque généralisée (280 instances) et de secrets système ou de domaine sur 147, l'escalade complète jusqu'au domain admin a échoué dans 97 % des cas. Les agents couvrent très bien de la surface mais restent faibles sur ce qui demande du jugement. Ce sont les fondamentaux sans IA qui ont tenu : segmentation réseau, moindre privilège, comptes d'administration séparés. Les basiques n'ont pas été périmés par l'IA, ils viennent d'être validés grandeur nature.",
+      "q_en": "Why are the 12 out of 395 organizations that lost domain admin actually good news?",
+      "a_en": "Because despite near-universal credential harvesting (280 instances) and OS or domain secrets on 147, full escalation to domain admin failed in 97% of cases. Agents cover surface very well but stay weak at anything requiring judgment. The AI-free fundamentals held: network segmentation, least privilege, separate admin accounts. The basics were not made obsolete by AI, they were validated at full scale."
+    }
+  ],
+  "qcm": [
+    {
+      "q_fr": "Dans la campagne PaperCut de septembre 2026, quelle affirmation est exacte ?",
+      "q_en": "In the September 2026 PaperCut campaign, which statement is accurate?",
+      "choices_fr": ["Les agents IA ont découvert une technique d'attaque inédite, impossible à reproduire manuellement", "L'attaque a visé en priorité des banques et des opérateurs d'infrastructures critiques", "Les agents ont automatisé des outils offensifs publics (Mimikatz, Impacket, SharpHound) : 440 instances compromises, 11 organisations en 26 secondes", "OpenAI et DeepSeek ont été piratés et leurs modèles détournés à leur insu"],
+      "choices_en": ["The AI agents discovered a novel attack technique impossible to reproduce by hand", "The attack primarily targeted banks and critical infrastructure operators", "The agents automated public offensive tools (Mimikatz, Impacket, SharpHound): 440 instances compromised, 11 organizations in 26 seconds", "OpenAI and DeepSeek were hacked and their models hijacked without their knowledge"],
+      "answer": 2,
+      "explain_fr": "Rien de nouveau dans l'outillage : Mimikatz, SharpHound, Certipy, Rubeus et Impacket sont publics depuis des années. La nouveauté est l'automatisation par des centaines d'agents tournant en parallèle dans AionUi avec une mémoire partagée (Hindsight). Les cibles n'étaient pas exotiques : 204 des 395 victimes sont des écoles et universités, avec des serveurs d'impression exposés et non patchés. Et Codex et DeepSeek n'ont pas été piratés, ils ont été utilisés comme outils de développement à des fins offensives.",
+      "explain_en": "Nothing new in the tooling: Mimikatz, SharpHound, Certipy, Rubeus and Impacket have been public for years. The novelty is automation by hundreds of agents running in parallel in AionUi with shared memory (Hindsight). The targets were not exotic: 204 of the 395 victims are schools and universities, with exposed, unpatched print servers. And Codex and DeepSeek were not hacked, they were used as developer tools for offensive ends."
+    },
+    {
+      "q_fr": "Que retenir du Patch Tuesday du 8 septembre 2026 et du zero-day Magento de la même semaine ?",
+      "q_en": "What should you take away from the September 8, 2026 Patch Tuesday and the same week's Magento zero-day?",
+      "choices_fr": ["972 CVE dont 113 critiques et 2 zero-days exploités ; et StyleSmuggler (CVE-2026-75650, CVSS 10.0) exploité 3 jours avant le hotfix", "Un mois calme, avec moins de correctifs qu'en août", "Les deux zero-days Windows n'étaient que théoriques, sans exploitation constatée", "Magento n'était vulnérable que sur la version 2.4.9"],
+      "choices_en": ["972 CVEs including 113 critical and 2 exploited zero-days; and StyleSmuggler (CVE-2026-75650, CVSS 10.0) exploited 3 days before the hotfix", "A quiet month, with fewer fixes than August", "The two Windows zero-days were theoretical only, with no observed exploitation", "Magento was only vulnerable on version 2.4.9"],
+      "answer": 0,
+      "explain_fr": "Record absolu pour Microsoft : 972 CVE, plus du double d'août, dont 113 critiques et 2 zero-days déjà exploités (CVE-2026-81963 dans le Windows Update Stack et CVE-2026-85880 dans ALPC). Côté Adobe, StyleSmuggler touche toutes les versions de 2.4.4 à 2.4.9 et était exploité depuis le 4 septembre, trois jours avant le hotfix du 7. Leçon : installer le correctif ne désinstalle pas un webshell déjà déposé, il faut aussi chercher les indicateurs de compromission.",
+      "explain_en": "An all-time record for Microsoft: 972 CVEs, more than double August's, including 113 critical and 2 already-exploited zero-days (CVE-2026-81963 in the Windows Update Stack and CVE-2026-85880 in ALPC). On the Adobe side, StyleSmuggler affects every version from 2.4.4 through 2.4.9 and was exploited from September 4, three days before the September 7 hotfix. Lesson: installing the patch does not uninstall a webshell that is already there, you must also hunt for indicators of compromise."
+    },
+    {
+      "q_fr": "Qu'est-ce qui distingue Fugu Max et Fugu Ultra v2, sortis par Sakana AI le 11 septembre 2026 ?",
+      "q_en": "What sets Sakana AI's Fugu Max and Fugu Ultra v2, released September 11, 2026, apart?",
+      "choices_fr": ["Ce sont les premiers modèles entraînés entièrement sans GPU", "Ce ne sont pas des modèles frontière mais un orchestrateur appris, qui route chaque tâche vers un pool de modèles open weight et spécialisés", "Ce sont des modèles réservés à la cybersécurité défensive", "Ce sont deux modèles identiques, seul le nom commercial change selon la région"],
+      "choices_en": ["They are the first models trained entirely without GPUs", "They are not frontier models but a learned orchestrator routing each task to a pool of open-weight and specialist models", "They are models reserved for defensive cybersecurity", "They are two identical models, only the commercial name changes by region"],
+      "answer": 1,
+      "explain_fr": "Fugu est un orchestrateur entraîné : un modèle qui apprend à router chaque tâche vers un pool de modèles open weight et spécialisés (dont Nemotron de Nvidia) et peut s'appeler lui-même récursivement, derrière une API compatible OpenAI. Ultra v2 est meilleur ou à égalité sur 5 benchmarks sur 8, avec 48,3 sur Chartography contre 27,3 pour Opus 5. Tarifs : 2 $ / 6 $ le million de tokens pour Max, 5 $ / 30 $ pour Ultra v2. Le pattern est transposable sans rien entraîner : un petit modèle rapide pour la classification, un gros pour le raisonnement.",
+      "explain_en": "Fugu is a trained orchestrator: a model that learns to route each task to a pool of open-weight and specialist models (including Nvidia's Nemotron) and can call itself recursively, behind an OpenAI-compatible API. Ultra v2 is best or joint-best on 5 of 8 benchmarks, scoring 48.3 on Chartography against 27.3 for Opus 5. Pricing: $2 / $6 per million tokens for Max, $5 / $30 for Ultra v2. The pattern transfers without training anything: a small fast model for classification, a big one for reasoning."
+    }
+  ]
+}
