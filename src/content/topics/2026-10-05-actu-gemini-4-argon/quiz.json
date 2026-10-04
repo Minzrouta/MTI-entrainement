@@ -1,0 +1,57 @@
+{
+  "flashcards": [
+    {
+      "q_fr": "Quels sont les trois lancements de la semaine du 28 septembre 2026, et qu'ont-ils en commun ?",
+      "a_fr": "Le 28 septembre, Anthropic sort Claude Sonnet 5.5. Le 29, OpenAI lance au DevDay ses agents permanents Dots et le modèle GPT-6.1 Sol. Le 30, Google dévoile Gemini 4 Argon, son premier modèle phare depuis février. Point commun : le prix. Sonnet 5.5, GPT-6.1 Sol et Argon (en tarif de lancement) sont tous à 2 $ par million de tokens en entrée et 10 $ en sortie. Argon passera ensuite à 4 $ / 20 $.",
+      "q_en": "What were the three launches of the week of September 28, 2026, and what do they have in common?",
+      "a_en": "On September 28, Anthropic shipped Claude Sonnet 5.5. On the 29th, OpenAI launched its always-on Dots agents and the GPT-6.1 Sol model at DevDay. On the 30th, Google unveiled Gemini 4 Argon, its first flagship model since February. The common point: price. Sonnet 5.5, GPT-6.1 Sol and Argon (at its introductory rate) all cost $2 per million input tokens and $10 per million output tokens. Argon will later move to $4 / $20."
+    },
+    {
+      "q_fr": "Gemini 4 Argon est-il « le meilleur modèle » ? Que disent vraiment les benchmarks ?",
+      "a_fr": "Argon mène seul sur 12 des 18 benchmarks publiés par Google et en partage un : 77,9 % sur DeepSWE v1.1 (Opus 5.5 à 74,2 %, GPT-6 Astra à 74,1 %), 68 % sur CWE-bench v1 à égalité avec Astra, 51,3 % sur AutomationBench. Mais il a environ dix points de retard sur FrontierSWE v2 (55,0 % contre 65,5 % pour Astra) et sur Terminal-bench 4.0 (57,4 % contre 66,4 % pour Opus 5.5). Conclusion : le classement dépend de la tâche mesurée, et ce sont les tests que l'éditeur a choisi de publier. Pour choisir, on évalue sur son propre cas d'usage.",
+      "q_en": "Is Gemini 4 Argon \"the best model\"? What do the benchmarks actually say?",
+      "a_en": "Argon leads outright on 12 of the 18 benchmarks Google published and ties one: 77.9% on DeepSWE v1.1 (Opus 5.5 at 74.2%, GPT-6 Astra at 74.1%), 68% on CWE-bench v1 tied with Astra, 51.3% on AutomationBench. But it trails by about ten points on FrontierSWE v2 (55.0% against 65.5% for Astra) and on Terminal-bench 4.0 (57.4% against 66.4% for Opus 5.5). Conclusion: the ranking depends on the task being measured, and these are the tests the vendor chose to publish. To choose, you evaluate on your own use case."
+    },
+    {
+      "q_fr": "Qu'est-ce qu'un Dot chez OpenAI ?",
+      "a_fr": "Un agent « toujours allumé » annoncé au DevDay du 29 septembre 2026. Il tourne en permanence dans le cloud, propulsé par GPT-6 Astra, avec un navigateur et des connexions à plus de 4 000 applications. On lui parle dans ChatGPT, Slack ou Teams, il garde le contexte entre les canaux, travaille en arrière-plan et apprend les préférences de l'utilisateur. Il suit les permissions de ChatGPT, avec des règles pour exiger une validation humaine sur les actions sensibles. Réservé aux offres Pro, Business Premium et Enterprise.",
+      "q_en": "What is an OpenAI Dot?",
+      "a_en": "An \"always-on\" agent announced at DevDay on September 29, 2026. It runs continuously in the cloud, powered by GPT-6 Astra, with a browser and connections to more than 4,000 apps. You talk to it in ChatGPT, Slack or Teams, it keeps context across channels, works in the background and learns the user's preferences. It follows ChatGPT permissions, with rules to require human approval on sensitive actions. Limited to the Pro, Business Premium and Enterprise plans."
+    },
+    {
+      "q_fr": "Que s'est-il passé chez Bee Cheng Hiang, et quelle leçon en tirer ?",
+      "a_fr": "Le 25 avril 2026, un employé a demandé à une IA générative un script Python pour envoyer une campagne e-mail par lots de 1 000 clients, sans préciser que les destinataires devaient être masqués les uns aux autres. Résultat : 95 364 adresses exposées à d'autres clients. Le régulateur singapourien (PDPC) a conclu que l'incident venait d'une erreur humaine et non d'un dysfonctionnement de l'outil. Leçon : le code généré fait ce qu'on lui demande, pas ce qu'on a oublié de demander. Il faut tester sur des comptes factices et faire relire par une deuxième personne tout code qui touche des données personnelles.",
+      "q_en": "What happened at Bee Cheng Hiang, and what is the lesson?",
+      "a_en": "On April 25, 2026, an employee asked a generative AI tool for a Python script to send an email campaign in batches of 1,000 customers, without saying that recipients had to be hidden from each other. Result: 95,364 addresses exposed to other customers. Singapore's regulator (PDPC) concluded the incident came from human error, not a malfunction of the tool. Lesson: generated code does what you ask, not what you forgot to ask. Test on dummy accounts and have a second person review any code that handles personal data."
+    }
+  ],
+  "qcm": [
+    {
+      "q_fr": "Qui peut utiliser Gemini 4 Argon au moment de son annonce, le 30 septembre 2026 ?",
+      "q_en": "Who can use Gemini 4 Argon when it is announced on September 30, 2026?",
+      "choices_fr": ["Tous les utilisateurs gratuits de Gemini", "Tous les clients payants de l'API, sans restriction", "Des défenseurs cyber de confiance via le programme Fairwind, et le gouvernement américain", "Uniquement les équipes internes de Google"],
+      "choices_en": ["All free Gemini users", "All paid API customers, with no restriction", "Trusted cyber defenders through the Fairwind program, and the US government", "Only Google's internal teams"],
+      "answer": 2,
+      "explain_fr": "Argon sort en diffusion limitée. Google le confie d'abord à des défenseurs cyber de confiance via Fairwind et au gouvernement américain dans le cadre de l'accès volontaire avant sortie. Les abonnés Google AI Ultra et les clients payants de l'API suivront « dès que possible », une fois les protections renforcées contre les usages offensifs et l'injection de prompt. Un modèle capable de trouver et corriger des failles seul se lance désormais par paliers.",
+      "explain_en": "Argon ships in limited release. Google gives it first to trusted cyber defenders through Fairwind and to the US government under voluntary pre-release access. Google AI Ultra subscribers and paid API customers will follow \"as soon as possible\", once safeguards against offensive use and prompt injection are strengthened. A model that can find and patch vulnerabilities on its own now launches in stages."
+    },
+    {
+      "q_fr": "Selon le régulateur singapourien, quelle est la cause de la fuite des e-mails de Bee Cheng Hiang ?",
+      "q_en": "According to Singapore's regulator, what caused the Bee Cheng Hiang email leak?",
+      "choices_fr": ["Une erreur humaine dans le développement du code d'envoi", "Un dysfonctionnement de l'outil d'IA", "Une attaque par rançongiciel", "Une faille dans le serveur de messagerie"],
+      "choices_en": ["Human error in developing the email distribution code", "A malfunction of the AI tool", "A ransomware attack", "A flaw in the mail server"],
+      "answer": 0,
+      "explain_fr": "La PDPC est explicite : l'incident n'a pas été causé par un dysfonctionnement de l'outil d'IA, mais par une erreur humaine. La demande faite à l'IA ne précisait pas que les adresses devaient être masquées entre destinataires, et le script a été lancé sans vérification suffisante. La responsabilité reste à celui qui exécute le code, quel que soit son auteur. D'où les mesures prises : double validation, revue indépendante du code généré, tests sur comptes factices.",
+      "explain_en": "The PDPC is explicit: the incident was not caused by a malfunction in the AI tool, but by human error. The request to the AI did not say addresses had to be hidden between recipients, and the script was run without enough checking. Responsibility stays with whoever runs the code, whoever wrote it. Hence the fixes: two-person approval, independent review of generated code, testing on dummy accounts."
+    },
+    {
+      "q_fr": "À quoi servent des modèles comme Clef (Cloudflare) ou Strands Decider 2B (Amazon) ?",
+      "q_en": "What are models like Clef (Cloudflare) or Strands Decider 2B (Amazon) for?",
+      "choices_fr": ["Générer de longs documents à bas coût", "Remplacer les modèles phares sur les benchmarks de code", "Entraîner d'autres modèles sur des données synthétiques", "Prendre vite de petites décisions dans un système d'agents : oui/non, classement, choix d'outil ou de route"],
+      "choices_en": ["Generating long documents cheaply", "Replacing flagship models on coding benchmarks", "Training other models on synthetic data", "Making small decisions fast inside an agent system: yes/no, ranking, tool or route selection"],
+      "answer": 3,
+      "explain_fr": "Ces petits modèles sous licence Apache 2.0 ne produisent pas de texte libre : ils rendent une décision. Decider 2B, avec 2 milliards de paramètres, répond en 106 ms médianes sur une RTX 3090. L'intérêt est architectural : dans un système d'agents, router une requête ou choisir un outil ne demande pas un modèle phare. On réserve le gros modèle aux étapes qui en ont besoin, ce qui réduit le coût et la latence.",
+      "explain_en": "These small Apache 2.0 models do not produce free text: they return a decision. Decider 2B, with 2 billion parameters, answers in a median 106 ms on an RTX 3090. The benefit is architectural: in an agent system, routing a request or picking a tool does not need a flagship model. You keep the big model for the steps that need it, which cuts cost and latency."
+    }
+  ]
+}
