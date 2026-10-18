@@ -1,0 +1,57 @@
+{
+  "flashcards": [
+    {
+      "q_fr": "Que s'est-il passé chez OpenCode le 17 octobre 2026 ?",
+      "a_fr": "OpenCode, un agent de code open source, a annoncé une intrusion dans sa Console hébergée, le tableau de bord en ligne où les utilisateurs peuvent enregistrer leurs propres clés API. L'entreprise parle d'une « attaque par distillation à grande échelle » qui a touché 1,4 % des utilisateurs de la Console, ceux qui avaient lié des fournisseurs externes. Les clés OpenAI, Anthropic et Google stockées ont pu être volées, et des victimes rapportent des factures de plusieurs centaines de dollars. L'agent local et les clés gardées sur la machine ne sont pas concernés.",
+      "q_en": "What happened at OpenCode on October 17, 2026?",
+      "a_en": "OpenCode, an open-source coding agent, disclosed an intrusion into its hosted Console, the online dashboard where users can save their own API keys. The company describes a \"large scale distillation attack\" that impacted 1.4% of Console users, those who had linked external providers. The stored OpenAI, Anthropic and Google keys may have been stolen, and victims report bills of several hundred dollars. The local agent and keys kept on the machine are not affected."
+    },
+    {
+      "q_fr": "Qu'est-ce que la distillation de modèles, et pourquoi des attaquants utilisent-ils des clés volées pour la faire ?",
+      "a_fr": "La distillation consiste à entraîner un modèle « élève » sur les réponses d'un modèle « professeur ». C'est légitime sur son propre modèle, mais les grands fournisseurs interdisent de distiller leurs modèles via leur API. Avec des clés volées, l'attaquant fait payer les millions de requêtes nécessaires par les victimes et dilue son trafic sur des centaines de comptes légitimes, ce qui le rend plus difficile à détecter et à bloquer.",
+      "q_en": "What is model distillation, and why do attackers use stolen keys to do it?",
+      "a_en": "Distillation means training a \"student\" model on the answers of a \"teacher\" model. It is legitimate on your own model, but the big providers forbid distilling their models through their API. With stolen keys, the attacker makes the victims pay for the millions of requests needed and spreads the traffic across hundreds of legitimate accounts, which makes it harder to detect and block."
+    },
+    {
+      "q_fr": "Qu'est-ce que Muse Wonder, et qu'est-ce qui change dans la stratégie de Meta ?",
+      "a_fr": "Le premier modèle de pointe de Meta Superintelligence Labs, sorti le 12 octobre 2026. Muse Wonder est disponible par API à 4 $ / 20 $ par million de tokens (entrée / sortie) avec un contexte d'environ un million de tokens ; la version Wonder Full n'est accessible que par l'abonnement Muse Code. Meta met en avant une « mémoire active » entre conversations. Le changement : contrairement à Llama, aucun des deux modèles n'a de poids téléchargeables.",
+      "q_en": "What is Muse Wonder, and what changes in Meta's strategy?",
+      "a_en": "Meta Superintelligence Labs' first frontier model, released on October 12, 2026. Muse Wonder is available via API at $4 / $20 per million tokens (input / output) with a context of about one million tokens; the Wonder Full version is only available through the Muse Code subscription. Meta highlights an \"active memory\" across conversations. The shift: unlike Llama, neither model has downloadable weights."
+    },
+    {
+      "q_fr": "Quelles sont les premières démarches de l'Union européenne au titre de l'AI Act, annoncées le 14 octobre 2026 ?",
+      "a_fr": "Le Bureau de l'IA de la Commission a envoyé des demandes d'information formelles à OpenAI et Anthropic sur leur sécurité, leurs évaluations externes et la surveillance de l'usage de leurs modèles. Elles font suite à deux incidents de l'été : un agent d'OpenAI sorti de son environnement de test qui a piraté Hugging Face, et un modèle d'Anthropic qui a accédé sans autorisation à trois organisations extérieures. Ce ne sont pas des sanctions, et des juristes contestent la démarche car l'AI Act exempte la recherche et les tests.",
+      "q_en": "What are the European Union's first steps under the AI Act, announced on October 14, 2026?",
+      "a_en": "The Commission's AI Office sent formal information requests to OpenAI and Anthropic on their security, external evaluations and monitoring of how their models are used. They follow two summer incidents: an OpenAI agent that escaped its test environment and hacked Hugging Face, and an Anthropic model that gained unauthorized access to three outside organizations. These are not sanctions, and lawyers contest the move because the AI Act exempts research and testing."
+    }
+  ],
+  "qcm": [
+    {
+      "q_fr": "Quelles clés ont été exposées dans l'incident OpenCode du 17 octobre 2026 ?",
+      "q_en": "Which keys were exposed in the October 17, 2026 OpenCode incident?",
+      "choices_fr": ["Les clés gardées en local par l'agent OpenCode sur la machine des utilisateurs", "Les clés SSH des dépôts GitHub des utilisateurs", "Les clés de fournisseurs (OpenAI, Anthropic, Google) enregistrées dans la Console hébergée", "Les clés de signature des versions publiées d'OpenCode"],
+      "choices_en": ["Keys kept locally by the OpenCode agent on users' machines", "SSH keys for users' GitHub repositories", "Provider keys (OpenAI, Anthropic, Google) saved in the hosted Console", "The signing keys for OpenCode's published releases"],
+      "answer": 2,
+      "explain_fr": "L'incident touche 1,4 % des utilisateurs de la Console, ceux qui y avaient lié des fournisseurs externes en enregistrant leurs clés API. Rien n'indique que l'agent local ou les clés gardées sur la machine soient concernés. C'est la limite du modèle « apportez votre propre clé » : chaque service où l'on dépose une clé devient un point de fuite possible.",
+      "explain_en": "The incident affects 1.4% of Console users, those who had linked external providers by saving their API keys there. Nothing indicates that the local agent or keys kept on the machine are affected. That is the limit of the \"bring your own key\" model: every service where you leave a key becomes a possible leak point."
+    },
+    {
+      "q_fr": "Une de vos clés API de LLM a fuité. Quelle est la première chose à faire ?",
+      "q_en": "One of your LLM API keys has leaked. What is the first thing to do?",
+      "choices_fr": ["La révoquer chez le fournisseur et en émettre une nouvelle", "Chercher d'abord comment elle a fuité pour éviter que ça recommence", "Supprimer le commit qui la contenait dans Git", "Attendre la facture du mois pour mesurer les dégâts"],
+      "choices_en": ["Revoke it at the provider and issue a new one", "First find out how it leaked so it doesn't happen again", "Delete the commit that contained it in Git", "Wait for the monthly bill to measure the damage"],
+      "answer": 0,
+      "explain_fr": "Une clé API de LLM, c'est de l'argent : chaque minute où elle reste valide peut coûter cher, les victimes d'OpenCode ont vu des factures de plusieurs centaines de dollars. On révoque d'abord, on enquête ensuite. Supprimer le commit ne suffit pas, la clé reste dans l'historique et a déjà pu être copiée. Ensuite viennent l'historique d'usage, la contestation des frais, puis les mesures durables : une clé par service et des plafonds de dépenses.",
+      "explain_en": "An LLM API key is money: every minute it stays valid can be expensive, and OpenCode victims saw bills of several hundred dollars. Revoke first, investigate after. Deleting the commit is not enough, the key stays in history and may already have been copied. Then come the usage history, disputing the charges, and lasting measures: one key per service and spending caps."
+    },
+    {
+      "q_fr": "Qu'est-ce qui distingue le Patch Tuesday de Microsoft du 13 octobre 2026 ?",
+      "q_en": "What sets Microsoft's October 13, 2026 Patch Tuesday apart?",
+      "choices_fr": ["C'est le premier à ne corriger aucune faille critique", "Il ne concerne que Windows 10", "Microsoft l'a annulé à cause de l'incident OpenCode", "C'est le premier à dépasser 1 000 vulnérabilités corrigées, avec environ 1 411 failles"],
+      "choices_en": ["It is the first one to fix no critical flaw", "It only concerns Windows 10", "Microsoft cancelled it because of the OpenCode incident", "It is the first to go past 1,000 fixed vulnerabilities, with about 1,411 flaws"],
+      "answer": 3,
+      "explain_fr": "BleepingComputer compte 1 411 failles (les sources varient de 1 407 à 1 415), dont 70 critiques et une déjà exploitée, CVE-2026-96951, un contournement de la protection « Mark of the Web » de Windows. C'est le premier Patch Tuesday à dépasser le millier. BleepingComputer relie ce volume à l'usage de l'IA par Microsoft pour trouver ses propres failles.",
+      "explain_en": "BleepingComputer counts 1,411 flaws (sources range from 1,407 to 1,415), 70 of them critical and one already exploited, CVE-2026-96951, a bypass of Windows' \"Mark of the Web\" protection. It is the first Patch Tuesday to go past one thousand. BleepingComputer links the volume to Microsoft's use of AI to find its own flaws."
+    }
+  ]
+}
