@@ -1,0 +1,57 @@
+{
+  "flashcards": [
+    {
+      "q_fr": "Qu'a annoncé Anthropic le 22 octobre 2026 ?",
+      "a_fr": "La disponibilité générale d'une offre Claude Platform gérée par Anthropic sur Google Cloud. Les entreprises peuvent l'utiliser avec leur identité Google Cloud, leur facturation Google Cloud et leurs engagements de dépense éventuels. Des points d'accès américain et mondial sont proposés, et l'offre gérée par Google reste disponible à côté.",
+      "q_en": "What did Anthropic announce on October 22, 2026?",
+      "a_en": "General availability of an Anthropic-managed Claude Platform on Google Cloud. Companies can use it with their Google Cloud identity, Google Cloud billing and any spend commitments. U.S. and global endpoints are offered, and the Google-managed offering remains available alongside."
+    },
+    {
+      "q_fr": "Où en est l'accès aux modèles d'OpenAI sur Google Cloud, annoncé le 21 octobre 2026 ?",
+      "a_fr": "C'est une préversion privée, limitée aux équipes approuvées et à des usages de développement et de test interne, pas à la production. Un élargissement est prévu « dans les prochaines semaines ». À ne pas confondre avec l'offre Claude, qui est en disponibilité générale.",
+      "q_en": "Where does access to OpenAI's models on Google Cloud, announced on October 21, 2026, stand?",
+      "a_en": "It is a private preview, limited to approved teams and to development and internal testing, not production. A wider rollout is planned \"in the coming weeks\". Not to be confused with the Claude offering, which is generally available."
+    },
+    {
+      "q_fr": "Qu'est-ce que Claude Duet ?",
+      "a_fr": "Un agent personnel d'Anthropic annoncé le 21 octobre 2026 en préversion de recherche, avec liste d'attente pour les abonnés Claude Pro et Max aux États-Unis. Il se connecte à vos applications et utilise un ordinateur virtuel pour préparer du travail en arrière-plan, en partageant les limites d'usage de Claude. Team et Enterprise ne sont pas inclus.",
+      "q_en": "What is Claude Duet?",
+      "a_en": "A personal agent from Anthropic announced on October 21, 2026 as a research preview, with a waitlist for U.S. Claude Pro and Max subscribers. It connects to your apps and uses a virtual computer to prepare work in the background, sharing Claude's usage limits. Team and Enterprise are not included."
+    },
+    {
+      "q_fr": "Qu'est-ce que le LLMjacking ?",
+      "a_fr": "Le détournement d'un modèle d'IA exposé sur Internet par un tiers, pour voler des identifiants ou miner de la cryptomonnaie. Le coût de calcul retombe sur le propriétaire du modèle. Parades de base : pas de serveur de modèle sans authentification, accès restreint par réseau, quotas et alertes de consommation.",
+      "q_en": "What is LLMjacking?",
+      "a_en": "A third party hijacking an AI model exposed on the Internet, to steal credentials or mine cryptocurrency. The compute cost falls on the model's owner. Basic defenses: no model server without authentication, network-restricted access, quotas and usage alerts."
+    }
+  ],
+  "qcm": [
+    {
+      "q_fr": "Qu'est-ce qui change concrètement pour une entreprise cliente de Google Cloud avec l'offre Claude du 22 octobre 2026 ?",
+      "q_en": "What concretely changes for a Google Cloud customer with the October 22, 2026 Claude offering?",
+      "choices_fr": ["Claude devient gratuit pour tous les clients Google Cloud", "Elle peut utiliser Claude avec son identité, sa facturation et ses engagements de dépense Google Cloud", "Claude n'est plus accessible par l'API directe d'Anthropic", "Les poids de Claude sont téléchargeables sur Google Cloud"],
+      "choices_en": ["Claude becomes free for all Google Cloud customers", "It can use Claude with its Google Cloud identity, billing and spend commitments", "Claude is no longer available through Anthropic's direct API", "Claude's weights can be downloaded on Google Cloud"],
+      "answer": 1,
+      "explain_fr": "Le changement est administratif, pas technique : achat, droits d'accès et budget restent dans l'outil que l'entreprise utilise déjà. L'offre gérée par Google reste disponible, et rien ne dit que l'API directe disparaît. Les fonctions disponibles peuvent différer de celles de l'API directe.",
+      "explain_en": "The change is administrative, not technical: purchasing, access rights and budget stay in the tool the company already uses. The Google-managed offering remains available, and nothing says the direct API goes away. Available features may differ from those of the direct API."
+    },
+    {
+      "q_fr": "Pourquoi est-il prudent de mettre l'appel au modèle derrière une petite interface dans son application ?",
+      "q_en": "Why is it wise to put the model call behind a small interface in your application?",
+      "choices_fr": ["Pour que les requêtes soient plus rapides", "Pour que le modèle n'ait plus besoin de clé ni d'identité", "Pour éviter d'écrire des tests", "Pour pouvoir changer de modèle ou de cloud sans réécrire l'application"],
+      "choices_en": ["So that requests are faster", "So the model no longer needs a key or an identity", "To avoid writing tests", "To be able to switch model or cloud without rewriting the application"],
+      "answer": 3,
+      "explain_fr": "Les modèles arrivent sur plusieurs clouds, les prix changent et les clients changent de fournisseur. Isoler la frontière avec le fournisseur (fonction ou classe, nom du modèle en configuration) rend le changement peu coûteux. Cela ne rend pas les requêtes plus rapides, et ne supprime ni l'authentification ni le besoin de tests, au contraire : des tests d'évaluation permettent de comparer deux modèles avant de changer.",
+      "explain_en": "Models are arriving on several clouds, prices change and clients switch providers. Isolating the boundary with the provider (a function or class, model name in configuration) makes switching cheap. It doesn't make requests faster, and it removes neither authentication nor the need for tests, quite the opposite: evaluation tests let you compare two models before switching."
+    },
+    {
+      "q_fr": "Vous lancez un serveur de modèle (par exemple Ollama) sur une machine accessible depuis Internet pour un projet. Quel risque le LLMjacking illustre-t-il ?",
+      "q_en": "You run a model server (for example Ollama) on a machine reachable from the Internet for a project. What risk does LLMjacking illustrate?",
+      "choices_fr": ["Un tiers peut utiliser votre modèle à vos frais si le serveur n'est pas protégé", "Le modèle va oublier ses poids au bout de quelques jours", "Le serveur sera bloqué automatiquement par le fournisseur du modèle", "Seuls les modèles hébergés par un cloud sont concernés"],
+      "choices_en": ["A third party can use your model at your expense if the server is not protected", "The model will forget its weights after a few days", "The server will be automatically blocked by the model's provider", "Only models hosted by a cloud are affected"],
+      "answer": 0,
+      "explain_fr": "Le LLMjacking détourne des modèles exposés pour voler des identifiants ou miner de la cryptomonnaie, et le coût de calcul retombe sur le propriétaire. La parade : authentification, accès restreint par réseau, quotas et alertes de consommation. Un serveur que vous hébergez vous-même est justement le cas typique.",
+      "explain_en": "LLMjacking hijacks exposed models to steal credentials or mine cryptocurrency, and the compute cost falls on the owner. The defense: authentication, network-restricted access, quotas and usage alerts. A server you host yourself is exactly the typical case."
+    }
+  ]
+}
