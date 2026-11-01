@@ -1,0 +1,57 @@
+{
+  "flashcards": [
+    {
+      "q_fr": "Que faisait la version 2.1.313 piégée de l'extension « anthropic.claude-code » sur Open VSX ?",
+      "a_fr": "Un chargeur d'environ 66 lignes ajoutait une clé SSH de l'attaquant dans authorized_keys, ouvrait un tunnel inverse vers un serveur externe et installait de la persistance. Cursor a indiqué qu'elle n'avait pas été développée par Anthropic et touchait 5 000 utilisateurs au plus.",
+      "q_en": "What did the booby-trapped version 2.1.313 of the \"anthropic.claude-code\" extension on Open VSX do?",
+      "a_en": "A loader of about 66 lines added an attacker's SSH key to authorized_keys, opened a reverse tunnel to an external server and set up persistence. Cursor said it was not developed by Anthropic and affected at most 5,000 users."
+    },
+    {
+      "q_fr": "Pourquoi désinstaller l'extension piégée ne suffit-il pas ?",
+      "a_fr": "Le programme a déposé de la persistance en dehors de l'extension, notamment une clé dans authorized_keys. Il faut la supprimer à la main, vérifier les connexions sortantes et changer les identifiants accessibles depuis la machine.",
+      "q_en": "Why is uninstalling the booby-trapped extension not enough?",
+      "a_en": "The malware dropped persistence outside the extension, notably a key in authorized_keys. You must remove it by hand, check outgoing connections and rotate the credentials reachable from the machine."
+    },
+    {
+      "q_fr": "Qu'est-ce qu'un tunnel inverse (reverse tunnel) ?",
+      "a_fr": "Une connexion que la machine victime ouvre vers l'extérieur, et par laquelle l'attaquant peut ensuite revenir vers elle. Comme la connexion part de l'intérieur, elle traverse souvent le pare-feu et la box qui bloquent les connexions entrantes.",
+      "q_en": "What is a reverse tunnel?",
+      "a_en": "A connection the victim machine opens outward, through which the attacker can then reach back into it. Since the connection starts from the inside, it often passes through the firewall and router that block incoming connections."
+    },
+    {
+      "q_fr": "Où en est la sortie des poids de Mistral Large 4 ?",
+      "a_fr": "Aperçu public via API depuis le 6 octobre 2026, publication des poids annoncée pour le 27 octobre. Les chiffres de taille et de performance viennent du fournisseur, sans évaluation indépendante publiée, et la sortie effective n'a pas été confirmée.",
+      "q_en": "Where does the release of Mistral Large 4's weights stand?",
+      "a_en": "Public API preview since October 6, 2026, weights announced for October 27. Size and performance figures come from the vendor, with no published independent evaluation, and the actual release was not confirmed."
+    }
+  ],
+  "qcm": [
+    {
+      "q_fr": "Une extension d'éditeur de code est soupçonnée d'être piégée. Quelle est la meilleure première réaction ?",
+      "q_en": "A code editor extension is suspected of being booby-trapped. What is the best first reaction?",
+      "choices_fr": ["La désinstaller et ne rien faire d'autre", "Chercher la persistance (authorized_keys, connexions sortantes) et changer clés et jetons", "Redémarrer l'ordinateur", "Attendre un communiqué de l'éditeur"],
+      "choices_en": ["Uninstall it and do nothing else", "Look for persistence (authorized_keys, outgoing connections) and rotate keys and tokens", "Restart the computer", "Wait for a statement from the code editor's vendor"],
+      "answer": 1,
+      "explain_fr": "Une extension tourne avec vos droits : tout ce qu'elle pouvait lire est à considérer comme compromis. La persistance déposée hors de l'extension survit à la désinstallation, donc il faut la chercher et renouveler les secrets.",
+      "explain_en": "An extension runs with your rights: anything it could read should be considered compromised. Persistence dropped outside the extension survives uninstallation, so you must hunt for it and renew secrets."
+    },
+    {
+      "q_fr": "Que peut-on affirmer sur la version officielle de l'extension d'après les sources de la semaine ?",
+      "q_en": "What can be said about the official version of the extension according to this week's sources?",
+      "choices_fr": ["Elle a été prouvée compromise par Anthropic", "Elle a été retirée de toutes les boutiques", "Elle n'est pas connue comme touchée, mais les chercheurs ne l'excluent pas formellement", "Elle a été développée par Cursor"],
+      "choices_en": ["It was proven compromised by Anthropic", "It was pulled from all stores", "It is not known to be affected, but researchers do not formally rule it out", "It was developed by Cursor"],
+      "answer": 2,
+      "explain_fr": "Les chercheurs précisent que leurs constats ne prouvent pas que la version officielle ou la chaîne de distribution d'Anthropic ait été compromise. Une affirmation contraire sur les réseaux sociaux n'est pas confirmée. Distinguer ce qui est établi de ce qui est supposé fait partie du métier.",
+      "explain_en": "Researchers say their findings do not prove Anthropic's official release or distribution chain was compromised. A contrary social media claim is unconfirmed. Separating what is established from what is assumed is part of the job."
+    },
+    {
+      "q_fr": "Quelle pratique réduit le plus l'impact d'une extension piégée sur votre poste ?",
+      "q_en": "Which practice most reduces the impact of a booby-trapped extension on your machine?",
+      "choices_fr": ["Utiliser votre clé SSH personnelle partout pour n'en gérer qu'une", "Garder tous vos jetons dans un fichier .env à la racine du home", "Utiliser des clés de déploiement distinctes, à droits minimaux et à expiration", "Installer toutes les extensions populaires pour comparer"],
+      "choices_en": ["Use your personal SSH key everywhere to manage only one", "Keep all your tokens in a .env file at the root of your home", "Use separate deploy keys with minimal rights and an expiry", "Install every popular extension to compare them"],
+      "answer": 2,
+      "explain_fr": "Une extension lit ce que votre utilisateur peut lire. Des secrets séparés, limités et à durée de vie courte réduisent ce qu'un attaquant peut faire avec ce qu'il vole, et facilitent la rotation.",
+      "explain_en": "An extension reads whatever your user can read. Separate, limited, short-lived secrets reduce what an attacker can do with what they steal, and make rotation easier."
+    }
+  ]
+}
