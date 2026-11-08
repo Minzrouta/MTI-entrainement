@@ -1,0 +1,57 @@
+{
+  "flashcards": [
+    {
+      "q_fr": "Qu'a obtenu l'attaquant chez Trigger.dev début novembre 2026 ?",
+      "a_fr": "Les clés API racine de certains environnements clients, qui donnent un accès complet aux réglages de l'environnement, y compris ses variables d'environnement. 0,66 % des clients sont touchés, et la cause n'a pas été publiée.",
+      "q_en": "What did the attacker obtain at Trigger.dev in early November 2026?",
+      "a_en": "Root API keys for some customer environments, which give full access to the environment's settings, including its environment variables. 0.66% of customers are affected, and the root cause has not been published."
+    },
+    {
+      "q_fr": "Que doit faire un client touché par la fuite Trigger.dev ?",
+      "a_fr": "Régénérer ses clés Trigger.dev, puis changer chaque identifiant stocké dans les environnements touchés (mots de passe de base, clés tierces, jetons) et révoquer les anciens chez chaque fournisseur. Les secrets de signature des webhooks n'ont pas été exposés.",
+      "q_en": "What should a customer affected by the Trigger.dev leak do?",
+      "a_en": "Regenerate their Trigger.dev keys, then rotate every credential stored in the affected environments (database passwords, third-party keys, tokens) and revoke the old ones with each provider. Webhook signing secrets were not exposed."
+    },
+    {
+      "q_fr": "Qu'apporte OIDC à une CI/CD par rapport à une clé stockée ?",
+      "a_fr": "La CI présente un jeton signé qui prouve son identité (dépôt, branche) et reçoit en échange un accès temporaire. Il n'y a plus de clé longue durée stockée qu'un attaquant pourrait voler.",
+      "q_en": "What does OIDC bring to CI/CD compared with a stored key?",
+      "a_en": "The CI presents a signed token proving its identity (repository, branch) and gets temporary access in return. There is no long-lived stored key left for an attacker to steal."
+    },
+    {
+      "q_fr": "Qu'est-ce que la faille GitLab CVE-2026-97229 ?",
+      "a_fr": "Une faille notée 10/10 dans le compilateur d'expressions régulières de la CI/CD, qui permet d'exécuter du code à distance sans authentification. Corrigée le 12 octobre 2026, elle est exploitée et plus de 1 000 serveurs restaient vulnérables le 1er novembre.",
+      "q_en": "What is the GitLab flaw CVE-2026-97229?",
+      "a_en": "A flaw rated 10/10 in the CI/CD regular expression compiler that allows unauthenticated remote code execution. Fixed on October 12, 2026, it is being exploited and over 1,000 servers were still vulnerable on November 1."
+    }
+  ],
+  "qcm": [
+    {
+      "q_fr": "Un fournisseur vous prévient que vos variables d'environnement ont pu être lues. Quelle est la bonne réaction ?",
+      "q_en": "A provider warns you that your environment variables may have been read. What is the right reaction?",
+      "choices_fr": ["Attendre la publication de la cause avant d'agir", "Supposer la fuite et changer chaque secret chez chaque fournisseur, en révoquant les anciens", "Supprimer le compte chez ce fournisseur et ne rien faire d'autre", "Changer seulement le mot de passe du tableau de bord"],
+      "choices_en": ["Wait for the root cause to be published before acting", "Assume the leak and rotate every secret with every provider, revoking the old ones", "Delete the account with that provider and do nothing else", "Only change the dashboard password"],
+      "answer": 1,
+      "explain_fr": "Un secret lu est un secret compromis, même si la plateforme est réparée. Seule la rotation chez chaque fournisseur, avec révocation des anciennes valeurs, retire à l'attaquant ce qu'il a obtenu.",
+      "explain_en": "A secret that was read is a compromised secret, even once the platform is fixed. Only rotation with each provider, revoking the old values, takes away what the attacker obtained."
+    },
+    {
+      "q_fr": "Que protègent vraiment les variables d'environnement par rapport à des secrets écrits dans le code ?",
+      "q_en": "What do environment variables really protect against, compared with secrets written in the code?",
+      "choices_fr": ["Tout accès, y compris celui de la plateforme qui les stocke", "Rien du tout, c'est équivalent", "Le chiffrement de bout en bout de chaque requête", "La fuite par le dépôt Git, mais pas une attaque sur la plateforme qui les stocke"],
+      "choices_en": ["Any access, including the platform that stores them", "Nothing at all, it is the same", "End-to-end encryption of every request", "Leaks through the Git repository, but not an attack on the platform that stores them"],
+      "answer": 3,
+      "explain_fr": "Sortir les secrets du code évite qu'ils fuient avec le dépôt. Mais ils sont stockés quelque part, et l'incident Trigger.dev montre que ce stockage peut être attaqué : d'où les droits minimaux et les jetons courts.",
+      "explain_en": "Moving secrets out of code keeps them from leaking with the repository. But they are stored somewhere, and the Trigger.dev incident shows that storage can be attacked: hence least privilege and short-lived tokens."
+    },
+    {
+      "q_fr": "Pourquoi la faille GitLab CVE-2026-97229 est-elle particulièrement grave pour un serveur auto-hébergé ?",
+      "q_en": "Why is the GitLab flaw CVE-2026-97229 especially serious for a self-hosted server?",
+      "choices_fr": ["Elle permet d'exécuter du code à distance sans identifiant sur un serveur exposé et non mis à jour", "Elle ne touche que GitLab.com", "Elle demande un accès administrateur préalable", "Elle n'a pas encore de correctif"],
+      "choices_en": ["It allows remote code execution without credentials on an exposed, unpatched server", "It only affects GitLab.com", "It requires prior administrator access", "It has no fix yet"],
+      "answer": 0,
+      "explain_fr": "Le correctif existe depuis le 12 octobre et GitLab.com était déjà protégé. Le danger vient des serveurs auto-hébergés pas mis à jour : sans authentification, n'importe qui sur Internet peut tenter l'attaque.",
+      "explain_en": "The fix has existed since October 12 and GitLab.com was already protected. The danger comes from unpatched self-hosted servers: with no authentication needed, anyone on the internet can try the attack."
+    }
+  ]
+}
