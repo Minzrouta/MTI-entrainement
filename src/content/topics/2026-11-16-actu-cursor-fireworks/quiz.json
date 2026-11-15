@@ -1,0 +1,57 @@
+{
+  "flashcards": [
+    {
+      "q_fr": "Comment l'attaquant a-t-il pu publier une extension Claude Code piégée dans la boutique de Cursor ?",
+      "a_fr": "Il a volé des identifiants chez Fireworks AI, fournisseur d'inférence de Cursor. Une clé stockée chez Fireworks donnait accès à d'anciennes traces d'agents de code, dont certaines contenaient des clés d'API en clair. L'une d'elles lui a permis de déposer les versions 2.1.312 et 2.1.313 dans le cache de la boutique, le 29 octobre 2026.",
+      "q_en": "How was the attacker able to publish a rigged Claude Code extension in Cursor's marketplace?",
+      "a_en": "They stole credentials at Fireworks AI, Cursor's inference provider. A key stored at Fireworks gave access to old coding-agent traces, some of which held plain-text API keys. One of them let the attacker place versions 2.1.312 and 2.1.313 on the marketplace cache on October 29, 2026."
+    },
+    {
+      "q_fr": "Quels utilisateurs de Cursor avaient des traces d'agents exposées ?",
+      "a_fr": "Ceux qui n'avaient pas activé le mode confidentialité : leurs traces, surtout de 2025, étaient partagées avec Fireworks AI. Cursor parle de moins de 0,05 % des utilisateurs. Le code et les prompts des utilisateurs en mode confidentialité n'ont pas été touchés.",
+      "q_en": "Which Cursor users had their agent traces exposed?",
+      "a_en": "Those who had not turned on Privacy Mode: their traces, mostly from 2025, were shared with Fireworks AI. Cursor says fewer than 0.05% of users. Code and prompts of Privacy Mode users were not affected."
+    },
+    {
+      "q_fr": "Qu'est-ce qu'une attaque par la chaîne d'approvisionnement ?",
+      "a_fr": "Une attaque qui ne vise pas directement la cible mais passe par quelqu'un en qui elle a confiance : un paquet, une extension, un fournisseur. Chez Cursor, l'attaquant est passé par Fireworks AI puis par la boutique d'extensions.",
+      "q_en": "What is a supply chain attack?",
+      "a_en": "An attack that does not target the victim directly but goes through someone it trusts: a package, an extension, a provider. At Cursor, the attacker went through Fireworks AI, then through the extension marketplace."
+    },
+    {
+      "q_fr": "Qu'apportent .NET 11 et C# 15, sortis le 10 novembre 2026 ?",
+      "a_fr": "C# 15 ajoute les types union, des valeurs qui sont exactement l'un de plusieurs types listés. .NET 11 est une version à support standard de deux ans, .NET 10 reste la version à support long.",
+      "q_en": "What do .NET 11 and C# 15, released on November 10, 2026, bring?",
+      "a_en": "C# 15 adds union types, values that are exactly one of several listed types. .NET 11 is a two-year Standard Term Support release, .NET 10 remains the long-term support release."
+    }
+  ],
+  "qcm": [
+    {
+      "q_fr": "Vous déboguez une erreur avec un agent de code et le message contient votre clé d'API. Que faites-vous ?",
+      "q_en": "You are debugging an error with a coding agent and the message contains your API key. What do you do?",
+      "choices_fr": ["Rien, l'agent ne garde rien", "Supprimer la conversation, ça suffit", "Masquer la clé avant de coller, et si elle a déjà été envoyée, la révoquer et en créer une nouvelle", "Chiffrer le message en base64"],
+      "choices_en": ["Nothing, the agent keeps nothing", "Delete the conversation, that is enough", "Mask the key before pasting, and if it was already sent, revoke it and create a new one", "Encode the message in base64"],
+      "answer": 2,
+      "explain_fr": "Les conversations peuvent être stockées et partagées avec des fournisseurs, comme chez Cursor. Supprimer la conversation ne garantit pas que les copies disparaissent, et base64 n'est pas un chiffrement. Seule la révocation rend une clé exposée inutile.",
+      "explain_en": "Conversations can be stored and shared with providers, as at Cursor. Deleting the conversation does not guarantee copies disappear, and base64 is not encryption. Only revocation makes an exposed key useless."
+    },
+    {
+      "q_fr": "Dans l'incident Cursor, quel a été le premier maillon compromis ?",
+      "q_en": "In the Cursor incident, which link was compromised first?",
+      "choices_fr": ["Fireworks AI, le fournisseur d'inférence de Cursor", "L'extension officielle d'Anthropic", "Open VSX", "Le dépôt GitHub de Cursor"],
+      "choices_en": ["Fireworks AI, Cursor's inference provider", "Anthropic's official extension", "Open VSX", "Cursor's GitHub repository"],
+      "answer": 0,
+      "explain_fr": "Les attaquants ont d'abord volé des identifiants chez Fireworks AI. Selon Cursor, ni l'extension officielle d'Anthropic ni Open VSX n'ont été compromis : la version piégée a été déposée dans le cache de la boutique de Cursor.",
+      "explain_en": "The attackers first stole credentials at Fireworks AI. According to Cursor, neither Anthropic's official extension nor Open VSX was compromised: the rigged version was placed on the cache of Cursor's marketplace."
+    },
+    {
+      "q_fr": "Un projet d'école tourne sur .NET 8 en novembre 2026. Quel est le problème ?",
+      "q_en": "A school project runs on .NET 8 in November 2026. What is the problem?",
+      "choices_fr": ["Il ne compile plus", ".NET 8 n'a jamais été une version à support long", "Il faut obligatoirement passer à .NET 11", "Selon la presse, .NET 8 est arrivé en fin de support le 10 novembre 2026 et ne reçoit plus de correctifs de sécurité"],
+      "choices_en": ["It no longer compiles", ".NET 8 was never a long-term support release", "Moving to .NET 11 is mandatory", "According to the press, .NET 8 reached end of support on November 10, 2026 and no longer gets security fixes"],
+      "answer": 3,
+      "explain_fr": "Le code continue de compiler, mais sans correctifs de sécurité. .NET 10, à support long, est le choix prudent pour migrer. .NET 11 n'est qu'une option, avec deux ans de support.",
+      "explain_en": "The code still compiles, but without security fixes. .NET 10, with long-term support, is the safe migration target. .NET 11 is only an option, with two years of support."
+    }
+  ]
+}
