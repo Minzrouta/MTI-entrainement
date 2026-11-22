@@ -1,0 +1,57 @@
+{
+  "flashcards": [
+    {
+      "q_fr": "Que s'est-il passé pour Anthropic les 18 et 19 novembre 2026 ?",
+      "a_fr": "Anthropic est entrée au Nasdaq sous le symbole ANT. Prix fixé à 83 dollars le 18 novembre, environ 81 milliards de dollars levés (record devant SpaceX), puis une clôture à 97,17 dollars (+17 %) le 19, soit environ 1 800 milliards de capitalisation.",
+      "q_en": "What happened to Anthropic on November 18 and 19, 2026?",
+      "a_en": "Anthropic listed on Nasdaq under the ticker ANT. Priced at $83 on November 18, about $81 billion raised (a record, ahead of SpaceX), then a close at $97.17 (+17%) on the 19th, a market cap of about $1.8 trillion."
+    },
+    {
+      "q_fr": "Que montre le prospectus d'Anthropic sur ses comptes des neuf premiers mois de 2026 ?",
+      "a_fr": "33,2 milliards de dollars de chiffre d'affaires (contre 2,5 un an plus tôt) et 104 milliards de perte nette, dont l'essentiel vient du traitement comptable d'obligations convertibles selon Fortune. Les engagements de calcul se comptent en centaines de milliards.",
+      "q_en": "What does Anthropic's prospectus show about its first nine months of 2026?",
+      "a_en": "$33.2 billion in revenue (up from $2.5 billion a year earlier) and a $104 billion net loss, most of it from the accounting treatment of convertible notes according to Fortune. Compute commitments run into the hundreds of billions."
+    },
+    {
+      "q_fr": "Comment les versions 1.26.1 et 1.26.2 du paquet PyPI agent-framework volaient-elles des identifiants ?",
+      "a_fr": "Elles posaient un fichier .pth dans site-packages. Python exécute ces fichiers à chaque démarrage de l'interpréteur, même sans importer le paquet. Le code envoyait variables d'environnement, fichiers d'identifiants et jetons Azure et GitHub Actions à l'attaquant. Publiées le 17 novembre 2026, retirées en moins d'une heure.",
+      "q_en": "How did versions 1.26.1 and 1.26.2 of the agent-framework PyPI package steal credentials?",
+      "a_en": "They dropped a .pth file in site-packages. Python runs these files at every interpreter startup, even if the package is never imported. The code sent environment variables, credential files and Azure and GitHub Actions tokens to the attacker. Published on November 17, 2026, removed in under an hour."
+    },
+    {
+      "q_fr": "À quoi sert une Content Security Policy (CSP) ?",
+      "a_fr": "C'est un en-tête HTTP qui indique au navigateur quelles sources de scripts et de connexions une page accepte. Dans l'incident Optimizely du 16 novembre 2026, les sites avec un script-src strict ont bloqué le code injecté.",
+      "q_en": "What is a Content Security Policy (CSP) for?",
+      "a_en": "It is an HTTP header that tells the browser which sources of scripts and connections a page accepts. In the Optimizely incident of November 16, 2026, sites with a strict script-src blocked the injected code."
+    }
+  ],
+  "qcm": [
+    {
+      "q_fr": "Pourquoi l'entrée en bourse d'un laboratoire d'IA intéresse-t-elle un développeur ?",
+      "q_en": "Why should a developer care about an AI lab going public?",
+      "choices_fr": ["Les modèles deviennent open source", "L'entreprise publie ses comptes et ses risques, ce qui aide à anticiper les prix et les quotas", "L'API devient gratuite pour les étudiants", "Le code des clients devient public"],
+      "choices_en": ["The models become open source", "The company publishes its accounts and risks, which helps anticipate prices and quotas", "The API becomes free for students", "Customers' code becomes public"],
+      "answer": 1,
+      "explain_fr": "Une entreprise cotée publie un prospectus puis des comptes trimestriels. On y lit le poids du calcul dans les coûts, donc la pression sur les prix et les limites d'usage. Rien ne change pour la licence des modèles ou les données des clients.",
+      "explain_en": "A listed company publishes a prospectus, then quarterly accounts. They show how much compute weighs on costs, hence the pressure on prices and usage limits. Nothing changes for model licensing or customer data."
+    },
+    {
+      "q_fr": "Une version piégée d'un paquet reste 45 minutes sur PyPI. Quelle habitude vous aurait protégé ?",
+      "q_en": "A rigged version of a package stays on PyPI for 45 minutes. Which habit would have protected you?",
+      "choices_fr": ["Installer en sudo", "Toujours prendre la dernière version", "Supprimer le fichier de verrouillage avant chaque installation", "Figer les versions dans un fichier de verrouillage et attendre quelques jours avant d'accepter une nouvelle version"],
+      "choices_en": ["Installing with sudo", "Always taking the latest version", "Deleting the lockfile before each install", "Pinning versions in a lockfile and waiting a few days before accepting a new release"],
+      "answer": 3,
+      "explain_fr": "Avec des versions exactes et un délai avant mise à jour, vous n'installez jamais une version publiée quelques minutes plus tôt. Les versions 1.26.1 et 1.26.2 d'agent-framework ont disparu de PyPI en moins d'une heure.",
+      "explain_en": "With exact versions and a delay before updating, you do not install a release published minutes ago. Versions 1.26.1 and 1.26.2 of agent-framework were gone from PyPI in under an hour."
+    },
+    {
+      "q_fr": "Un script tiers chargé depuis un CDN de confiance est modifié par un attaquant. Qu'est-ce qui peut limiter les dégâts côté navigateur ?",
+      "q_en": "A third-party script loaded from a trusted CDN is modified by an attacker. What can limit the damage in the browser?",
+      "choices_fr": ["Une Content Security Policy avec script-src et connect-src restreints", "Le HTTPS", "Un cookie HttpOnly sur le panier", "Minifier le JavaScript"],
+      "choices_en": ["A Content Security Policy with restricted script-src and connect-src", "HTTPS", "An HttpOnly cookie on the cart", "Minifying the JavaScript"],
+      "answer": 0,
+      "explain_fr": "Chez Optimizely, le script infecté chargeait un second script depuis un domaine inconnu et y envoyait des données. Une CSP stricte bloque ce chargement et cette exfiltration. HTTPS protège le transport, pas le contenu d'un script déjà compromis à la source.",
+      "explain_en": "At Optimizely, the infected script loaded a second script from an unknown domain and sent data to it. A strict CSP blocks that load and that exfiltration. HTTPS protects transport, not the content of a script already compromised at the source."
+    }
+  ]
+}
